@@ -5,9 +5,9 @@ _tabversion = '3.2'
 
 _lr_method = 'LALR'
 
-_lr_signature = b'\xfb\x00\xee[\xa5\xdaY\x0bc\x05ZK,l\x17m'
+_lr_signature = b'\x16\xf0\x1a\x98~I\x9c\x86\xee\x06\xb5\x02k\xf6.\xe6'
     
-_lr_action_items = {'OR':([2,4,43,50,55,63,70,73,75,76,78,84,],[-2,-1,-3,-3,60,-3,-3,-3,-3,-3,-3,-3,]),'NEG':([2,4,43,50,55,63,70,73,75,76,78,84,],[-2,-1,-3,-3,62,-3,-3,-3,-3,-3,-3,-3,]),'WEIGHT_START':([0,2,3,4,26,],[-3,-2,7,-1,-3,]),'RPAREN':([2,4,28,54,59,61,66,67,72,74,77,79,80,81,82,83,85,86,87,88,],[-2,-1,-23,-3,68,-30,-29,-28,-31,-3,80,-3,-32,-35,-3,86,88,-33,-36,-34,]),'LPAREN':([2,4,35,43,50,55,60,62,63,64,65,69,70,71,73,75,76,78,84,],[-2,-1,43,-3,-3,63,-38,-3,-3,-3,-37,73,-3,75,-3,-3,-3,-3,-3,]),'NEWLINE':([2,4,8,9,10,12,13,16,19,23,27,28,29,30,31,32,34,42,45,47,48,49,56,57,58,68,],[-2,-1,-8,-7,-3,-11,-9,-10,26,-17,-21,-23,-20,-13,-15,-12,-18,-26,-22,-15,-16,-19,-25,-24,-14,-27,]),'RANGE_OP':([2,23,31,39,40,],[-2,-17,-3,46,-1,]),'FORMULA_START':([0,2,3,4,26,],[-3,-2,6,-1,-3,]),'NODE_START':([0,2,3,4,26,],[-3,-2,14,-1,-3,]),'IDENTIFIER':([2,4,20,36,38,43,50,55,62,63,69,70,73,75,76,78,84,],[-2,-1,28,28,28,-3,-3,28,-3,-3,28,-3,-3,-3,-3,-3,-3,]),'AND':([2,4,43,50,55,63,70,73,75,76,78,84,],[-2,-1,-3,-3,65,-3,-3,-3,-3,-3,-3,-3,]),'$end':([1,5,26,37,],[-4,0,-5,-6,]),'INTEGER':([2,4,17,18,21,22,40,41,46,51,52,53,],[-2,-1,23,23,23,23,23,23,-3,56,23,23,]),'ALPHABET_START':([0,2,3,4,26,],[-3,-2,11,-1,-3,]),'EDGE_START':([0,2,3,4,26,],[-3,-2,15,-1,-3,]),'WHITESPACE':([0,2,4,6,7,8,9,10,11,12,13,14,15,16,23,24,25,26,27,28,29,30,31,32,33,34,42,43,44,45,46,47,48,49,50,54,56,57,58,60,61,62,63,64,65,66,67,68,70,72,73,74,75,76,78,79,80,81,82,84,86,87,88,],[4,-2,-1,17,18,-8,-7,4,20,-11,-9,21,22,-10,-17,35,36,4,38,-23,-20,-13,40,-12,41,-18,-26,4,51,-22,4,53,-16,-19,4,4,-25,-24,-14,-38,-30,4,4,4,-37,-29,-28,-27,4,-31,4,4,4,4,4,4,-32,84,4,4,-33,-36,-34,]),}
+_lr_action_items = {'$end':([1,6,17,],[0,-1,-2,]),'NEWLINE':([2,3,5,9,10,11,12,13,14,16,20,22,23,25,31,32,36,39,45,],[-21,6,-22,-10,-9,-4,-5,-11,-23,-12,-3,-6,-23,-14,-21,-7,-8,-15,-13,]),'IDENTIFIER':([0,2,4,5,6,18,31,],[-23,-21,7,-22,-23,7,7,]),'RPAREN':([2,5,42,44,],[-21,-22,-23,45,]),'LPAREN':([0,2,4,5,6,15,18,21,31,38,41,],[-23,-21,8,-22,-23,-23,8,8,8,-23,8,]),'STRING':([0,2,4,5,6,15,18,21,31,38,41,],[-23,-21,9,-22,-23,-23,9,28,9,-23,28,]),'WHITESPACE':([0,2,5,6,7,8,9,10,11,12,13,14,15,16,22,23,24,25,26,27,28,29,30,31,32,34,36,37,38,39,42,43,45,],[2,-21,-22,2,18,2,-10,-9,-4,-5,-11,2,2,-12,-6,31,2,-14,2,-20,-19,-18,2,-21,-7,-16,-8,2,2,-15,2,-17,-13,]),'RSQUARE':([2,5,15,21,26,27,28,29,30,34,35,43,45,],[-21,-22,-23,25,-23,-20,-19,-18,-23,-16,39,-17,-13,]),'INTEGER':([0,2,4,5,6,8,15,18,19,21,31,37,38,40,41,],[-23,-21,10,-22,-23,-23,-23,10,24,29,10,-23,-23,42,29,]),'COMMA':([2,5,24,26,27,28,29,33,34,45,],[-21,-22,-23,-23,-20,-19,-18,37,38,-13,]),'LSQUARE':([0,2,4,5,6,18,31,],[-23,-21,15,-22,-23,15,15,]),}
 
 _lr_action = { }
 for _k, _v in _lr_action_items.items():
@@ -16,7 +16,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'FORM':([50,70,76,78,84,],[54,74,79,81,81,]),'NODE_RANGE':([21,],[30,]),'OPT_WHITESPACE':([0,10,26,31,43,46,50,54,62,63,64,70,73,74,75,76,78,79,82,84,],[3,19,3,39,50,52,55,59,69,70,71,55,76,77,78,55,55,83,85,55,]),'EDGE_LINE':([3,],[8,]),'NODE_LIST':([21,40,53,],[32,48,48,]),'WEIGHT':([51,],[57,]),'NODE_LINE':([3,],[9,]),'SIMPLE_FORM':([55,],[67,]),'FORMULA':([35,],[42,]),'LINE':([3,],[10,]),'FORMULA_LINE':([3,],[12,]),'COMPOUND_FORM':([55,],[66,]),'empty':([0,10,26,31,43,46,50,54,62,63,64,70,73,74,75,76,78,79,82,84,],[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,]),'ALPHABET_LINE':([3,],[13,]),'ATOM':([20,36,38,55,69,],[27,44,27,61,72,]),'LINES':([0,26,],[1,37,]),'EDGE':([22,],[34,]),'OP':([55,],[64,]),'FORM_LIST':([78,84,],[82,87,]),'ATOM_LIST':([20,38,],[29,45,]),'FILE':([0,],[5,]),'NODE':([17,18,21,22,40,41,52,53,],[24,25,31,33,47,49,58,47,]),'WEIGHT_LINE':([3,],[16,]),}
+_lr_goto_items = {'LINES':([0,6,],[1,17,]),'ELEMENT':([21,41,],[26,26,]),'FUNCTION_CALL':([4,18,31,],[12,12,12,]),'LINE':([0,6,],[3,3,]),'OPT_WHITE':([0,6,8,14,15,23,24,26,30,37,38,42,],[4,4,19,20,21,32,33,34,35,40,41,44,]),'ELEMENTS':([21,41,],[30,43,]),'LITERAL':([4,18,31,],[11,11,11,]),'ARGS':([18,31,],[22,36,]),'ORDERED_PAIR':([4,18,21,31,41,],[13,13,27,13,27,]),'EXPRESSION':([4,18,31,],[14,23,23,]),'LIST':([4,18,31,],[16,16,16,]),'empty':([0,6,8,14,15,23,24,26,30,37,38,42,],[5,5,5,5,5,5,5,5,5,5,5,5,]),}
 
 _lr_goto = { }
 for _k, _v in _lr_goto_items.items():
@@ -25,43 +25,28 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> FILE","S'",1,None,None,None),
-  ('OPT_WHITESPACE -> WHITESPACE','OPT_WHITESPACE',1,'p_OPT_WHITESPACE','BCF_Parser2.py',59),
-  ('OPT_WHITESPACE -> empty','OPT_WHITESPACE',1,'p_OPT_WHITESPACE','BCF_Parser2.py',60),
-  ('empty -> <empty>','empty',0,'p_empty','BCF_Parser2.py',64),
-  ('FILE -> LINES','FILE',1,'p_FILE','BCF_Parser2.py',68),
-  ('LINES -> OPT_WHITESPACE LINE OPT_WHITESPACE NEWLINE','LINES',4,'p_LINES','BCF_Parser2.py',73),
-  ('LINES -> OPT_WHITESPACE LINE OPT_WHITESPACE NEWLINE LINES','LINES',5,'p_LINES','BCF_Parser2.py',74),
-  ('LINE -> NODE_LINE','LINE',1,'p_LINE','BCF_Parser2.py',79),
-  ('LINE -> EDGE_LINE','LINE',1,'p_LINE','BCF_Parser2.py',80),
-  ('LINE -> ALPHABET_LINE','LINE',1,'p_LINE','BCF_Parser2.py',81),
-  ('LINE -> WEIGHT_LINE','LINE',1,'p_LINE','BCF_Parser2.py',82),
-  ('LINE -> FORMULA_LINE','LINE',1,'p_LINE','BCF_Parser2.py',83),
-  ('NODE_LINE -> NODE_START WHITESPACE NODE_LIST','NODE_LINE',3,'p_NODE_LINE','BCF_Parser2.py',88),
-  ('NODE_LINE -> NODE_START WHITESPACE NODE_RANGE','NODE_LINE',3,'p_NODE_LINE','BCF_Parser2.py',89),
-  ('NODE_RANGE -> NODE OPT_WHITESPACE RANGE_OP OPT_WHITESPACE NODE','NODE_RANGE',5,'p_NODE_RANGE','BCF_Parser2.py',93),
-  ('NODE_LIST -> NODE','NODE_LIST',1,'p_NODE_LIST','BCF_Parser2.py',99),
-  ('NODE_LIST -> NODE WHITESPACE NODE_LIST','NODE_LIST',3,'p_NODE_LIST','BCF_Parser2.py',100),
-  ('NODE -> INTEGER','NODE',1,'p_NODE','BCF_Parser2.py',104),
-  ('EDGE_LINE -> EDGE_START WHITESPACE EDGE','EDGE_LINE',3,'p_EDGE_LINE','BCF_Parser2.py',110),
-  ('EDGE -> NODE WHITESPACE NODE','EDGE',3,'p_EDGE','BCF_Parser2.py',115),
-  ('ALPHABET_LINE -> ALPHABET_START WHITESPACE ATOM_LIST','ALPHABET_LINE',3,'p_ALPHABET_LINE','BCF_Parser2.py',120),
-  ('ATOM_LIST -> ATOM','ATOM_LIST',1,'p_ATOM_LIST','BCF_Parser2.py',125),
-  ('ATOM_LIST -> ATOM WHITESPACE ATOM_LIST','ATOM_LIST',3,'p_ATOM_LIST','BCF_Parser2.py',126),
-  ('ATOM -> IDENTIFIER','ATOM',1,'p_ATOM','BCF_Parser2.py',131),
-  ('WEIGHT_LINE -> WEIGHT_START WHITESPACE NODE WHITESPACE ATOM WHITESPACE WEIGHT','WEIGHT_LINE',7,'p_WEIGHT_LINE','BCF_Parser2.py',136),
-  ('WEIGHT -> INTEGER','WEIGHT',1,'p_WEIGHT','BCF_Parser2.py',140),
-  ('FORMULA_LINE -> FORMULA_START WHITESPACE NODE WHITESPACE FORMULA','FORMULA_LINE',5,'p_FORMULA_LINE','BCF_Parser2.py',144),
-  ('FORMULA -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN','FORMULA',5,'p_FORMULA','BCF_Parser2.py',149),
-  ('FORM -> OPT_WHITESPACE SIMPLE_FORM','FORM',2,'p_FORM','BCF_Parser2.py',154),
-  ('FORM -> OPT_WHITESPACE COMPOUND_FORM','FORM',2,'p_FORM','BCF_Parser2.py',155),
-  ('SIMPLE_FORM -> ATOM','SIMPLE_FORM',1,'p_SIMPLE_FORM','BCF_Parser2.py',160),
-  ('SIMPLE_FORM -> NEG OPT_WHITESPACE ATOM','SIMPLE_FORM',3,'p_SIMPLE_FORM','BCF_Parser2.py',161),
-  ('SIMPLE_FORM -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN','SIMPLE_FORM',5,'p_SIMPLE_FORM','BCF_Parser2.py',162),
-  ('SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN','SIMPLE_FORM',7,'p_SIMPLE_FORM','BCF_Parser2.py',163),
-  ('COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN','COMPOUND_FORM',7,'p_COMPOUND_FORM','BCF_Parser2.py',175),
-  ('FORM_LIST -> FORM','FORM_LIST',1,'p_FORM_LIST','BCF_Parser2.py',180),
-  ('FORM_LIST -> FORM WHITESPACE FORM_LIST','FORM_LIST',3,'p_FORM_LIST','BCF_Parser2.py',181),
-  ('OP -> AND','OP',1,'p_OP','BCF_Parser2.py',186),
-  ('OP -> OR','OP',1,'p_OP','BCF_Parser2.py',187),
+  ("S' -> LINES","S'",1,None,None,None),
+  ('LINES -> LINE NEWLINE','LINES',2,'p_LINES','Equibel_Parser.py',49),
+  ('LINES -> LINE NEWLINE LINES','LINES',3,'p_LINES','Equibel_Parser.py',50),
+  ('LINE -> OPT_WHITE EXPRESSION OPT_WHITE','LINE',3,'p_LINE','Equibel_Parser.py',55),
+  ('EXPRESSION -> LITERAL','EXPRESSION',1,'p_EXPRESSION','Equibel_Parser.py',60),
+  ('EXPRESSION -> FUNCTION_CALL','EXPRESSION',1,'p_EXPRESSION','Equibel_Parser.py',61),
+  ('FUNCTION_CALL -> IDENTIFIER WHITESPACE ARGS','FUNCTION_CALL',3,'p_FUNCTION_CALL','Equibel_Parser.py',66),
+  ('ARGS -> EXPRESSION OPT_WHITE','ARGS',2,'p_ARGS','Equibel_Parser.py',70),
+  ('ARGS -> EXPRESSION WHITESPACE ARGS','ARGS',3,'p_ARGS','Equibel_Parser.py',71),
+  ('LITERAL -> INTEGER','LITERAL',1,'p_LITERAL','Equibel_Parser.py',76),
+  ('LITERAL -> STRING','LITERAL',1,'p_LITERAL','Equibel_Parser.py',77),
+  ('LITERAL -> ORDERED_PAIR','LITERAL',1,'p_LITERAL','Equibel_Parser.py',78),
+  ('LITERAL -> LIST','LITERAL',1,'p_LITERAL','Equibel_Parser.py',79),
+  ('ORDERED_PAIR -> LPAREN OPT_WHITE INTEGER OPT_WHITE COMMA OPT_WHITE INTEGER OPT_WHITE RPAREN','ORDERED_PAIR',9,'p_ORDERED_PAIR','Equibel_Parser.py',83),
+  ('LIST -> LSQUARE OPT_WHITE RSQUARE','LIST',3,'p_LIST','Equibel_Parser.py',88),
+  ('LIST -> LSQUARE OPT_WHITE ELEMENTS OPT_WHITE RSQUARE','LIST',5,'p_LIST','Equibel_Parser.py',89),
+  ('ELEMENTS -> ELEMENT OPT_WHITE','ELEMENTS',2,'p_ELEMENTS','Equibel_Parser.py',98),
+  ('ELEMENTS -> ELEMENT OPT_WHITE COMMA OPT_WHITE ELEMENTS','ELEMENTS',5,'p_ELEMENTS','Equibel_Parser.py',99),
+  ('ELEMENT -> INTEGER','ELEMENT',1,'p_ELEMENT','Equibel_Parser.py',106),
+  ('ELEMENT -> STRING','ELEMENT',1,'p_ELEMENT','Equibel_Parser.py',107),
+  ('ELEMENT -> ORDERED_PAIR','ELEMENT',1,'p_ELEMENT','Equibel_Parser.py',108),
+  ('OPT_WHITE -> WHITESPACE','OPT_WHITE',1,'p_OPT_WHITE','Equibel_Parser.py',113),
+  ('OPT_WHITE -> empty','OPT_WHITE',1,'p_OPT_WHITE','Equibel_Parser.py',114),
+  ('empty -> <empty>','empty',0,'p_empty','Equibel_Parser.py',118),
 ]
