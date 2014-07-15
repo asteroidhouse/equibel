@@ -1,0 +1,11 @@
+a='hello'
+batman=['batarang','awesomeness']
+     catgirl =      [(  1, 2),  (3,4),(5,
+               6  )     ]    
+
+books = ['Seven Languages in Seven Weeks', 'Programming in Python 3',
+         'other book'
+         
+         ,'something else']
+
+  result_of_function =   do_this 'stuff' 32
