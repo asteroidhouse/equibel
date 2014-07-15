@@ -2,6 +2,7 @@ import ply.lex
 import ply.yacc
 import sys
 import pprint
+from nodes import *
 
 def parse_equibel(text):
      tokens = ("IDENTIFIER", "INTEGER", "STRING", "LPAREN", "RPAREN", "COMMA", "EQUALS",
@@ -49,7 +50,7 @@ def parse_equibel(text):
           """LINES : LINE NEWLINE
                    | LINE NEWLINE LINES"""
           print("lines")
-          p[0] = [p[1]] if len(p) == 3 else [p[1]] + p[3]
+          p[0] = Nodes([p[1]]) if len(p) == 3 else p[3].append(p[1])
 
      # TODO: Think about semicolon terminators, in terms of:
      #         1) Signaling the end of a statement, to allow multiple statements
@@ -74,7 +75,7 @@ def parse_equibel(text):
      #       as arguments.
      def p_FUNCTION_CALL(p):
           """FUNCTION_CALL : IDENTIFIER WHITESPACE ARGS"""
-          p[0] = (p[1], p[3])
+          p[0] = CallNode(None, p[1], p[3])
 
      def p_ARGS(p):
           """ARGS : EXPRESSION OPT_WHITE
@@ -98,7 +99,7 @@ def parse_equibel(text):
 
      def p_ASSIGNMENT(p):
           """ASSIGNMENT : IDENTIFIER OPT_WHITE EQUALS OPT_WHITE EXPRESSION"""
-          p[0] = (p[1], '=', p[5])
+          p[0] = SetLocalNode(p[1], p[5])
 
 
      def p_LITERAL(p):
@@ -106,7 +107,7 @@ def parse_equibel(text):
                      | STRING
                      | ORDERED_PAIR
                      | LIST"""
-          p[0] = p[1]
+          p[0] = LiteralNode(p[1])
 
      def p_ORDERED_PAIR(p):
           """ORDERED_PAIR : LPAREN OPT_WHITE_NEWLINE INTEGER OPT_WHITE_NEWLINE COMMA \
@@ -184,3 +185,4 @@ if __name__ == '__main__':
 
      tokens = parse_equibel(f.read())
      pprint.pprint(tokens)
+     print(tokens)
