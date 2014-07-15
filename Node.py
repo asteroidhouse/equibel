@@ -1,47 +1,44 @@
 class Node:
-	def __init__(self, num):
-		self.__num = num
-		self.__atom_weights = {}
-		self.__formulas = []
-	
-	def __repr__(self):
-		return "Node({0})".format(self.__num)
-	
-	@property
-	def num(self):
-		return self.__num
-	
-	@num.setter
-	def num(self, new_num):
-		if new_num >= 0:
-			self.__num = new_num
-	
-	def add_atom(self, atom):
-		if atom not in self.__atom_weights:
-			self.__atom_weights[atom] = 1
+     def __init__(self, num):
+          self.num = num
+          self.weights = dict()
+          self.formulas = set()
 
-	def set_atom_weight(self, atom, weight):
-		self.__atom_weights[atom] = weight
-	
-	@property
-	def atoms(self):
-		return self.__atom_weights
-	
-	def add_formula(self, formula):
-		if formula not in self.__formulas:
-			self.__formulas.append(formula)
-	
-	def remove_formula(self, formula):
-		if formula in self.__formulas:
-			del self.__formulas[self.__formulas.index(formula)]
+     def add_formula(self, formula):
+          self.formulas.add(formula)
 
-	@property
-	def formulas(self):
-		return self.__formulas
+     def remove_formula(self, formula):
+          self.formulas.discard(formula)
+
+     def add_atom(self, atom, weight=1):
+          self.weights[atom] = weight
+
+     def remove_atom(self, atom):
+          if atom in self.weights:
+               del self.weights[atom]
+
+     def set_atom_weight(self, atom, weight=1):
+          self.weights[atom] = weight
 
 
-def formulas(node):
-	return node.formulas
+     def __repr__(self):
+          return "Node({0})".format(self.num)
 
-def atoms(node):
-	return node.atoms
+
+     def __str__(self):
+          result_str = "Node {0}:\n".format(self.num)
+          
+          if self.weights:
+               result_str += "\tAtoms\n"
+               result_str += "\t------------------------------\n"
+               for atom in self.weights:
+                    weight = self.weights[atom]
+                    result_str += "\t{0}: {1}\n".format(atom, weight)
+          
+          if self.formulas:
+               result_str += "\n\tFormulas\n"
+               result_str += "\t------------------------------\n"
+               for formula in self.formulas:
+                    result_str += "\t{0}\n".format(formula)
+
+          return result_str
