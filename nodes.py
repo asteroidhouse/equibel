@@ -3,7 +3,8 @@ class Nodes:
           self.nodes = nodes
 
      def append(self, node):
-          self.nodes.append(node)
+          # To avoid reversing the input sequence of lines when building the AST.
+          self.nodes = [node] + self.nodes
           return self
 
      def evaluate(self, context):
@@ -57,6 +58,25 @@ class CallNode:
 
      def __str__(self):
           return "{0}.{1}({2})".format(self.receiver, self.method, list(map(str, self.arguments)))
+
+
+#TODO: What else needs to be added to this class?
+class ConstructorNode:
+     def __init__(self, constructor, arguments=[]):
+          self.constructor = constructor
+          self.arguments = arguments
+
+     # TODO: Check if this works. Not sure about it, because I haven't made the 
+     #       runtime class yet.
+     #-------------------------------------------------------------------------
+     def evaluate(self, context):
+          receiver = context.current_self
+          arguments = map(lambda arg: arg.evaluate(context), self.arguments)
+          receiver.call_constructor(self.constructor, arguments)
+
+     def __str__(self):
+          return "{0}({1})".format(self.constructor, list(map(str, self.arguments)))
+
      
 class SetLocalNode:
      def __init__(self, name, value):

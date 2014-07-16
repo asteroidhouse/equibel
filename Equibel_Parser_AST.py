@@ -73,6 +73,13 @@ def parse_equibel(text):
      # TODO: Think about parenthesized expressions as arguments, particularly
      #       parenthesized function calls, whose return values are to be used
      #       as arguments.
+     #       Also, think about adding support for qualifying function names 
+     #       with receiver names, to allow 'methods' to be called on specific 
+     #       objects. This would allow:
+     #              g2.add_nodes [1,2,3,4]
+     #       instead of requiring a context switch:
+     #              use g2
+     #              add_nodes [1,2,3,4]
      def p_FUNCTION_CALL(p):
           """FUNCTION_CALL : IDENTIFIER WHITESPACE ARGS"""
           p[0] = CallNode(None, p[1], p[3])
@@ -87,9 +94,9 @@ def parse_equibel(text):
           """CONSTRUCTOR : IDENTIFIER LPAREN OPT_WHITE_NEWLINE RPAREN
                          | IDENTIFIER LPAREN OPT_WHITE_NEWLINE COMMA_ARGS OPT_WHITE_NEWLINE RPAREN"""
           if len(p) == 5:
-               p[0] = ('constructor', p[1], [])
+               p[0] = ConstructorNode(p[1], [])
           else:
-               p[0] = ('constructor', p[1], p[4])
+               p[0] = ConstructorNode(p[1], p[4])
 
      def p_COMMA_ARGS(p):
           """COMMA_ARGS : EXPRESSION OPT_WHITE_NEWLINE
@@ -184,5 +191,4 @@ if __name__ == '__main__':
      f = open(filename, 'r')
 
      tokens = parse_equibel(f.read())
-     pprint.pprint(tokens)
      print(tokens)
