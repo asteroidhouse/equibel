@@ -3,7 +3,7 @@ class Nodes:
           self.nodes = nodes
 
      def append(self, node):
-          # To avoid reversing the input sequence of lines when building the AST.
+          # To avoid reversing the input sequence when building the AST.
           self.nodes = [node] + self.nodes
           return self
 
