@@ -1,3 +1,5 @@
+from runtime_simple import *
+
 class Nodes:
      def __init__(self, nodes=[]):
           self.nodes = nodes
@@ -10,6 +12,7 @@ class Nodes:
      def evaluate(self, context):
           ret_val = None
           for node in self.nodes:
+               print("evaluating " + str(node))
                ret_val = node.evaluate(context)
           return ret_val
 
@@ -25,13 +28,13 @@ class LiteralNode:
 
      def evaluate(self, context):
           if isinstance(self.value, int):
-               Runtime["Number"].new_value(self.value)
+               return Runtime["Number"].new_value(self.value)
           elif isinstance(self.value, str):
-               Runtime["String"].new_value(self.value)
+               return Runtime["String"].new_value(self.value)
           elif isinstance(self.value, tuple):
-               Runtime["OrderedPair"].new_value(self.value)
+               return Runtime["OrderedPair"].new_value(self.value)
           elif isinstance(self.value, list):
-               Runtime["List"].new_value(self.value)
+               return Runtime["List"].new_value(self.value)
           else:
                raise ValueError("Unknown literal type: " + str(type(a)))
 
@@ -45,7 +48,8 @@ class CallNode:
           self.arguments = arguments
 
      def evaluate(self, context):
-          if self.receiver is None and context.local[self.method]:
+          #if self.receiver is None and context.locals[self.method]:
+          if self.receiver is None and self.method in context.locals:
                return context.local[self.method]
           else:
                if self.receiver:
@@ -53,8 +57,8 @@ class CallNode:
                else:
                     receiver = context.current_self
 
-               arguments = map(lambda arg: arg.evaluate(context), self.arguments)
-               receiver.call(self.method, arguments)
+               arguments = list(map(lambda arg: arg.evaluate(context), self.arguments))
+               return receiver.call(self.method, arguments)
 
      def __str__(self):
           return "{0}.{1}({2})".format(self.receiver, self.method, list(map(str, self.arguments)))
@@ -84,7 +88,7 @@ class SetLocalNode:
           self.value = value
 
      def evaluate(self, context):
-          context.local[self.name] = selv.value.evaluate(context)
+          context.locals[self.name] = self.value.evaluate(context)
 
      def __str__(self):
           return "{0} = {1}".format(self.name, self.value)

@@ -9,3 +9,4 @@ books = ['Seven Languages in Seven Weeks', 'Programming in Python 3',
          ,'something else']
 
   result_of_function =   do_this 'stuff' 32
+a = b

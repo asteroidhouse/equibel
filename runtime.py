@@ -10,6 +10,8 @@ class AwesomeObject:
 
 class AwesomeClass(AwesomeObject):
      def __init__(self):
+          self.awesome_methods = {}
+
           #if 'Runtime' in vars() or 'Runtime' in globals():
           try:
                awesome_class = Runtime["Class"]
@@ -17,9 +19,8 @@ class AwesomeClass(AwesomeObject):
                awesome_class = None
                print("It wasn't defined.")
           
-          super(awesome_class)
+          super().__init__(awesome_class)
 
-          self.awesome_methods = {}
 
      def lookup(self, method_name):
           method = self.awesome_methods[method_name]
@@ -27,12 +28,11 @@ class AwesomeClass(AwesomeObject):
                raise Exception("Method not found: {0}".format(method_name))
           return method
 
-     def __new__(cls):
-          return AwesomeObject(cls)
+     def new(self):
+          return AwesomeObject(self)
 
-     @classmethod
-     def new_value(cls, value):
-          return AwesomeObject(cls, value)
+     def new_value(self, value):
+          return AwesomeObject(self, value)
 
 class AwesomeMethod:
      def __init__(self, params, body):
@@ -63,8 +63,10 @@ awesome_class = AwesomeClass()
 awesome_class.awesome_class = awesome_class
 awesome_object_class = AwesomeClass()
 
+awesome_object_class.awesome_class = awesome_class
+
 #Runtime = Context(awesome_object_class.class.__new__())
-Runtime = Context(AwesomeClass())
+Runtime = Context(awesome_object_class.new())
 
 Runtime["Class"]  = awesome_class
 Runtime["Object"] = awesome_object_class
