@@ -12,7 +12,7 @@ class Nodes:
      def evaluate(self, context):
           ret_val = None
           for node in self.nodes:
-               print("evaluating " + str(node))
+               #print("evaluating " + str(node))
                ret_val = node.evaluate(context)
           return ret_val
 
@@ -50,7 +50,7 @@ class CallNode:
      def evaluate(self, context):
           #if self.receiver is None and context.locals[self.method]:
           if self.receiver is None and self.method in context.locals:
-               return context.local[self.method]
+               return context.locals[self.method]
           else:
                if self.receiver:
                     receiver = self.receiver.evaluate(context)
@@ -61,7 +61,7 @@ class CallNode:
                return receiver.call(self.method, arguments)
 
      def __str__(self):
-          return "{0}.{1}({2})".format(self.receiver, self.method, list(map(str, self.arguments)))
+          return "{0}.{1}({2})".format(self.receiver, self.method, list(str(arg) for arg in self.arguments))
 
 
 #TODO: What else needs to be added to this class?
@@ -76,7 +76,7 @@ class ConstructorNode:
      def evaluate(self, context):
           receiver = context.current_self
           arguments = map(lambda arg: arg.evaluate(context), self.arguments)
-          receiver.call_constructor(self.constructor, arguments)
+          return receiver.call_constructor(self.constructor, arguments)
 
      def __str__(self):
           return "{0}({1})".format(self.constructor, list(map(str, self.arguments)))

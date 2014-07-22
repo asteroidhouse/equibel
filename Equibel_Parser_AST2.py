@@ -49,7 +49,7 @@ def parse_equibel(text):
      def p_LINES(p):
           """LINES : LINE NEWLINE
                    | LINE NEWLINE LINES"""
-          print("lines")
+          #print("lines")
           p[0] = Nodes([p[1]]) if len(p) == 3 else p[3].append(p[1])
 
      # TODO: Think about semicolon terminators, in terms of:
@@ -59,16 +59,15 @@ def parse_equibel(text):
      #            line.
      def p_LINE(p):
           """LINE : OPT_WHITE EXPRESSION OPT_WHITE"""
-          print("line")
+          #print("line")
           p[0] = p[2]
 
      def p_EXPRESSION(p):
           """EXPRESSION : LITERAL
-                        | IDENTIFIER
                         | ASSIGNMENT
                         | FUNCTION_CALL
                         | CONSTRUCTOR"""
-          print("expression")
+          #print("expression")
           p[0] = p[1]
 
      # TODO: Think about parenthesized expressions as arguments, particularly
@@ -82,22 +81,23 @@ def parse_equibel(text):
      #              use g2
      #              add_nodes [1,2,3,4]
      def p_FUNCTION_CALL(p):
-          """FUNCTION_CALL : IDENTIFIER WHITESPACE ARGS"""
-          print("function call")
-          # According to the book, identifiers need to be treated as function calls with no arguments.
-          p[0] = CallNode(None, p[1], p[3])
+          """FUNCTION_CALL : IDENTIFIER
+                           | IDENTIFIER WHITESPACE ARGS"""
+          #print("function call")
+          # DONE: According to the book, identifiers need to be treated as function calls with no arguments.
+          p[0] = CallNode(None, p[1]) if len(p) == 2 else CallNode(None, p[1], p[3])
 
      def p_ARGS(p):
           """ARGS : EXPRESSION OPT_WHITE
                   | EXPRESSION WHITESPACE ARGS"""
-          print("args")
+          #print("args")
           p[0] = [p[1]] if len(p) == 3 else [p[1]] + p[3]
 
      
      def p_CONSTRUCTOR(p):
           """CONSTRUCTOR : IDENTIFIER LPAREN OPT_WHITE_NEWLINE RPAREN
                          | IDENTIFIER LPAREN OPT_WHITE_NEWLINE COMMA_ARGS OPT_WHITE_NEWLINE RPAREN"""
-          print("constructor")
+          #print("constructor")
           if len(p) == 5:
                p[0] = ConstructorNode(p[1], [])
           else:
@@ -111,7 +111,7 @@ def parse_equibel(text):
 
      def p_ASSIGNMENT(p):
           """ASSIGNMENT : IDENTIFIER OPT_WHITE EQUALS OPT_WHITE EXPRESSION"""
-          print("assignment")
+          #print("assignment")
           p[0] = SetLocalNode(p[1], p[5])
 
 
@@ -120,13 +120,13 @@ def parse_equibel(text):
                      | STRING
                      | ORDERED_PAIR
                      | LIST"""
-          print("literal")
+          #print("literal")
           p[0] = LiteralNode(p[1])
 
      def p_ORDERED_PAIR(p):
           """ORDERED_PAIR : LPAREN OPT_WHITE_NEWLINE INTEGER OPT_WHITE_NEWLINE COMMA \
                             OPT_WHITE_NEWLINE INTEGER OPT_WHITE_NEWLINE RPAREN"""
-          print("pair")
+          #print("pair")
           p[0] = (int(p[3]), int(p[7]))
 
      def p_LIST(p):
@@ -142,7 +142,7 @@ def parse_equibel(text):
      def p_ELEMENTS(p):
           """ELEMENTS : ELEMENT OPT_WHITE_NEWLINE
                       | ELEMENT OPT_WHITE_NEWLINE COMMA OPT_WHITE_NEWLINE ELEMENTS"""
-          print("elements")
+          #print("elements")
           p[0] = [p[1]] if len(p) == 3 else [p[1]] + p[5]
 
      # Might extend this to allow arbitrary expressions within lists, but this would allow for 
@@ -151,25 +151,28 @@ def parse_equibel(text):
           """ELEMENT : INTEGER
                      | STRING
                      | ORDERED_PAIR"""
-          print("element")
+          #print("element")
           p[0] = p[1]
 
      def p_OPT_WHITE_NEWLINE(p):
           """OPT_WHITE_NEWLINE : WHITESPACE_NEWLINE
                                | empty"""
-          print("optional whitespace/newlines")
+          #print("optional whitespace/newlines")
+          pass
 
      def p_WHITESPACE_NEWLINE(p):
           """WHITESPACE_NEWLINE : WHITESPACE
                                 | NEWLINE
                                 | WHITESPACE WHITESPACE_NEWLINE
                                 | NEWLINE WHITESPACE_NEWLINE"""
-          print("whitespace or newlines")
+          #print("whitespace or newlines")
+          pass
 
      def p_OPT_WHITE(p):
           """OPT_WHITE : WHITESPACE
                        | empty"""
-          print("optional whitespace")
+          #print("optional whitespace")
+          pass
 
      def p_empty(p):
           """empty :"""

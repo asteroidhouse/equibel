@@ -67,6 +67,7 @@ Runtime["Object"] = object_class
 Runtime["Number"] = AwesomeClass()
 Runtime["String"] = AwesomeClass()
 Runtime["OrderedPair"] = AwesomeClass()
+Runtime["List"] = AwesomeClass()
 
 def print_function(receiver, arguments):
      if len(arguments) > 0:
@@ -74,7 +75,48 @@ def print_function(receiver, arguments):
                print(arg.python_value)
      return None
 
+nodes_list = []
+def add_node_function(receiver, arguments):
+     if len(arguments) == 1:
+          arg = arguments[0].python_value
+          if isinstance(arg, int):
+               nodes_list.append(arg)
+          else:
+               raise Exception("Argument to add_node must be an integer.")
+          print(nodes_list)
+     else:
+          raise Exception("Incorrect number of arguments to add_node.")
+
+def add_nodes_function(receiver, arguments):
+     if len(arguments) == 1:
+          arg_list = arguments[0].python_value
+          if isinstance(arg_list, list):
+               for item in arg_list:
+                    if isinstance(item, int):
+                         nodes_list.append(item)
+                    else:
+                         raise Exception("All items in the list passed to add_nodes must be integers.")
+          else:
+               raise Exception("Argument to add_node must be a list.")
+          print(nodes_list)
+     else:
+          raise Exception("Incorrect number of arguments to add_node.")
+
+def remove_node_function(receiver, arguments):
+     if len(arguments) == 1:
+          arg = arguments[0].python_value
+          if isinstance(arg, int):
+               nodes_list.remove(arg)
+          else:
+               raise Exception("Argument to remove_node must be an integer.")
+          print(nodes_list)
+     else:
+          raise Exception("Incorrect number of arguments to add_node")
+
 
 Runtime["Class"].methods["new"] = lambda receiver, arguments: receiver.new()
 
 Runtime["Object"].methods["print"] = print_function
+Runtime["Object"].methods["add_node"] = add_node_function
+Runtime["Object"].methods["add_nodes"] = add_nodes_function
+Runtime["Object"].methods["remove_node"] = remove_node_function
