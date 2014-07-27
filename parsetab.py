@@ -7,7 +7,7 @@ _lr_method = 'LALR'
 
 _lr_signature = b'2\xe1\x98\x8e\xe4\x7f\xed\xef\xcc}\xc4\xff\xe0\x1a:)'
     
-_lr_action_items = {'RPAREN':([1,6,7,8,9,10,11,12,16,17,19,22,23,24,26,30,32,33,34,35,41,43,44,45,47,48,52,53,54,55,56,59,65,66,67,68,],[-36,-20,-17,-5,-19,-4,-8,-6,-7,-18,-37,-30,-32,-31,-29,43,-9,-37,-34,-33,-22,-12,-37,-37,-10,-35,59,-14,-16,-11,-23,-13,-37,-15,68,-21,]),'NEWLINE':([1,3,4,6,7,8,9,10,11,12,13,14,15,16,17,19,22,23,24,26,28,32,33,34,35,36,37,38,39,40,41,42,43,44,45,47,48,50,53,54,55,56,57,58,59,60,64,65,66,68,],[-36,-35,18,-20,-17,-5,-19,-4,-8,-6,23,23,-37,-7,-18,23,-30,23,23,-29,-3,-9,-37,-34,-33,-28,-26,23,-27,23,-22,23,-12,23,23,-10,-35,-24,-14,-16,-11,-23,23,23,-13,23,-25,23,-15,-21,]),'$end':([5,18,29,],[0,-1,-2,]),'WHITESPACE':([0,1,6,7,8,9,10,11,12,13,14,15,16,17,18,19,22,23,24,26,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,47,48,50,53,54,55,56,57,58,59,60,64,65,66,68,],[3,-36,-20,-17,-5,-19,-4,21,-6,24,24,3,-7,-18,3,24,-30,24,24,-29,3,-9,48,-34,-33,-28,-26,24,-27,24,-22,24,-12,24,24,-10,-35,-24,-14,-16,-11,-23,24,24,-13,24,-25,24,-15,-21,]),'INTEGER':([0,1,2,3,13,14,18,19,21,22,23,24,25,26,27,30,31,34,35,46,48,57,58,60,61,62,63,],[-37,-36,7,-35,-37,-37,-37,-37,7,-30,-32,-31,37,-29,42,7,-37,-34,-33,7,7,-37,-37,-37,37,65,7,]),'COMMA':([1,6,7,8,9,10,11,12,16,17,22,23,24,26,32,33,34,35,36,37,39,40,41,42,43,45,47,48,50,51,53,54,55,56,59,68,],[-36,-20,-17,-5,-19,-4,-8,-6,-7,-18,-30,-32,-31,-29,-9,-37,-34,-33,-28,-26,-27,-37,-22,-37,-12,-37,-10,-35,57,58,60,-16,-11,-23,-13,-21,]),'LSQUARE':([0,1,2,3,18,19,21,22,23,24,26,30,31,34,35,46,48,60,63,],[-37,-36,13,-35,-37,-37,13,-30,-32,-31,-29,13,-37,-34,-33,13,13,-37,13,]),'LPAREN':([0,1,2,3,11,13,18,19,21,22,23,24,25,26,30,31,34,35,46,48,57,60,61,63,],[-37,-36,14,-35,19,-37,-37,-37,14,-30,-32,-31,14,-29,14,-37,-34,-33,14,14,-37,-37,14,14,]),'EQUALS':([1,11,20,21,],[-36,-37,31,-35,]),'IDENTIFIER':([0,1,2,3,18,19,21,22,23,24,26,30,31,34,35,46,48,60,63,],[-37,-36,11,-35,-37,-37,11,-30,-32,-31,-29,11,-37,-34,-33,11,11,-37,11,]),'RSQUARE':([13,22,23,24,25,26,34,35,36,37,38,39,40,49,50,64,68,],[-37,-30,-32,-31,41,-29,-34,-33,-28,-26,-37,-27,-37,56,-24,-25,-21,]),'STRING':([0,1,2,3,13,18,19,21,22,23,24,25,26,30,31,34,35,46,48,57,60,61,63,],[-37,-36,17,-35,-37,-37,-37,17,-30,-32,-31,39,-29,17,-37,-34,-33,17,17,-37,-37,39,17,]),}
+_lr_action_items = {'COMMA':([4,8,9,10,11,12,13,15,17,18,24,25,26,28,30,31,34,35,36,37,38,40,41,42,43,44,45,47,49,51,52,53,55,57,60,68,],[-36,-6,-19,-8,-5,-7,-20,-18,-17,-4,-31,-29,-32,-30,-37,-9,-33,-34,-37,-22,-26,-27,-28,-37,-35,-10,-37,-12,56,58,-11,59,-16,-23,-13,-21,]),'WHITESPACE':([0,4,6,7,8,9,10,11,12,13,14,15,16,17,18,22,24,25,26,28,30,31,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,49,52,53,55,56,57,58,59,60,64,65,66,68,],[1,-36,1,1,-6,-19,21,-5,-7,-20,24,-18,24,-17,-4,24,24,-29,24,-30,43,-9,1,-33,-34,24,-22,-26,24,-27,-28,24,-35,-10,24,24,-12,-24,-11,-14,-16,24,-23,24,24,-13,-25,24,-15,-21,]),'NEWLINE':([1,3,4,7,8,9,10,11,12,13,14,15,16,17,18,20,22,24,25,26,28,30,31,34,35,36,37,38,39,40,41,42,43,44,45,46,47,49,52,53,55,56,57,58,59,60,64,65,66,68,],[-35,6,-36,-37,-6,-19,-8,-5,-7,-20,26,-18,26,-17,-4,-3,26,26,-29,26,-30,-37,-9,-33,-34,26,-22,-26,26,-27,-28,26,-35,-10,26,26,-12,-24,-11,-14,-16,26,-23,26,26,-13,-25,26,-15,-21,]),'$end':([2,6,19,],[0,-1,-2,]),'LSQUARE':([0,1,4,5,6,21,22,24,25,26,28,32,33,34,35,43,48,59,63,],[-37,-35,-36,14,-37,14,-37,-31,-29,-32,-30,14,-37,-33,-34,14,14,-37,14,]),'EQUALS':([4,10,21,23,],[-36,-37,-35,33,]),'STRING':([0,1,4,5,6,14,21,22,24,25,26,27,28,32,33,34,35,43,48,56,59,61,63,],[-37,-35,-36,15,-37,-37,15,-37,-31,-29,-32,40,-30,15,-37,-33,-34,15,15,-37,-37,40,15,]),'IDENTIFIER':([0,1,4,5,6,21,22,24,25,26,28,32,33,34,35,43,48,59,63,],[-37,-35,-36,10,-37,10,-37,-31,-29,-32,-30,10,-37,-33,-34,10,10,-37,10,]),'LPAREN':([0,1,4,5,6,10,14,21,22,24,25,26,27,28,32,33,34,35,43,48,56,59,61,63,],[-37,-35,-36,16,-37,22,-37,16,-37,-31,-29,-32,16,-30,16,-37,-33,-34,16,16,-37,-37,16,16,]),'RPAREN':([4,8,9,10,11,12,13,15,17,18,22,24,25,26,28,30,31,32,34,35,37,43,44,45,46,47,52,53,54,55,57,60,65,66,67,68,],[-36,-6,-19,-8,-5,-7,-20,-18,-17,-4,-37,-31,-29,-32,-30,-37,-9,47,-33,-34,-22,-35,-10,-37,-37,-12,-11,-14,60,-16,-23,-13,-37,-15,68,-21,]),'INTEGER':([0,1,4,5,6,14,16,21,22,24,25,26,27,28,29,32,33,34,35,43,48,56,58,59,61,62,63,],[-37,-35,-36,17,-37,-37,-37,17,-37,-31,-29,-32,38,-30,42,17,-37,-33,-34,17,17,-37,-37,-37,38,65,17,]),'RSQUARE':([14,24,25,26,27,28,34,35,36,38,39,40,41,49,50,64,68,],[-37,-31,-29,-32,37,-30,-33,-34,-37,-26,-37,-27,-28,-24,57,-25,-21,]),}
 
 _lr_action = { }
 for _k, _v in _lr_action_items.items():
@@ -16,7 +16,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'ARGS':([21,48,],[32,55,]),'OPT_WHITE':([0,11,15,18,31,33,],[2,20,28,2,46,47,]),'EXPRESSION':([2,21,30,46,48,63,],[15,33,45,54,33,45,]),'FUNCTION_CALL':([2,21,30,46,48,63,],[12,12,12,12,12,12,]),'LINE':([0,18,],[4,4,]),'ASSIGNMENT':([2,21,30,46,48,63,],[8,8,8,8,8,8,]),'OPT_WHITE_NEWLINE':([13,14,19,38,40,42,44,45,57,58,60,65,],[25,27,30,49,50,51,52,53,61,62,63,67,]),'empty':([0,11,13,14,15,18,19,31,33,38,40,42,44,45,57,58,60,65,],[1,1,22,22,1,1,22,1,1,22,22,22,22,22,22,22,22,22,]),'ELEMENT':([25,61,],[40,40,]),'COMMA_ARGS':([30,63,],[44,66,]),'ELEMENTS':([25,61,],[38,64,]),'LINES':([0,18,],[5,29,]),'ORDERED_PAIR':([2,21,25,30,46,48,61,63,],[9,9,36,9,9,9,36,9,]),'CONSTRUCTOR':([2,21,30,46,48,63,],[16,16,16,16,16,16,]),'LITERAL':([2,21,30,46,48,63,],[10,10,10,10,10,10,]),'LIST':([2,21,30,46,48,63,],[6,6,6,6,6,6,]),'WHITESPACE_NEWLINE':([13,14,19,23,24,38,40,42,44,45,57,58,60,65,],[26,26,26,34,35,26,26,26,26,26,26,26,26,26,]),}
+_lr_goto_items = {'EXPRESSION':([5,21,32,43,48,63,],[7,30,45,30,55,45,]),'ELEMENT':([27,61,],[36,36,]),'COMMA_ARGS':([32,63,],[46,66,]),'WHITESPACE_NEWLINE':([14,16,22,24,26,36,39,42,45,46,56,58,59,65,],[25,25,25,34,35,25,25,25,25,25,25,25,25,25,]),'ELEMENTS':([27,61,],[39,64,]),'CONSTRUCTOR':([5,21,32,43,48,63,],[12,12,12,12,12,12,]),'LINE':([0,6,],[3,3,]),'FUNCTION_CALL':([5,21,32,43,48,63,],[8,8,8,8,8,8,]),'empty':([0,6,7,10,14,16,22,30,33,36,39,42,45,46,56,58,59,65,],[4,4,4,4,28,28,28,4,4,28,28,28,28,28,28,28,28,28,]),'ORDERED_PAIR':([5,21,27,32,43,48,61,63,],[9,9,41,9,9,9,41,9,]),'ASSIGNMENT':([5,21,32,43,48,63,],[11,11,11,11,11,11,]),'LINES':([0,6,],[2,19,]),'LIST':([5,21,32,43,48,63,],[13,13,13,13,13,13,]),'ARGS':([21,43,],[31,52,]),'OPT_WHITE_NEWLINE':([14,16,22,36,39,42,45,46,56,58,59,65,],[27,29,32,49,50,51,53,54,61,62,63,67,]),'LITERAL':([5,21,32,43,48,63,],[18,18,18,18,18,18,]),'OPT_WHITE':([0,6,7,10,30,33,],[5,5,20,23,44,48,]),}
 
 _lr_goto = { }
 for _k, _v in _lr_goto_items.items():
@@ -26,41 +26,41 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> LINES","S'",1,None,None,None),
-  ('LINES -> LINE NEWLINE','LINES',2,'p_LINES','Equibel_Parser_AST2.py',50),
-  ('LINES -> LINE NEWLINE LINES','LINES',3,'p_LINES','Equibel_Parser_AST2.py',51),
-  ('LINE -> OPT_WHITE EXPRESSION OPT_WHITE','LINE',3,'p_LINE','Equibel_Parser_AST2.py',61),
-  ('EXPRESSION -> LITERAL','EXPRESSION',1,'p_EXPRESSION','Equibel_Parser_AST2.py',66),
-  ('EXPRESSION -> ASSIGNMENT','EXPRESSION',1,'p_EXPRESSION','Equibel_Parser_AST2.py',67),
-  ('EXPRESSION -> FUNCTION_CALL','EXPRESSION',1,'p_EXPRESSION','Equibel_Parser_AST2.py',68),
-  ('EXPRESSION -> CONSTRUCTOR','EXPRESSION',1,'p_EXPRESSION','Equibel_Parser_AST2.py',69),
-  ('FUNCTION_CALL -> IDENTIFIER','FUNCTION_CALL',1,'p_FUNCTION_CALL','Equibel_Parser_AST2.py',84),
-  ('FUNCTION_CALL -> IDENTIFIER WHITESPACE ARGS','FUNCTION_CALL',3,'p_FUNCTION_CALL','Equibel_Parser_AST2.py',85),
-  ('ARGS -> EXPRESSION OPT_WHITE','ARGS',2,'p_ARGS','Equibel_Parser_AST2.py',91),
-  ('ARGS -> EXPRESSION WHITESPACE ARGS','ARGS',3,'p_ARGS','Equibel_Parser_AST2.py',92),
-  ('CONSTRUCTOR -> IDENTIFIER LPAREN OPT_WHITE_NEWLINE RPAREN','CONSTRUCTOR',4,'p_CONSTRUCTOR','Equibel_Parser_AST2.py',98),
-  ('CONSTRUCTOR -> IDENTIFIER LPAREN OPT_WHITE_NEWLINE COMMA_ARGS OPT_WHITE_NEWLINE RPAREN','CONSTRUCTOR',6,'p_CONSTRUCTOR','Equibel_Parser_AST2.py',99),
-  ('COMMA_ARGS -> EXPRESSION OPT_WHITE_NEWLINE','COMMA_ARGS',2,'p_COMMA_ARGS','Equibel_Parser_AST2.py',107),
-  ('COMMA_ARGS -> EXPRESSION OPT_WHITE_NEWLINE COMMA OPT_WHITE_NEWLINE COMMA_ARGS','COMMA_ARGS',5,'p_COMMA_ARGS','Equibel_Parser_AST2.py',108),
-  ('ASSIGNMENT -> IDENTIFIER OPT_WHITE EQUALS OPT_WHITE EXPRESSION','ASSIGNMENT',5,'p_ASSIGNMENT','Equibel_Parser_AST2.py',113),
-  ('LITERAL -> INTEGER','LITERAL',1,'p_LITERAL','Equibel_Parser_AST2.py',119),
-  ('LITERAL -> STRING','LITERAL',1,'p_LITERAL','Equibel_Parser_AST2.py',120),
-  ('LITERAL -> ORDERED_PAIR','LITERAL',1,'p_LITERAL','Equibel_Parser_AST2.py',121),
-  ('LITERAL -> LIST','LITERAL',1,'p_LITERAL','Equibel_Parser_AST2.py',122),
-  ('ORDERED_PAIR -> LPAREN OPT_WHITE_NEWLINE INTEGER OPT_WHITE_NEWLINE COMMA OPT_WHITE_NEWLINE INTEGER OPT_WHITE_NEWLINE RPAREN','ORDERED_PAIR',9,'p_ORDERED_PAIR','Equibel_Parser_AST2.py',127),
-  ('LIST -> LSQUARE OPT_WHITE_NEWLINE RSQUARE','LIST',3,'p_LIST','Equibel_Parser_AST2.py',133),
-  ('LIST -> LSQUARE OPT_WHITE_NEWLINE ELEMENTS OPT_WHITE_NEWLINE RSQUARE','LIST',5,'p_LIST','Equibel_Parser_AST2.py',134),
-  ('ELEMENTS -> ELEMENT OPT_WHITE_NEWLINE','ELEMENTS',2,'p_ELEMENTS','Equibel_Parser_AST2.py',143),
-  ('ELEMENTS -> ELEMENT OPT_WHITE_NEWLINE COMMA OPT_WHITE_NEWLINE ELEMENTS','ELEMENTS',5,'p_ELEMENTS','Equibel_Parser_AST2.py',144),
-  ('ELEMENT -> INTEGER','ELEMENT',1,'p_ELEMENT','Equibel_Parser_AST2.py',151),
-  ('ELEMENT -> STRING','ELEMENT',1,'p_ELEMENT','Equibel_Parser_AST2.py',152),
-  ('ELEMENT -> ORDERED_PAIR','ELEMENT',1,'p_ELEMENT','Equibel_Parser_AST2.py',153),
-  ('OPT_WHITE_NEWLINE -> WHITESPACE_NEWLINE','OPT_WHITE_NEWLINE',1,'p_OPT_WHITE_NEWLINE','Equibel_Parser_AST2.py',158),
-  ('OPT_WHITE_NEWLINE -> empty','OPT_WHITE_NEWLINE',1,'p_OPT_WHITE_NEWLINE','Equibel_Parser_AST2.py',159),
-  ('WHITESPACE_NEWLINE -> WHITESPACE','WHITESPACE_NEWLINE',1,'p_WHITESPACE_NEWLINE','Equibel_Parser_AST2.py',163),
-  ('WHITESPACE_NEWLINE -> NEWLINE','WHITESPACE_NEWLINE',1,'p_WHITESPACE_NEWLINE','Equibel_Parser_AST2.py',164),
-  ('WHITESPACE_NEWLINE -> WHITESPACE WHITESPACE_NEWLINE','WHITESPACE_NEWLINE',2,'p_WHITESPACE_NEWLINE','Equibel_Parser_AST2.py',165),
-  ('WHITESPACE_NEWLINE -> NEWLINE WHITESPACE_NEWLINE','WHITESPACE_NEWLINE',2,'p_WHITESPACE_NEWLINE','Equibel_Parser_AST2.py',166),
-  ('OPT_WHITE -> WHITESPACE','OPT_WHITE',1,'p_OPT_WHITE','Equibel_Parser_AST2.py',170),
-  ('OPT_WHITE -> empty','OPT_WHITE',1,'p_OPT_WHITE','Equibel_Parser_AST2.py',171),
-  ('empty -> <empty>','empty',0,'p_empty','Equibel_Parser_AST2.py',175),
+  ('LINES -> LINE NEWLINE','LINES',2,'p_LINES','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',50),
+  ('LINES -> LINE NEWLINE LINES','LINES',3,'p_LINES','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',51),
+  ('LINE -> OPT_WHITE EXPRESSION OPT_WHITE','LINE',3,'p_LINE','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',61),
+  ('EXPRESSION -> LITERAL','EXPRESSION',1,'p_EXPRESSION','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',66),
+  ('EXPRESSION -> ASSIGNMENT','EXPRESSION',1,'p_EXPRESSION','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',67),
+  ('EXPRESSION -> FUNCTION_CALL','EXPRESSION',1,'p_EXPRESSION','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',68),
+  ('EXPRESSION -> CONSTRUCTOR','EXPRESSION',1,'p_EXPRESSION','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',69),
+  ('FUNCTION_CALL -> IDENTIFIER','FUNCTION_CALL',1,'p_FUNCTION_CALL','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',84),
+  ('FUNCTION_CALL -> IDENTIFIER WHITESPACE ARGS','FUNCTION_CALL',3,'p_FUNCTION_CALL','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',85),
+  ('ARGS -> EXPRESSION OPT_WHITE','ARGS',2,'p_ARGS','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',91),
+  ('ARGS -> EXPRESSION WHITESPACE ARGS','ARGS',3,'p_ARGS','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',92),
+  ('CONSTRUCTOR -> IDENTIFIER LPAREN OPT_WHITE_NEWLINE RPAREN','CONSTRUCTOR',4,'p_CONSTRUCTOR','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',98),
+  ('CONSTRUCTOR -> IDENTIFIER LPAREN OPT_WHITE_NEWLINE COMMA_ARGS OPT_WHITE_NEWLINE RPAREN','CONSTRUCTOR',6,'p_CONSTRUCTOR','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',99),
+  ('COMMA_ARGS -> EXPRESSION OPT_WHITE_NEWLINE','COMMA_ARGS',2,'p_COMMA_ARGS','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',107),
+  ('COMMA_ARGS -> EXPRESSION OPT_WHITE_NEWLINE COMMA OPT_WHITE_NEWLINE COMMA_ARGS','COMMA_ARGS',5,'p_COMMA_ARGS','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',108),
+  ('ASSIGNMENT -> IDENTIFIER OPT_WHITE EQUALS OPT_WHITE EXPRESSION','ASSIGNMENT',5,'p_ASSIGNMENT','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',113),
+  ('LITERAL -> INTEGER','LITERAL',1,'p_LITERAL','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',119),
+  ('LITERAL -> STRING','LITERAL',1,'p_LITERAL','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',120),
+  ('LITERAL -> ORDERED_PAIR','LITERAL',1,'p_LITERAL','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',121),
+  ('LITERAL -> LIST','LITERAL',1,'p_LITERAL','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',122),
+  ('ORDERED_PAIR -> LPAREN OPT_WHITE_NEWLINE INTEGER OPT_WHITE_NEWLINE COMMA OPT_WHITE_NEWLINE INTEGER OPT_WHITE_NEWLINE RPAREN','ORDERED_PAIR',9,'p_ORDERED_PAIR','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',127),
+  ('LIST -> LSQUARE OPT_WHITE_NEWLINE RSQUARE','LIST',3,'p_LIST','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',133),
+  ('LIST -> LSQUARE OPT_WHITE_NEWLINE ELEMENTS OPT_WHITE_NEWLINE RSQUARE','LIST',5,'p_LIST','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',134),
+  ('ELEMENTS -> ELEMENT OPT_WHITE_NEWLINE','ELEMENTS',2,'p_ELEMENTS','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',143),
+  ('ELEMENTS -> ELEMENT OPT_WHITE_NEWLINE COMMA OPT_WHITE_NEWLINE ELEMENTS','ELEMENTS',5,'p_ELEMENTS','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',144),
+  ('ELEMENT -> INTEGER','ELEMENT',1,'p_ELEMENT','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',151),
+  ('ELEMENT -> STRING','ELEMENT',1,'p_ELEMENT','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',152),
+  ('ELEMENT -> ORDERED_PAIR','ELEMENT',1,'p_ELEMENT','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',153),
+  ('OPT_WHITE_NEWLINE -> WHITESPACE_NEWLINE','OPT_WHITE_NEWLINE',1,'p_OPT_WHITE_NEWLINE','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',158),
+  ('OPT_WHITE_NEWLINE -> empty','OPT_WHITE_NEWLINE',1,'p_OPT_WHITE_NEWLINE','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',159),
+  ('WHITESPACE_NEWLINE -> WHITESPACE','WHITESPACE_NEWLINE',1,'p_WHITESPACE_NEWLINE','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',164),
+  ('WHITESPACE_NEWLINE -> NEWLINE','WHITESPACE_NEWLINE',1,'p_WHITESPACE_NEWLINE','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',165),
+  ('WHITESPACE_NEWLINE -> WHITESPACE WHITESPACE_NEWLINE','WHITESPACE_NEWLINE',2,'p_WHITESPACE_NEWLINE','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',166),
+  ('WHITESPACE_NEWLINE -> NEWLINE WHITESPACE_NEWLINE','WHITESPACE_NEWLINE',2,'p_WHITESPACE_NEWLINE','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',167),
+  ('OPT_WHITE -> WHITESPACE','OPT_WHITE',1,'p_OPT_WHITE','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',172),
+  ('OPT_WHITE -> empty','OPT_WHITE',1,'p_OPT_WHITE','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',173),
+  ('empty -> <empty>','empty',0,'p_empty','/Users/paulvicol/Learn/Python/ParserTests/Equibel_Parser_AST2.py',178),
 ]

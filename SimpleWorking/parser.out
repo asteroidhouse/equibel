@@ -1,0 +1,628 @@
+Created by PLY version 3.4 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    NEWLINE
+
+Grammar
+
+Rule 0     S' -> FORMULA_LINE
+Rule 1     FORMULA_LINE -> OPT_WHITESPACE FORMULA OPT_WHITESPACE
+Rule 2     FORMULA -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+Rule 3     FORM -> SIMPLE_FORM
+Rule 4     FORM -> COMPOUND_FORM
+Rule 5     SIMPLE_FORM -> ATOM
+Rule 6     SIMPLE_FORM -> NEG OPT_WHITESPACE ATOM
+Rule 7     SIMPLE_FORM -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+Rule 8     SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+Rule 9     COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
+Rule 10    FORM_LIST -> FORM OPT_WHITESPACE
+Rule 11    FORM_LIST -> FORM WHITESPACE FORM_LIST
+Rule 12    ATOM -> IDENTIFIER
+Rule 13    OP -> AND_OP
+Rule 14    OP -> OR_OP
+Rule 15    AND_OP -> AND
+Rule 16    OR_OP -> OR
+Rule 17    OPT_WHITESPACE -> WHITESPACE
+Rule 18    OPT_WHITESPACE -> empty
+Rule 19    empty -> <empty>
+
+Terminals, with rules where they appear
+
+AND                  : 15
+IDENTIFIER           : 12
+LPAREN               : 2 7 8 9
+NEG                  : 6 8
+NEWLINE              : 
+OR                   : 16
+RPAREN               : 2 7 8 9
+WHITESPACE           : 11 17
+error                : 
+
+Nonterminals, with rules where they appear
+
+AND_OP               : 13
+ATOM                 : 5 6
+COMPOUND_FORM        : 4
+FORM                 : 2 7 8 10 11
+FORMULA              : 1
+FORMULA_LINE         : 0
+FORM_LIST            : 9 11
+OP                   : 9
+OPT_WHITESPACE       : 1 1 2 2 6 7 7 8 8 8 9 9 9 10
+OR_OP                : 14
+SIMPLE_FORM          : 3
+empty                : 18
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . FORMULA_LINE
+    (1) FORMULA_LINE -> . OPT_WHITESPACE FORMULA OPT_WHITESPACE
+    (17) OPT_WHITESPACE -> . WHITESPACE
+    (18) OPT_WHITESPACE -> . empty
+    (19) empty -> .
+
+    WHITESPACE      shift and go to state 4
+    LPAREN          reduce using rule 19 (empty -> .)
+
+    OPT_WHITESPACE                 shift and go to state 1
+    FORMULA_LINE                   shift and go to state 2
+    empty                          shift and go to state 3
+
+state 1
+
+    (1) FORMULA_LINE -> OPT_WHITESPACE . FORMULA OPT_WHITESPACE
+    (2) FORMULA -> . LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+
+    LPAREN          shift and go to state 6
+
+    FORMULA                        shift and go to state 5
+
+state 2
+
+    (0) S' -> FORMULA_LINE .
+
+
+
+state 3
+
+    (18) OPT_WHITESPACE -> empty .
+
+    LPAREN          reduce using rule 18 (OPT_WHITESPACE -> empty .)
+    IDENTIFIER      reduce using rule 18 (OPT_WHITESPACE -> empty .)
+    NEG             reduce using rule 18 (OPT_WHITESPACE -> empty .)
+    AND             reduce using rule 18 (OPT_WHITESPACE -> empty .)
+    OR              reduce using rule 18 (OPT_WHITESPACE -> empty .)
+    $end            reduce using rule 18 (OPT_WHITESPACE -> empty .)
+    RPAREN          reduce using rule 18 (OPT_WHITESPACE -> empty .)
+    WHITESPACE      reduce using rule 18 (OPT_WHITESPACE -> empty .)
+
+
+state 4
+
+    (17) OPT_WHITESPACE -> WHITESPACE .
+
+    LPAREN          reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
+    IDENTIFIER      reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
+    NEG             reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
+    AND             reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
+    OR              reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
+    $end            reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
+    RPAREN          reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
+
+
+state 5
+
+    (1) FORMULA_LINE -> OPT_WHITESPACE FORMULA . OPT_WHITESPACE
+    (17) OPT_WHITESPACE -> . WHITESPACE
+    (18) OPT_WHITESPACE -> . empty
+    (19) empty -> .
+
+    WHITESPACE      shift and go to state 4
+    $end            reduce using rule 19 (empty -> .)
+
+    OPT_WHITESPACE                 shift and go to state 7
+    empty                          shift and go to state 3
+
+state 6
+
+    (2) FORMULA -> LPAREN . OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+    (17) OPT_WHITESPACE -> . WHITESPACE
+    (18) OPT_WHITESPACE -> . empty
+    (19) empty -> .
+
+    WHITESPACE      shift and go to state 4
+    NEG             reduce using rule 19 (empty -> .)
+    LPAREN          reduce using rule 19 (empty -> .)
+    IDENTIFIER      reduce using rule 19 (empty -> .)
+    AND             reduce using rule 19 (empty -> .)
+    OR              reduce using rule 19 (empty -> .)
+
+    OPT_WHITESPACE                 shift and go to state 8
+    empty                          shift and go to state 3
+
+state 7
+
+    (1) FORMULA_LINE -> OPT_WHITESPACE FORMULA OPT_WHITESPACE .
+
+    $end            reduce using rule 1 (FORMULA_LINE -> OPT_WHITESPACE FORMULA OPT_WHITESPACE .)
+
+
+state 8
+
+    (2) FORMULA -> LPAREN OPT_WHITESPACE . FORM OPT_WHITESPACE RPAREN
+    (3) FORM -> . SIMPLE_FORM
+    (4) FORM -> . COMPOUND_FORM
+    (5) SIMPLE_FORM -> . ATOM
+    (6) SIMPLE_FORM -> . NEG OPT_WHITESPACE ATOM
+    (7) SIMPLE_FORM -> . LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+    (8) SIMPLE_FORM -> . NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+    (9) COMPOUND_FORM -> . OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
+    (12) ATOM -> . IDENTIFIER
+    (13) OP -> . AND_OP
+    (14) OP -> . OR_OP
+    (15) AND_OP -> . AND
+    (16) OR_OP -> . OR
+
+    NEG             shift and go to state 11
+    LPAREN          shift and go to state 14
+    IDENTIFIER      shift and go to state 10
+    AND             shift and go to state 16
+    OR              shift and go to state 20
+
+    OR_OP                          shift and go to state 9
+    FORM                           shift and go to state 17
+    AND_OP                         shift and go to state 18
+    ATOM                           shift and go to state 12
+    OP                             shift and go to state 19
+    COMPOUND_FORM                  shift and go to state 13
+    SIMPLE_FORM                    shift and go to state 15
+
+state 9
+
+    (14) OP -> OR_OP .
+
+    WHITESPACE      reduce using rule 14 (OP -> OR_OP .)
+    LPAREN          reduce using rule 14 (OP -> OR_OP .)
+
+
+state 10
+
+    (12) ATOM -> IDENTIFIER .
+
+    WHITESPACE      reduce using rule 12 (ATOM -> IDENTIFIER .)
+    RPAREN          reduce using rule 12 (ATOM -> IDENTIFIER .)
+
+
+state 11
+
+    (6) SIMPLE_FORM -> NEG . OPT_WHITESPACE ATOM
+    (8) SIMPLE_FORM -> NEG . OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+    (17) OPT_WHITESPACE -> . WHITESPACE
+    (18) OPT_WHITESPACE -> . empty
+    (19) empty -> .
+
+    WHITESPACE      shift and go to state 4
+    LPAREN          reduce using rule 19 (empty -> .)
+    IDENTIFIER      reduce using rule 19 (empty -> .)
+
+    OPT_WHITESPACE                 shift and go to state 21
+    empty                          shift and go to state 3
+
+state 12
+
+    (5) SIMPLE_FORM -> ATOM .
+
+    WHITESPACE      reduce using rule 5 (SIMPLE_FORM -> ATOM .)
+    RPAREN          reduce using rule 5 (SIMPLE_FORM -> ATOM .)
+
+
+state 13
+
+    (4) FORM -> COMPOUND_FORM .
+
+    WHITESPACE      reduce using rule 4 (FORM -> COMPOUND_FORM .)
+    RPAREN          reduce using rule 4 (FORM -> COMPOUND_FORM .)
+
+
+state 14
+
+    (7) SIMPLE_FORM -> LPAREN . OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+    (17) OPT_WHITESPACE -> . WHITESPACE
+    (18) OPT_WHITESPACE -> . empty
+    (19) empty -> .
+
+    WHITESPACE      shift and go to state 4
+    NEG             reduce using rule 19 (empty -> .)
+    LPAREN          reduce using rule 19 (empty -> .)
+    IDENTIFIER      reduce using rule 19 (empty -> .)
+    AND             reduce using rule 19 (empty -> .)
+    OR              reduce using rule 19 (empty -> .)
+
+    OPT_WHITESPACE                 shift and go to state 22
+    empty                          shift and go to state 3
+
+state 15
+
+    (3) FORM -> SIMPLE_FORM .
+
+    WHITESPACE      reduce using rule 3 (FORM -> SIMPLE_FORM .)
+    RPAREN          reduce using rule 3 (FORM -> SIMPLE_FORM .)
+
+
+state 16
+
+    (15) AND_OP -> AND .
+
+    WHITESPACE      reduce using rule 15 (AND_OP -> AND .)
+    LPAREN          reduce using rule 15 (AND_OP -> AND .)
+
+
+state 17
+
+    (2) FORMULA -> LPAREN OPT_WHITESPACE FORM . OPT_WHITESPACE RPAREN
+    (17) OPT_WHITESPACE -> . WHITESPACE
+    (18) OPT_WHITESPACE -> . empty
+    (19) empty -> .
+
+    WHITESPACE      shift and go to state 4
+    RPAREN          reduce using rule 19 (empty -> .)
+
+    OPT_WHITESPACE                 shift and go to state 23
+    empty                          shift and go to state 3
+
+state 18
+
+    (13) OP -> AND_OP .
+
+    WHITESPACE      reduce using rule 13 (OP -> AND_OP .)
+    LPAREN          reduce using rule 13 (OP -> AND_OP .)
+
+
+state 19
+
+    (9) COMPOUND_FORM -> OP . OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
+    (17) OPT_WHITESPACE -> . WHITESPACE
+    (18) OPT_WHITESPACE -> . empty
+    (19) empty -> .
+
+    WHITESPACE      shift and go to state 4
+    LPAREN          reduce using rule 19 (empty -> .)
+
+    empty                          shift and go to state 3
+    OPT_WHITESPACE                 shift and go to state 24
+
+state 20
+
+    (16) OR_OP -> OR .
+
+    WHITESPACE      reduce using rule 16 (OR_OP -> OR .)
+    LPAREN          reduce using rule 16 (OR_OP -> OR .)
+
+
+state 21
+
+    (6) SIMPLE_FORM -> NEG OPT_WHITESPACE . ATOM
+    (8) SIMPLE_FORM -> NEG OPT_WHITESPACE . LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+    (12) ATOM -> . IDENTIFIER
+
+    LPAREN          shift and go to state 26
+    IDENTIFIER      shift and go to state 10
+
+    ATOM                           shift and go to state 25
+
+state 22
+
+    (7) SIMPLE_FORM -> LPAREN OPT_WHITESPACE . FORM OPT_WHITESPACE RPAREN
+    (3) FORM -> . SIMPLE_FORM
+    (4) FORM -> . COMPOUND_FORM
+    (5) SIMPLE_FORM -> . ATOM
+    (6) SIMPLE_FORM -> . NEG OPT_WHITESPACE ATOM
+    (7) SIMPLE_FORM -> . LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+    (8) SIMPLE_FORM -> . NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+    (9) COMPOUND_FORM -> . OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
+    (12) ATOM -> . IDENTIFIER
+    (13) OP -> . AND_OP
+    (14) OP -> . OR_OP
+    (15) AND_OP -> . AND
+    (16) OR_OP -> . OR
+
+    NEG             shift and go to state 11
+    LPAREN          shift and go to state 14
+    IDENTIFIER      shift and go to state 10
+    AND             shift and go to state 16
+    OR              shift and go to state 20
+
+    OR_OP                          shift and go to state 9
+    FORM                           shift and go to state 27
+    AND_OP                         shift and go to state 18
+    ATOM                           shift and go to state 12
+    OP                             shift and go to state 19
+    COMPOUND_FORM                  shift and go to state 13
+    SIMPLE_FORM                    shift and go to state 15
+
+state 23
+
+    (2) FORMULA -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE . RPAREN
+
+    RPAREN          shift and go to state 28
+
+
+state 24
+
+    (9) COMPOUND_FORM -> OP OPT_WHITESPACE . LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
+
+    LPAREN          shift and go to state 29
+
+
+state 25
+
+    (6) SIMPLE_FORM -> NEG OPT_WHITESPACE ATOM .
+
+    WHITESPACE      reduce using rule 6 (SIMPLE_FORM -> NEG OPT_WHITESPACE ATOM .)
+    RPAREN          reduce using rule 6 (SIMPLE_FORM -> NEG OPT_WHITESPACE ATOM .)
+
+
+state 26
+
+    (8) SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN . OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+    (17) OPT_WHITESPACE -> . WHITESPACE
+    (18) OPT_WHITESPACE -> . empty
+    (19) empty -> .
+
+    WHITESPACE      shift and go to state 4
+    NEG             reduce using rule 19 (empty -> .)
+    LPAREN          reduce using rule 19 (empty -> .)
+    IDENTIFIER      reduce using rule 19 (empty -> .)
+    AND             reduce using rule 19 (empty -> .)
+    OR              reduce using rule 19 (empty -> .)
+
+    OPT_WHITESPACE                 shift and go to state 30
+    empty                          shift and go to state 3
+
+state 27
+
+    (7) SIMPLE_FORM -> LPAREN OPT_WHITESPACE FORM . OPT_WHITESPACE RPAREN
+    (17) OPT_WHITESPACE -> . WHITESPACE
+    (18) OPT_WHITESPACE -> . empty
+    (19) empty -> .
+
+    WHITESPACE      shift and go to state 4
+    RPAREN          reduce using rule 19 (empty -> .)
+
+    OPT_WHITESPACE                 shift and go to state 31
+    empty                          shift and go to state 3
+
+state 28
+
+    (2) FORMULA -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .
+
+    WHITESPACE      reduce using rule 2 (FORMULA -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .)
+    $end            reduce using rule 2 (FORMULA -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .)
+
+
+state 29
+
+    (9) COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN . OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
+    (17) OPT_WHITESPACE -> . WHITESPACE
+    (18) OPT_WHITESPACE -> . empty
+    (19) empty -> .
+
+    WHITESPACE      shift and go to state 4
+    NEG             reduce using rule 19 (empty -> .)
+    LPAREN          reduce using rule 19 (empty -> .)
+    IDENTIFIER      reduce using rule 19 (empty -> .)
+    AND             reduce using rule 19 (empty -> .)
+    OR              reduce using rule 19 (empty -> .)
+
+    empty                          shift and go to state 3
+    OPT_WHITESPACE                 shift and go to state 32
+
+state 30
+
+    (8) SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE . FORM OPT_WHITESPACE RPAREN
+    (3) FORM -> . SIMPLE_FORM
+    (4) FORM -> . COMPOUND_FORM
+    (5) SIMPLE_FORM -> . ATOM
+    (6) SIMPLE_FORM -> . NEG OPT_WHITESPACE ATOM
+    (7) SIMPLE_FORM -> . LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+    (8) SIMPLE_FORM -> . NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+    (9) COMPOUND_FORM -> . OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
+    (12) ATOM -> . IDENTIFIER
+    (13) OP -> . AND_OP
+    (14) OP -> . OR_OP
+    (15) AND_OP -> . AND
+    (16) OR_OP -> . OR
+
+    NEG             shift and go to state 11
+    LPAREN          shift and go to state 14
+    IDENTIFIER      shift and go to state 10
+    AND             shift and go to state 16
+    OR              shift and go to state 20
+
+    OR_OP                          shift and go to state 9
+    FORM                           shift and go to state 33
+    AND_OP                         shift and go to state 18
+    ATOM                           shift and go to state 12
+    OP                             shift and go to state 19
+    COMPOUND_FORM                  shift and go to state 13
+    SIMPLE_FORM                    shift and go to state 15
+
+state 31
+
+    (7) SIMPLE_FORM -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE . RPAREN
+
+    RPAREN          shift and go to state 34
+
+
+state 32
+
+    (9) COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN OPT_WHITESPACE . FORM_LIST OPT_WHITESPACE RPAREN
+    (10) FORM_LIST -> . FORM OPT_WHITESPACE
+    (11) FORM_LIST -> . FORM WHITESPACE FORM_LIST
+    (3) FORM -> . SIMPLE_FORM
+    (4) FORM -> . COMPOUND_FORM
+    (5) SIMPLE_FORM -> . ATOM
+    (6) SIMPLE_FORM -> . NEG OPT_WHITESPACE ATOM
+    (7) SIMPLE_FORM -> . LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+    (8) SIMPLE_FORM -> . NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+    (9) COMPOUND_FORM -> . OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
+    (12) ATOM -> . IDENTIFIER
+    (13) OP -> . AND_OP
+    (14) OP -> . OR_OP
+    (15) AND_OP -> . AND
+    (16) OR_OP -> . OR
+
+    NEG             shift and go to state 11
+    LPAREN          shift and go to state 14
+    IDENTIFIER      shift and go to state 10
+    AND             shift and go to state 16
+    OR              shift and go to state 20
+
+    OR_OP                          shift and go to state 9
+    FORM                           shift and go to state 35
+    AND_OP                         shift and go to state 18
+    ATOM                           shift and go to state 12
+    OP                             shift and go to state 19
+    COMPOUND_FORM                  shift and go to state 13
+    FORM_LIST                      shift and go to state 36
+    SIMPLE_FORM                    shift and go to state 15
+
+state 33
+
+    (8) SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM . OPT_WHITESPACE RPAREN
+    (17) OPT_WHITESPACE -> . WHITESPACE
+    (18) OPT_WHITESPACE -> . empty
+    (19) empty -> .
+
+    WHITESPACE      shift and go to state 4
+    RPAREN          reduce using rule 19 (empty -> .)
+
+    OPT_WHITESPACE                 shift and go to state 37
+    empty                          shift and go to state 3
+
+state 34
+
+    (7) SIMPLE_FORM -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .
+
+    WHITESPACE      reduce using rule 7 (SIMPLE_FORM -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .)
+    RPAREN          reduce using rule 7 (SIMPLE_FORM -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .)
+
+
+state 35
+
+    (10) FORM_LIST -> FORM . OPT_WHITESPACE
+    (11) FORM_LIST -> FORM . WHITESPACE FORM_LIST
+    (17) OPT_WHITESPACE -> . WHITESPACE
+    (18) OPT_WHITESPACE -> . empty
+    (19) empty -> .
+
+  ! shift/reduce conflict for WHITESPACE resolved as shift
+    WHITESPACE      shift and go to state 39
+    RPAREN          reduce using rule 19 (empty -> .)
+
+  ! WHITESPACE      [ reduce using rule 19 (empty -> .) ]
+
+    OPT_WHITESPACE                 shift and go to state 38
+    empty                          shift and go to state 3
+
+state 36
+
+    (9) COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST . OPT_WHITESPACE RPAREN
+    (17) OPT_WHITESPACE -> . WHITESPACE
+    (18) OPT_WHITESPACE -> . empty
+    (19) empty -> .
+
+    WHITESPACE      shift and go to state 4
+    RPAREN          reduce using rule 19 (empty -> .)
+
+    empty                          shift and go to state 3
+    OPT_WHITESPACE                 shift and go to state 40
+
+state 37
+
+    (8) SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE . RPAREN
+
+    RPAREN          shift and go to state 41
+
+
+state 38
+
+    (10) FORM_LIST -> FORM OPT_WHITESPACE .
+
+    WHITESPACE      reduce using rule 10 (FORM_LIST -> FORM OPT_WHITESPACE .)
+    RPAREN          reduce using rule 10 (FORM_LIST -> FORM OPT_WHITESPACE .)
+
+
+state 39
+
+    (11) FORM_LIST -> FORM WHITESPACE . FORM_LIST
+    (17) OPT_WHITESPACE -> WHITESPACE .
+    (10) FORM_LIST -> . FORM OPT_WHITESPACE
+    (11) FORM_LIST -> . FORM WHITESPACE FORM_LIST
+    (3) FORM -> . SIMPLE_FORM
+    (4) FORM -> . COMPOUND_FORM
+    (5) SIMPLE_FORM -> . ATOM
+    (6) SIMPLE_FORM -> . NEG OPT_WHITESPACE ATOM
+    (7) SIMPLE_FORM -> . LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+    (8) SIMPLE_FORM -> . NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+    (9) COMPOUND_FORM -> . OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
+    (12) ATOM -> . IDENTIFIER
+    (13) OP -> . AND_OP
+    (14) OP -> . OR_OP
+    (15) AND_OP -> . AND
+    (16) OR_OP -> . OR
+
+    WHITESPACE      reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
+    RPAREN          reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
+    NEG             shift and go to state 11
+    LPAREN          shift and go to state 14
+    IDENTIFIER      shift and go to state 10
+    AND             shift and go to state 16
+    OR              shift and go to state 20
+
+    OR_OP                          shift and go to state 9
+    FORM                           shift and go to state 35
+    AND_OP                         shift and go to state 18
+    ATOM                           shift and go to state 12
+    OP                             shift and go to state 19
+    COMPOUND_FORM                  shift and go to state 13
+    SIMPLE_FORM                    shift and go to state 15
+    FORM_LIST                      shift and go to state 42
+
+state 40
+
+    (9) COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE . RPAREN
+
+    RPAREN          shift and go to state 43
+
+
+state 41
+
+    (8) SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .
+
+    WHITESPACE      reduce using rule 8 (SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .)
+    RPAREN          reduce using rule 8 (SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .)
+
+
+state 42
+
+    (11) FORM_LIST -> FORM WHITESPACE FORM_LIST .
+
+    WHITESPACE      reduce using rule 11 (FORM_LIST -> FORM WHITESPACE FORM_LIST .)
+    RPAREN          reduce using rule 11 (FORM_LIST -> FORM WHITESPACE FORM_LIST .)
+
+
+state 43
+
+    (9) COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN .
+
+    WHITESPACE      reduce using rule 9 (COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN .)
+    RPAREN          reduce using rule 9 (COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for WHITESPACE in state 35 resolved as shift

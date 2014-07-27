@@ -1,0 +1,8 @@
+function  (  a+3)
+nodes = [1,2,3,  4  , 5]
+
+add_node(3)
+
+nodes += [1,2,3]
+remove_nodes([1,2 ] ,  [3, 4] + [5] )
+g.add_node(5)
