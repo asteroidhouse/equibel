@@ -1,628 +1,1170 @@
 Created by PLY version 3.4 (http://www.dabeaz.com/ply)
 
-Unused terminals:
-
-    NEWLINE
-
 Grammar
 
-Rule 0     S' -> FORMULA_LINE
-Rule 1     FORMULA_LINE -> OPT_WHITESPACE FORMULA OPT_WHITESPACE
-Rule 2     FORMULA -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-Rule 3     FORM -> SIMPLE_FORM
-Rule 4     FORM -> COMPOUND_FORM
-Rule 5     SIMPLE_FORM -> ATOM
-Rule 6     SIMPLE_FORM -> NEG OPT_WHITESPACE ATOM
-Rule 7     SIMPLE_FORM -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-Rule 8     SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-Rule 9     COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
-Rule 10    FORM_LIST -> FORM OPT_WHITESPACE
-Rule 11    FORM_LIST -> FORM WHITESPACE FORM_LIST
-Rule 12    ATOM -> IDENTIFIER
-Rule 13    OP -> AND_OP
-Rule 14    OP -> OR_OP
-Rule 15    AND_OP -> AND
-Rule 16    OR_OP -> OR
-Rule 17    OPT_WHITESPACE -> WHITESPACE
-Rule 18    OPT_WHITESPACE -> empty
-Rule 19    empty -> <empty>
+Rule 0     S' -> LINES
+Rule 1     LINES -> LINE
+Rule 2     LINES -> LINE NEWLINE LINES
+Rule 3     LINE -> EXPRESSION
+Rule 4     EXPRESSION -> LITERAL
+Rule 5     EXPRESSION -> ASSIGNMENT
+Rule 6     EXPRESSION -> MOD_ASSIGNMENT
+Rule 7     EXPRESSION -> FUNCTION_CALL
+Rule 8     EXPRESSION -> LPAREN EXPRESSION RPAREN
+Rule 9     FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+Rule 10    FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN RPAREN
+Rule 11    FUNCTION_CALL -> IDENTIFIER LPAREN COMMA_ARGS RPAREN
+Rule 12    FUNCTION_CALL -> IDENTIFIER LPAREN RPAREN
+Rule 13    FUNCTION_CALL -> IDENTIFIER
+Rule 14    FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER
+Rule 15    COMMA_ARGS -> COMMA_ARGS COMMA EXPRESSION
+Rule 16    COMMA_ARGS -> EXPRESSION
+Rule 17    FUNCTION_CALL -> EXPRESSION BINARY_OPERATOR EXPRESSION
+Rule 18    BINARY_OPERATOR -> PLUS
+Rule 19    BINARY_OPERATOR -> MINUS
+Rule 20    ASSIGNMENT -> IDENTIFIER EQUALS EXPRESSION
+Rule 21    MOD_ASSIGNMENT -> IDENTIFIER ASSIGN_OPERATOR EXPRESSION
+Rule 22    ASSIGN_OPERATOR -> PLUS_EQUALS
+Rule 23    ASSIGN_OPERATOR -> MINUS_EQUALS
+Rule 24    LITERAL -> INTEGER
+Rule 25    LITERAL -> STRING
+Rule 26    LITERAL -> ORDERED_PAIR
+Rule 27    LITERAL -> LIST
+Rule 28    ORDERED_PAIR -> LPAREN INTEGER COMMA INTEGER RPAREN
+Rule 29    LIST -> LSQUARE RSQUARE
+Rule 30    LIST -> LSQUARE ELEMENTS RSQUARE
+Rule 31    ELEMENTS -> ELEMENTS COMMA ELEMENT
+Rule 32    ELEMENTS -> INTEGER DOT DOT INTEGER
+Rule 33    ELEMENTS -> ELEMENT
+Rule 34    ELEMENT -> EXPRESSION
 
 Terminals, with rules where they appear
 
-AND                  : 15
-IDENTIFIER           : 12
-LPAREN               : 2 7 8 9
-NEG                  : 6 8
-NEWLINE              : 
-OR                   : 16
-RPAREN               : 2 7 8 9
-WHITESPACE           : 11 17
+COMMA                : 15 28 31
+DOT                  : 9 10 14 32 32
+EQUALS               : 20
+IDENTIFIER           : 9 10 11 12 13 14 20 21
+INTEGER              : 24 28 28 32 32
+LPAREN               : 8 9 10 11 12 28
+LSQUARE              : 29 30
+MINUS                : 19
+MINUS_EQUALS         : 23
+NEWLINE              : 2
+PLUS                 : 18
+PLUS_EQUALS          : 22
+RPAREN               : 8 9 10 11 12 28
+RSQUARE              : 29 30
+STRING               : 25
 error                : 
 
 Nonterminals, with rules where they appear
 
-AND_OP               : 13
-ATOM                 : 5 6
-COMPOUND_FORM        : 4
-FORM                 : 2 7 8 10 11
-FORMULA              : 1
-FORMULA_LINE         : 0
-FORM_LIST            : 9 11
-OP                   : 9
-OPT_WHITESPACE       : 1 1 2 2 6 7 7 8 8 8 9 9 9 10
-OR_OP                : 14
-SIMPLE_FORM          : 3
-empty                : 18
+ASSIGNMENT           : 5
+ASSIGN_OPERATOR      : 21
+BINARY_OPERATOR      : 17
+COMMA_ARGS           : 9 11 15
+ELEMENT              : 31 33
+ELEMENTS             : 30 31
+EXPRESSION           : 3 8 9 10 14 15 16 17 17 20 21 34
+FUNCTION_CALL        : 7
+LINE                 : 1 2
+LINES                : 2 0
+LIST                 : 27
+LITERAL              : 4
+MOD_ASSIGNMENT       : 6
+ORDERED_PAIR         : 26
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . FORMULA_LINE
-    (1) FORMULA_LINE -> . OPT_WHITESPACE FORMULA OPT_WHITESPACE
-    (17) OPT_WHITESPACE -> . WHITESPACE
-    (18) OPT_WHITESPACE -> . empty
-    (19) empty -> .
+    (0) S' -> . LINES
+    (1) LINES -> . LINE
+    (2) LINES -> . LINE NEWLINE LINES
+    (3) LINE -> . EXPRESSION
+    (4) EXPRESSION -> . LITERAL
+    (5) EXPRESSION -> . ASSIGNMENT
+    (6) EXPRESSION -> . MOD_ASSIGNMENT
+    (7) EXPRESSION -> . FUNCTION_CALL
+    (8) EXPRESSION -> . LPAREN EXPRESSION RPAREN
+    (24) LITERAL -> . INTEGER
+    (25) LITERAL -> . STRING
+    (26) LITERAL -> . ORDERED_PAIR
+    (27) LITERAL -> . LIST
+    (20) ASSIGNMENT -> . IDENTIFIER EQUALS EXPRESSION
+    (21) MOD_ASSIGNMENT -> . IDENTIFIER ASSIGN_OPERATOR EXPRESSION
+    (9) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN RPAREN
+    (11) FUNCTION_CALL -> . IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (12) FUNCTION_CALL -> . IDENTIFIER LPAREN RPAREN
+    (13) FUNCTION_CALL -> . IDENTIFIER
+    (14) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER
+    (17) FUNCTION_CALL -> . EXPRESSION BINARY_OPERATOR EXPRESSION
+    (28) ORDERED_PAIR -> . LPAREN INTEGER COMMA INTEGER RPAREN
+    (29) LIST -> . LSQUARE RSQUARE
+    (30) LIST -> . LSQUARE ELEMENTS RSQUARE
 
-    WHITESPACE      shift and go to state 4
-    LPAREN          reduce using rule 19 (empty -> .)
+    LPAREN          shift and go to state 6
+    INTEGER         shift and go to state 7
+    STRING          shift and go to state 13
+    IDENTIFIER      shift and go to state 10
+    LSQUARE         shift and go to state 8
 
-    OPT_WHITESPACE                 shift and go to state 1
-    FORMULA_LINE                   shift and go to state 2
-    empty                          shift and go to state 3
+    ORDERED_PAIR                   shift and go to state 4
+    FUNCTION_CALL                  shift and go to state 5
+    LINES                          shift and go to state 1
+    LIST                           shift and go to state 9
+    LINE                           shift and go to state 14
+    ASSIGNMENT                     shift and go to state 2
+    MOD_ASSIGNMENT                 shift and go to state 3
+    EXPRESSION                     shift and go to state 11
+    LITERAL                        shift and go to state 12
 
 state 1
 
-    (1) FORMULA_LINE -> OPT_WHITESPACE . FORMULA OPT_WHITESPACE
-    (2) FORMULA -> . LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+    (0) S' -> LINES .
 
-    LPAREN          shift and go to state 6
 
-    FORMULA                        shift and go to state 5
 
 state 2
 
-    (0) S' -> FORMULA_LINE .
+    (5) EXPRESSION -> ASSIGNMENT .
 
+    DOT             reduce using rule 5 (EXPRESSION -> ASSIGNMENT .)
+    PLUS            reduce using rule 5 (EXPRESSION -> ASSIGNMENT .)
+    MINUS           reduce using rule 5 (EXPRESSION -> ASSIGNMENT .)
+    NEWLINE         reduce using rule 5 (EXPRESSION -> ASSIGNMENT .)
+    $end            reduce using rule 5 (EXPRESSION -> ASSIGNMENT .)
+    RPAREN          reduce using rule 5 (EXPRESSION -> ASSIGNMENT .)
+    RSQUARE         reduce using rule 5 (EXPRESSION -> ASSIGNMENT .)
+    COMMA           reduce using rule 5 (EXPRESSION -> ASSIGNMENT .)
 
 
 state 3
 
-    (18) OPT_WHITESPACE -> empty .
+    (6) EXPRESSION -> MOD_ASSIGNMENT .
 
-    LPAREN          reduce using rule 18 (OPT_WHITESPACE -> empty .)
-    IDENTIFIER      reduce using rule 18 (OPT_WHITESPACE -> empty .)
-    NEG             reduce using rule 18 (OPT_WHITESPACE -> empty .)
-    AND             reduce using rule 18 (OPT_WHITESPACE -> empty .)
-    OR              reduce using rule 18 (OPT_WHITESPACE -> empty .)
-    $end            reduce using rule 18 (OPT_WHITESPACE -> empty .)
-    RPAREN          reduce using rule 18 (OPT_WHITESPACE -> empty .)
-    WHITESPACE      reduce using rule 18 (OPT_WHITESPACE -> empty .)
+    DOT             reduce using rule 6 (EXPRESSION -> MOD_ASSIGNMENT .)
+    PLUS            reduce using rule 6 (EXPRESSION -> MOD_ASSIGNMENT .)
+    MINUS           reduce using rule 6 (EXPRESSION -> MOD_ASSIGNMENT .)
+    NEWLINE         reduce using rule 6 (EXPRESSION -> MOD_ASSIGNMENT .)
+    $end            reduce using rule 6 (EXPRESSION -> MOD_ASSIGNMENT .)
+    RPAREN          reduce using rule 6 (EXPRESSION -> MOD_ASSIGNMENT .)
+    RSQUARE         reduce using rule 6 (EXPRESSION -> MOD_ASSIGNMENT .)
+    COMMA           reduce using rule 6 (EXPRESSION -> MOD_ASSIGNMENT .)
 
 
 state 4
 
-    (17) OPT_WHITESPACE -> WHITESPACE .
+    (26) LITERAL -> ORDERED_PAIR .
 
-    LPAREN          reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
-    IDENTIFIER      reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
-    NEG             reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
-    AND             reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
-    OR              reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
-    $end            reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
-    RPAREN          reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
+    DOT             reduce using rule 26 (LITERAL -> ORDERED_PAIR .)
+    PLUS            reduce using rule 26 (LITERAL -> ORDERED_PAIR .)
+    MINUS           reduce using rule 26 (LITERAL -> ORDERED_PAIR .)
+    RPAREN          reduce using rule 26 (LITERAL -> ORDERED_PAIR .)
+    COMMA           reduce using rule 26 (LITERAL -> ORDERED_PAIR .)
+    NEWLINE         reduce using rule 26 (LITERAL -> ORDERED_PAIR .)
+    $end            reduce using rule 26 (LITERAL -> ORDERED_PAIR .)
+    RSQUARE         reduce using rule 26 (LITERAL -> ORDERED_PAIR .)
 
 
 state 5
 
-    (1) FORMULA_LINE -> OPT_WHITESPACE FORMULA . OPT_WHITESPACE
-    (17) OPT_WHITESPACE -> . WHITESPACE
-    (18) OPT_WHITESPACE -> . empty
-    (19) empty -> .
+    (7) EXPRESSION -> FUNCTION_CALL .
 
-    WHITESPACE      shift and go to state 4
-    $end            reduce using rule 19 (empty -> .)
+    DOT             reduce using rule 7 (EXPRESSION -> FUNCTION_CALL .)
+    PLUS            reduce using rule 7 (EXPRESSION -> FUNCTION_CALL .)
+    MINUS           reduce using rule 7 (EXPRESSION -> FUNCTION_CALL .)
+    NEWLINE         reduce using rule 7 (EXPRESSION -> FUNCTION_CALL .)
+    $end            reduce using rule 7 (EXPRESSION -> FUNCTION_CALL .)
+    RPAREN          reduce using rule 7 (EXPRESSION -> FUNCTION_CALL .)
+    RSQUARE         reduce using rule 7 (EXPRESSION -> FUNCTION_CALL .)
+    COMMA           reduce using rule 7 (EXPRESSION -> FUNCTION_CALL .)
 
-    OPT_WHITESPACE                 shift and go to state 7
-    empty                          shift and go to state 3
 
 state 6
 
-    (2) FORMULA -> LPAREN . OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-    (17) OPT_WHITESPACE -> . WHITESPACE
-    (18) OPT_WHITESPACE -> . empty
-    (19) empty -> .
+    (8) EXPRESSION -> LPAREN . EXPRESSION RPAREN
+    (28) ORDERED_PAIR -> LPAREN . INTEGER COMMA INTEGER RPAREN
+    (4) EXPRESSION -> . LITERAL
+    (5) EXPRESSION -> . ASSIGNMENT
+    (6) EXPRESSION -> . MOD_ASSIGNMENT
+    (7) EXPRESSION -> . FUNCTION_CALL
+    (8) EXPRESSION -> . LPAREN EXPRESSION RPAREN
+    (24) LITERAL -> . INTEGER
+    (25) LITERAL -> . STRING
+    (26) LITERAL -> . ORDERED_PAIR
+    (27) LITERAL -> . LIST
+    (20) ASSIGNMENT -> . IDENTIFIER EQUALS EXPRESSION
+    (21) MOD_ASSIGNMENT -> . IDENTIFIER ASSIGN_OPERATOR EXPRESSION
+    (9) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN RPAREN
+    (11) FUNCTION_CALL -> . IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (12) FUNCTION_CALL -> . IDENTIFIER LPAREN RPAREN
+    (13) FUNCTION_CALL -> . IDENTIFIER
+    (14) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER
+    (17) FUNCTION_CALL -> . EXPRESSION BINARY_OPERATOR EXPRESSION
+    (28) ORDERED_PAIR -> . LPAREN INTEGER COMMA INTEGER RPAREN
+    (29) LIST -> . LSQUARE RSQUARE
+    (30) LIST -> . LSQUARE ELEMENTS RSQUARE
 
-    WHITESPACE      shift and go to state 4
-    NEG             reduce using rule 19 (empty -> .)
-    LPAREN          reduce using rule 19 (empty -> .)
-    IDENTIFIER      reduce using rule 19 (empty -> .)
-    AND             reduce using rule 19 (empty -> .)
-    OR              reduce using rule 19 (empty -> .)
+    INTEGER         shift and go to state 15
+    LPAREN          shift and go to state 6
+    STRING          shift and go to state 13
+    IDENTIFIER      shift and go to state 10
+    LSQUARE         shift and go to state 8
 
-    OPT_WHITESPACE                 shift and go to state 8
-    empty                          shift and go to state 3
+    ORDERED_PAIR                   shift and go to state 4
+    LIST                           shift and go to state 9
+    FUNCTION_CALL                  shift and go to state 5
+    ASSIGNMENT                     shift and go to state 2
+    MOD_ASSIGNMENT                 shift and go to state 3
+    EXPRESSION                     shift and go to state 16
+    LITERAL                        shift and go to state 12
 
 state 7
 
-    (1) FORMULA_LINE -> OPT_WHITESPACE FORMULA OPT_WHITESPACE .
+    (24) LITERAL -> INTEGER .
 
-    $end            reduce using rule 1 (FORMULA_LINE -> OPT_WHITESPACE FORMULA OPT_WHITESPACE .)
+    DOT             reduce using rule 24 (LITERAL -> INTEGER .)
+    PLUS            reduce using rule 24 (LITERAL -> INTEGER .)
+    MINUS           reduce using rule 24 (LITERAL -> INTEGER .)
+    RPAREN          reduce using rule 24 (LITERAL -> INTEGER .)
+    COMMA           reduce using rule 24 (LITERAL -> INTEGER .)
+    NEWLINE         reduce using rule 24 (LITERAL -> INTEGER .)
+    $end            reduce using rule 24 (LITERAL -> INTEGER .)
+    RSQUARE         reduce using rule 24 (LITERAL -> INTEGER .)
 
 
 state 8
 
-    (2) FORMULA -> LPAREN OPT_WHITESPACE . FORM OPT_WHITESPACE RPAREN
-    (3) FORM -> . SIMPLE_FORM
-    (4) FORM -> . COMPOUND_FORM
-    (5) SIMPLE_FORM -> . ATOM
-    (6) SIMPLE_FORM -> . NEG OPT_WHITESPACE ATOM
-    (7) SIMPLE_FORM -> . LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-    (8) SIMPLE_FORM -> . NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-    (9) COMPOUND_FORM -> . OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
-    (12) ATOM -> . IDENTIFIER
-    (13) OP -> . AND_OP
-    (14) OP -> . OR_OP
-    (15) AND_OP -> . AND
-    (16) OR_OP -> . OR
+    (29) LIST -> LSQUARE . RSQUARE
+    (30) LIST -> LSQUARE . ELEMENTS RSQUARE
+    (31) ELEMENTS -> . ELEMENTS COMMA ELEMENT
+    (32) ELEMENTS -> . INTEGER DOT DOT INTEGER
+    (33) ELEMENTS -> . ELEMENT
+    (34) ELEMENT -> . EXPRESSION
+    (4) EXPRESSION -> . LITERAL
+    (5) EXPRESSION -> . ASSIGNMENT
+    (6) EXPRESSION -> . MOD_ASSIGNMENT
+    (7) EXPRESSION -> . FUNCTION_CALL
+    (8) EXPRESSION -> . LPAREN EXPRESSION RPAREN
+    (24) LITERAL -> . INTEGER
+    (25) LITERAL -> . STRING
+    (26) LITERAL -> . ORDERED_PAIR
+    (27) LITERAL -> . LIST
+    (20) ASSIGNMENT -> . IDENTIFIER EQUALS EXPRESSION
+    (21) MOD_ASSIGNMENT -> . IDENTIFIER ASSIGN_OPERATOR EXPRESSION
+    (9) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN RPAREN
+    (11) FUNCTION_CALL -> . IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (12) FUNCTION_CALL -> . IDENTIFIER LPAREN RPAREN
+    (13) FUNCTION_CALL -> . IDENTIFIER
+    (14) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER
+    (17) FUNCTION_CALL -> . EXPRESSION BINARY_OPERATOR EXPRESSION
+    (28) ORDERED_PAIR -> . LPAREN INTEGER COMMA INTEGER RPAREN
+    (29) LIST -> . LSQUARE RSQUARE
+    (30) LIST -> . LSQUARE ELEMENTS RSQUARE
 
-    NEG             shift and go to state 11
-    LPAREN          shift and go to state 14
+    RSQUARE         shift and go to state 18
+    INTEGER         shift and go to state 19
+    LPAREN          shift and go to state 6
+    STRING          shift and go to state 13
     IDENTIFIER      shift and go to state 10
-    AND             shift and go to state 16
-    OR              shift and go to state 20
+    LSQUARE         shift and go to state 8
 
-    OR_OP                          shift and go to state 9
-    FORM                           shift and go to state 17
-    AND_OP                         shift and go to state 18
-    ATOM                           shift and go to state 12
-    OP                             shift and go to state 19
-    COMPOUND_FORM                  shift and go to state 13
-    SIMPLE_FORM                    shift and go to state 15
+    ORDERED_PAIR                   shift and go to state 4
+    FUNCTION_CALL                  shift and go to state 5
+    ELEMENTS                       shift and go to state 17
+    LIST                           shift and go to state 9
+    ASSIGNMENT                     shift and go to state 2
+    MOD_ASSIGNMENT                 shift and go to state 3
+    ELEMENT                        shift and go to state 20
+    EXPRESSION                     shift and go to state 21
+    LITERAL                        shift and go to state 12
 
 state 9
 
-    (14) OP -> OR_OP .
+    (27) LITERAL -> LIST .
 
-    WHITESPACE      reduce using rule 14 (OP -> OR_OP .)
-    LPAREN          reduce using rule 14 (OP -> OR_OP .)
+    DOT             reduce using rule 27 (LITERAL -> LIST .)
+    PLUS            reduce using rule 27 (LITERAL -> LIST .)
+    MINUS           reduce using rule 27 (LITERAL -> LIST .)
+    RPAREN          reduce using rule 27 (LITERAL -> LIST .)
+    COMMA           reduce using rule 27 (LITERAL -> LIST .)
+    NEWLINE         reduce using rule 27 (LITERAL -> LIST .)
+    $end            reduce using rule 27 (LITERAL -> LIST .)
+    RSQUARE         reduce using rule 27 (LITERAL -> LIST .)
 
 
 state 10
 
-    (12) ATOM -> IDENTIFIER .
+    (20) ASSIGNMENT -> IDENTIFIER . EQUALS EXPRESSION
+    (21) MOD_ASSIGNMENT -> IDENTIFIER . ASSIGN_OPERATOR EXPRESSION
+    (11) FUNCTION_CALL -> IDENTIFIER . LPAREN COMMA_ARGS RPAREN
+    (12) FUNCTION_CALL -> IDENTIFIER . LPAREN RPAREN
+    (13) FUNCTION_CALL -> IDENTIFIER .
+    (22) ASSIGN_OPERATOR -> . PLUS_EQUALS
+    (23) ASSIGN_OPERATOR -> . MINUS_EQUALS
 
-    WHITESPACE      reduce using rule 12 (ATOM -> IDENTIFIER .)
-    RPAREN          reduce using rule 12 (ATOM -> IDENTIFIER .)
+    EQUALS          shift and go to state 24
+    LPAREN          shift and go to state 22
+    DOT             reduce using rule 13 (FUNCTION_CALL -> IDENTIFIER .)
+    PLUS            reduce using rule 13 (FUNCTION_CALL -> IDENTIFIER .)
+    MINUS           reduce using rule 13 (FUNCTION_CALL -> IDENTIFIER .)
+    RSQUARE         reduce using rule 13 (FUNCTION_CALL -> IDENTIFIER .)
+    COMMA           reduce using rule 13 (FUNCTION_CALL -> IDENTIFIER .)
+    RPAREN          reduce using rule 13 (FUNCTION_CALL -> IDENTIFIER .)
+    NEWLINE         reduce using rule 13 (FUNCTION_CALL -> IDENTIFIER .)
+    $end            reduce using rule 13 (FUNCTION_CALL -> IDENTIFIER .)
+    PLUS_EQUALS     shift and go to state 23
+    MINUS_EQUALS    shift and go to state 25
 
+    ASSIGN_OPERATOR                shift and go to state 26
 
 state 11
 
-    (6) SIMPLE_FORM -> NEG . OPT_WHITESPACE ATOM
-    (8) SIMPLE_FORM -> NEG . OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-    (17) OPT_WHITESPACE -> . WHITESPACE
-    (18) OPT_WHITESPACE -> . empty
-    (19) empty -> .
+    (3) LINE -> EXPRESSION .
+    (9) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER LPAREN RPAREN
+    (14) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER
+    (17) FUNCTION_CALL -> EXPRESSION . BINARY_OPERATOR EXPRESSION
+    (18) BINARY_OPERATOR -> . PLUS
+    (19) BINARY_OPERATOR -> . MINUS
 
-    WHITESPACE      shift and go to state 4
-    LPAREN          reduce using rule 19 (empty -> .)
-    IDENTIFIER      reduce using rule 19 (empty -> .)
+    NEWLINE         reduce using rule 3 (LINE -> EXPRESSION .)
+    $end            reduce using rule 3 (LINE -> EXPRESSION .)
+    DOT             shift and go to state 27
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 29
 
-    OPT_WHITESPACE                 shift and go to state 21
-    empty                          shift and go to state 3
+    BINARY_OPERATOR                shift and go to state 28
 
 state 12
 
-    (5) SIMPLE_FORM -> ATOM .
+    (4) EXPRESSION -> LITERAL .
 
-    WHITESPACE      reduce using rule 5 (SIMPLE_FORM -> ATOM .)
-    RPAREN          reduce using rule 5 (SIMPLE_FORM -> ATOM .)
+    DOT             reduce using rule 4 (EXPRESSION -> LITERAL .)
+    PLUS            reduce using rule 4 (EXPRESSION -> LITERAL .)
+    MINUS           reduce using rule 4 (EXPRESSION -> LITERAL .)
+    NEWLINE         reduce using rule 4 (EXPRESSION -> LITERAL .)
+    $end            reduce using rule 4 (EXPRESSION -> LITERAL .)
+    RPAREN          reduce using rule 4 (EXPRESSION -> LITERAL .)
+    RSQUARE         reduce using rule 4 (EXPRESSION -> LITERAL .)
+    COMMA           reduce using rule 4 (EXPRESSION -> LITERAL .)
 
 
 state 13
 
-    (4) FORM -> COMPOUND_FORM .
+    (25) LITERAL -> STRING .
 
-    WHITESPACE      reduce using rule 4 (FORM -> COMPOUND_FORM .)
-    RPAREN          reduce using rule 4 (FORM -> COMPOUND_FORM .)
+    DOT             reduce using rule 25 (LITERAL -> STRING .)
+    PLUS            reduce using rule 25 (LITERAL -> STRING .)
+    MINUS           reduce using rule 25 (LITERAL -> STRING .)
+    RPAREN          reduce using rule 25 (LITERAL -> STRING .)
+    COMMA           reduce using rule 25 (LITERAL -> STRING .)
+    NEWLINE         reduce using rule 25 (LITERAL -> STRING .)
+    $end            reduce using rule 25 (LITERAL -> STRING .)
+    RSQUARE         reduce using rule 25 (LITERAL -> STRING .)
 
 
 state 14
 
-    (7) SIMPLE_FORM -> LPAREN . OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-    (17) OPT_WHITESPACE -> . WHITESPACE
-    (18) OPT_WHITESPACE -> . empty
-    (19) empty -> .
+    (1) LINES -> LINE .
+    (2) LINES -> LINE . NEWLINE LINES
 
-    WHITESPACE      shift and go to state 4
-    NEG             reduce using rule 19 (empty -> .)
-    LPAREN          reduce using rule 19 (empty -> .)
-    IDENTIFIER      reduce using rule 19 (empty -> .)
-    AND             reduce using rule 19 (empty -> .)
-    OR              reduce using rule 19 (empty -> .)
+    $end            reduce using rule 1 (LINES -> LINE .)
+    NEWLINE         shift and go to state 31
 
-    OPT_WHITESPACE                 shift and go to state 22
-    empty                          shift and go to state 3
 
 state 15
 
-    (3) FORM -> SIMPLE_FORM .
+    (28) ORDERED_PAIR -> LPAREN INTEGER . COMMA INTEGER RPAREN
+    (24) LITERAL -> INTEGER .
 
-    WHITESPACE      reduce using rule 3 (FORM -> SIMPLE_FORM .)
-    RPAREN          reduce using rule 3 (FORM -> SIMPLE_FORM .)
+    COMMA           shift and go to state 32
+    RPAREN          reduce using rule 24 (LITERAL -> INTEGER .)
+    DOT             reduce using rule 24 (LITERAL -> INTEGER .)
+    PLUS            reduce using rule 24 (LITERAL -> INTEGER .)
+    MINUS           reduce using rule 24 (LITERAL -> INTEGER .)
 
 
 state 16
 
-    (15) AND_OP -> AND .
+    (8) EXPRESSION -> LPAREN EXPRESSION . RPAREN
+    (9) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER LPAREN RPAREN
+    (14) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER
+    (17) FUNCTION_CALL -> EXPRESSION . BINARY_OPERATOR EXPRESSION
+    (18) BINARY_OPERATOR -> . PLUS
+    (19) BINARY_OPERATOR -> . MINUS
 
-    WHITESPACE      reduce using rule 15 (AND_OP -> AND .)
-    LPAREN          reduce using rule 15 (AND_OP -> AND .)
+    RPAREN          shift and go to state 33
+    DOT             shift and go to state 27
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 29
 
+    BINARY_OPERATOR                shift and go to state 28
 
 state 17
 
-    (2) FORMULA -> LPAREN OPT_WHITESPACE FORM . OPT_WHITESPACE RPAREN
-    (17) OPT_WHITESPACE -> . WHITESPACE
-    (18) OPT_WHITESPACE -> . empty
-    (19) empty -> .
+    (30) LIST -> LSQUARE ELEMENTS . RSQUARE
+    (31) ELEMENTS -> ELEMENTS . COMMA ELEMENT
 
-    WHITESPACE      shift and go to state 4
-    RPAREN          reduce using rule 19 (empty -> .)
+    RSQUARE         shift and go to state 34
+    COMMA           shift and go to state 35
 
-    OPT_WHITESPACE                 shift and go to state 23
-    empty                          shift and go to state 3
 
 state 18
 
-    (13) OP -> AND_OP .
+    (29) LIST -> LSQUARE RSQUARE .
 
-    WHITESPACE      reduce using rule 13 (OP -> AND_OP .)
-    LPAREN          reduce using rule 13 (OP -> AND_OP .)
+    DOT             reduce using rule 29 (LIST -> LSQUARE RSQUARE .)
+    PLUS            reduce using rule 29 (LIST -> LSQUARE RSQUARE .)
+    MINUS           reduce using rule 29 (LIST -> LSQUARE RSQUARE .)
+    NEWLINE         reduce using rule 29 (LIST -> LSQUARE RSQUARE .)
+    $end            reduce using rule 29 (LIST -> LSQUARE RSQUARE .)
+    RPAREN          reduce using rule 29 (LIST -> LSQUARE RSQUARE .)
+    RSQUARE         reduce using rule 29 (LIST -> LSQUARE RSQUARE .)
+    COMMA           reduce using rule 29 (LIST -> LSQUARE RSQUARE .)
 
 
 state 19
 
-    (9) COMPOUND_FORM -> OP . OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
-    (17) OPT_WHITESPACE -> . WHITESPACE
-    (18) OPT_WHITESPACE -> . empty
-    (19) empty -> .
+    (32) ELEMENTS -> INTEGER . DOT DOT INTEGER
+    (24) LITERAL -> INTEGER .
 
-    WHITESPACE      shift and go to state 4
-    LPAREN          reduce using rule 19 (empty -> .)
+  ! shift/reduce conflict for DOT resolved as shift
+    DOT             shift and go to state 36
+    PLUS            reduce using rule 24 (LITERAL -> INTEGER .)
+    MINUS           reduce using rule 24 (LITERAL -> INTEGER .)
+    RSQUARE         reduce using rule 24 (LITERAL -> INTEGER .)
+    COMMA           reduce using rule 24 (LITERAL -> INTEGER .)
 
-    empty                          shift and go to state 3
-    OPT_WHITESPACE                 shift and go to state 24
+  ! DOT             [ reduce using rule 24 (LITERAL -> INTEGER .) ]
+
 
 state 20
 
-    (16) OR_OP -> OR .
+    (33) ELEMENTS -> ELEMENT .
 
-    WHITESPACE      reduce using rule 16 (OR_OP -> OR .)
-    LPAREN          reduce using rule 16 (OR_OP -> OR .)
+    RSQUARE         reduce using rule 33 (ELEMENTS -> ELEMENT .)
+    COMMA           reduce using rule 33 (ELEMENTS -> ELEMENT .)
 
 
 state 21
 
-    (6) SIMPLE_FORM -> NEG OPT_WHITESPACE . ATOM
-    (8) SIMPLE_FORM -> NEG OPT_WHITESPACE . LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-    (12) ATOM -> . IDENTIFIER
+    (34) ELEMENT -> EXPRESSION .
+    (9) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER LPAREN RPAREN
+    (14) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER
+    (17) FUNCTION_CALL -> EXPRESSION . BINARY_OPERATOR EXPRESSION
+    (18) BINARY_OPERATOR -> . PLUS
+    (19) BINARY_OPERATOR -> . MINUS
 
-    LPAREN          shift and go to state 26
-    IDENTIFIER      shift and go to state 10
+    RSQUARE         reduce using rule 34 (ELEMENT -> EXPRESSION .)
+    COMMA           reduce using rule 34 (ELEMENT -> EXPRESSION .)
+    DOT             shift and go to state 27
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 29
 
-    ATOM                           shift and go to state 25
+    BINARY_OPERATOR                shift and go to state 28
 
 state 22
 
-    (7) SIMPLE_FORM -> LPAREN OPT_WHITESPACE . FORM OPT_WHITESPACE RPAREN
-    (3) FORM -> . SIMPLE_FORM
-    (4) FORM -> . COMPOUND_FORM
-    (5) SIMPLE_FORM -> . ATOM
-    (6) SIMPLE_FORM -> . NEG OPT_WHITESPACE ATOM
-    (7) SIMPLE_FORM -> . LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-    (8) SIMPLE_FORM -> . NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-    (9) COMPOUND_FORM -> . OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
-    (12) ATOM -> . IDENTIFIER
-    (13) OP -> . AND_OP
-    (14) OP -> . OR_OP
-    (15) AND_OP -> . AND
-    (16) OR_OP -> . OR
+    (11) FUNCTION_CALL -> IDENTIFIER LPAREN . COMMA_ARGS RPAREN
+    (12) FUNCTION_CALL -> IDENTIFIER LPAREN . RPAREN
+    (15) COMMA_ARGS -> . COMMA_ARGS COMMA EXPRESSION
+    (16) COMMA_ARGS -> . EXPRESSION
+    (4) EXPRESSION -> . LITERAL
+    (5) EXPRESSION -> . ASSIGNMENT
+    (6) EXPRESSION -> . MOD_ASSIGNMENT
+    (7) EXPRESSION -> . FUNCTION_CALL
+    (8) EXPRESSION -> . LPAREN EXPRESSION RPAREN
+    (24) LITERAL -> . INTEGER
+    (25) LITERAL -> . STRING
+    (26) LITERAL -> . ORDERED_PAIR
+    (27) LITERAL -> . LIST
+    (20) ASSIGNMENT -> . IDENTIFIER EQUALS EXPRESSION
+    (21) MOD_ASSIGNMENT -> . IDENTIFIER ASSIGN_OPERATOR EXPRESSION
+    (9) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN RPAREN
+    (11) FUNCTION_CALL -> . IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (12) FUNCTION_CALL -> . IDENTIFIER LPAREN RPAREN
+    (13) FUNCTION_CALL -> . IDENTIFIER
+    (14) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER
+    (17) FUNCTION_CALL -> . EXPRESSION BINARY_OPERATOR EXPRESSION
+    (28) ORDERED_PAIR -> . LPAREN INTEGER COMMA INTEGER RPAREN
+    (29) LIST -> . LSQUARE RSQUARE
+    (30) LIST -> . LSQUARE ELEMENTS RSQUARE
 
-    NEG             shift and go to state 11
-    LPAREN          shift and go to state 14
+    RPAREN          shift and go to state 38
+    LPAREN          shift and go to state 6
+    INTEGER         shift and go to state 7
+    STRING          shift and go to state 13
     IDENTIFIER      shift and go to state 10
-    AND             shift and go to state 16
-    OR              shift and go to state 20
+    LSQUARE         shift and go to state 8
 
-    OR_OP                          shift and go to state 9
-    FORM                           shift and go to state 27
-    AND_OP                         shift and go to state 18
-    ATOM                           shift and go to state 12
-    OP                             shift and go to state 19
-    COMPOUND_FORM                  shift and go to state 13
-    SIMPLE_FORM                    shift and go to state 15
+    ORDERED_PAIR                   shift and go to state 4
+    COMMA_ARGS                     shift and go to state 37
+    FUNCTION_CALL                  shift and go to state 5
+    ASSIGNMENT                     shift and go to state 2
+    MOD_ASSIGNMENT                 shift and go to state 3
+    EXPRESSION                     shift and go to state 39
+    LITERAL                        shift and go to state 12
+    LIST                           shift and go to state 9
 
 state 23
 
-    (2) FORMULA -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE . RPAREN
+    (22) ASSIGN_OPERATOR -> PLUS_EQUALS .
 
-    RPAREN          shift and go to state 28
+    LPAREN          reduce using rule 22 (ASSIGN_OPERATOR -> PLUS_EQUALS .)
+    INTEGER         reduce using rule 22 (ASSIGN_OPERATOR -> PLUS_EQUALS .)
+    STRING          reduce using rule 22 (ASSIGN_OPERATOR -> PLUS_EQUALS .)
+    IDENTIFIER      reduce using rule 22 (ASSIGN_OPERATOR -> PLUS_EQUALS .)
+    LSQUARE         reduce using rule 22 (ASSIGN_OPERATOR -> PLUS_EQUALS .)
 
 
 state 24
 
-    (9) COMPOUND_FORM -> OP OPT_WHITESPACE . LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
+    (20) ASSIGNMENT -> IDENTIFIER EQUALS . EXPRESSION
+    (4) EXPRESSION -> . LITERAL
+    (5) EXPRESSION -> . ASSIGNMENT
+    (6) EXPRESSION -> . MOD_ASSIGNMENT
+    (7) EXPRESSION -> . FUNCTION_CALL
+    (8) EXPRESSION -> . LPAREN EXPRESSION RPAREN
+    (24) LITERAL -> . INTEGER
+    (25) LITERAL -> . STRING
+    (26) LITERAL -> . ORDERED_PAIR
+    (27) LITERAL -> . LIST
+    (20) ASSIGNMENT -> . IDENTIFIER EQUALS EXPRESSION
+    (21) MOD_ASSIGNMENT -> . IDENTIFIER ASSIGN_OPERATOR EXPRESSION
+    (9) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN RPAREN
+    (11) FUNCTION_CALL -> . IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (12) FUNCTION_CALL -> . IDENTIFIER LPAREN RPAREN
+    (13) FUNCTION_CALL -> . IDENTIFIER
+    (14) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER
+    (17) FUNCTION_CALL -> . EXPRESSION BINARY_OPERATOR EXPRESSION
+    (28) ORDERED_PAIR -> . LPAREN INTEGER COMMA INTEGER RPAREN
+    (29) LIST -> . LSQUARE RSQUARE
+    (30) LIST -> . LSQUARE ELEMENTS RSQUARE
 
-    LPAREN          shift and go to state 29
+    LPAREN          shift and go to state 6
+    INTEGER         shift and go to state 7
+    STRING          shift and go to state 13
+    IDENTIFIER      shift and go to state 10
+    LSQUARE         shift and go to state 8
 
+    ORDERED_PAIR                   shift and go to state 4
+    LIST                           shift and go to state 9
+    FUNCTION_CALL                  shift and go to state 5
+    ASSIGNMENT                     shift and go to state 2
+    MOD_ASSIGNMENT                 shift and go to state 3
+    EXPRESSION                     shift and go to state 40
+    LITERAL                        shift and go to state 12
 
 state 25
 
-    (6) SIMPLE_FORM -> NEG OPT_WHITESPACE ATOM .
+    (23) ASSIGN_OPERATOR -> MINUS_EQUALS .
 
-    WHITESPACE      reduce using rule 6 (SIMPLE_FORM -> NEG OPT_WHITESPACE ATOM .)
-    RPAREN          reduce using rule 6 (SIMPLE_FORM -> NEG OPT_WHITESPACE ATOM .)
+    LPAREN          reduce using rule 23 (ASSIGN_OPERATOR -> MINUS_EQUALS .)
+    INTEGER         reduce using rule 23 (ASSIGN_OPERATOR -> MINUS_EQUALS .)
+    STRING          reduce using rule 23 (ASSIGN_OPERATOR -> MINUS_EQUALS .)
+    IDENTIFIER      reduce using rule 23 (ASSIGN_OPERATOR -> MINUS_EQUALS .)
+    LSQUARE         reduce using rule 23 (ASSIGN_OPERATOR -> MINUS_EQUALS .)
 
 
 state 26
 
-    (8) SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN . OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-    (17) OPT_WHITESPACE -> . WHITESPACE
-    (18) OPT_WHITESPACE -> . empty
-    (19) empty -> .
+    (21) MOD_ASSIGNMENT -> IDENTIFIER ASSIGN_OPERATOR . EXPRESSION
+    (4) EXPRESSION -> . LITERAL
+    (5) EXPRESSION -> . ASSIGNMENT
+    (6) EXPRESSION -> . MOD_ASSIGNMENT
+    (7) EXPRESSION -> . FUNCTION_CALL
+    (8) EXPRESSION -> . LPAREN EXPRESSION RPAREN
+    (24) LITERAL -> . INTEGER
+    (25) LITERAL -> . STRING
+    (26) LITERAL -> . ORDERED_PAIR
+    (27) LITERAL -> . LIST
+    (20) ASSIGNMENT -> . IDENTIFIER EQUALS EXPRESSION
+    (21) MOD_ASSIGNMENT -> . IDENTIFIER ASSIGN_OPERATOR EXPRESSION
+    (9) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN RPAREN
+    (11) FUNCTION_CALL -> . IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (12) FUNCTION_CALL -> . IDENTIFIER LPAREN RPAREN
+    (13) FUNCTION_CALL -> . IDENTIFIER
+    (14) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER
+    (17) FUNCTION_CALL -> . EXPRESSION BINARY_OPERATOR EXPRESSION
+    (28) ORDERED_PAIR -> . LPAREN INTEGER COMMA INTEGER RPAREN
+    (29) LIST -> . LSQUARE RSQUARE
+    (30) LIST -> . LSQUARE ELEMENTS RSQUARE
 
-    WHITESPACE      shift and go to state 4
-    NEG             reduce using rule 19 (empty -> .)
-    LPAREN          reduce using rule 19 (empty -> .)
-    IDENTIFIER      reduce using rule 19 (empty -> .)
-    AND             reduce using rule 19 (empty -> .)
-    OR              reduce using rule 19 (empty -> .)
+    LPAREN          shift and go to state 6
+    INTEGER         shift and go to state 7
+    STRING          shift and go to state 13
+    IDENTIFIER      shift and go to state 10
+    LSQUARE         shift and go to state 8
 
-    OPT_WHITESPACE                 shift and go to state 30
-    empty                          shift and go to state 3
+    ORDERED_PAIR                   shift and go to state 4
+    LIST                           shift and go to state 9
+    FUNCTION_CALL                  shift and go to state 5
+    ASSIGNMENT                     shift and go to state 2
+    MOD_ASSIGNMENT                 shift and go to state 3
+    EXPRESSION                     shift and go to state 41
+    LITERAL                        shift and go to state 12
 
 state 27
 
-    (7) SIMPLE_FORM -> LPAREN OPT_WHITESPACE FORM . OPT_WHITESPACE RPAREN
-    (17) OPT_WHITESPACE -> . WHITESPACE
-    (18) OPT_WHITESPACE -> . empty
-    (19) empty -> .
+    (9) FUNCTION_CALL -> EXPRESSION DOT . IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> EXPRESSION DOT . IDENTIFIER LPAREN RPAREN
+    (14) FUNCTION_CALL -> EXPRESSION DOT . IDENTIFIER
 
-    WHITESPACE      shift and go to state 4
-    RPAREN          reduce using rule 19 (empty -> .)
+    IDENTIFIER      shift and go to state 42
 
-    OPT_WHITESPACE                 shift and go to state 31
-    empty                          shift and go to state 3
 
 state 28
 
-    (2) FORMULA -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .
+    (17) FUNCTION_CALL -> EXPRESSION BINARY_OPERATOR . EXPRESSION
+    (4) EXPRESSION -> . LITERAL
+    (5) EXPRESSION -> . ASSIGNMENT
+    (6) EXPRESSION -> . MOD_ASSIGNMENT
+    (7) EXPRESSION -> . FUNCTION_CALL
+    (8) EXPRESSION -> . LPAREN EXPRESSION RPAREN
+    (24) LITERAL -> . INTEGER
+    (25) LITERAL -> . STRING
+    (26) LITERAL -> . ORDERED_PAIR
+    (27) LITERAL -> . LIST
+    (20) ASSIGNMENT -> . IDENTIFIER EQUALS EXPRESSION
+    (21) MOD_ASSIGNMENT -> . IDENTIFIER ASSIGN_OPERATOR EXPRESSION
+    (9) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN RPAREN
+    (11) FUNCTION_CALL -> . IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (12) FUNCTION_CALL -> . IDENTIFIER LPAREN RPAREN
+    (13) FUNCTION_CALL -> . IDENTIFIER
+    (14) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER
+    (17) FUNCTION_CALL -> . EXPRESSION BINARY_OPERATOR EXPRESSION
+    (28) ORDERED_PAIR -> . LPAREN INTEGER COMMA INTEGER RPAREN
+    (29) LIST -> . LSQUARE RSQUARE
+    (30) LIST -> . LSQUARE ELEMENTS RSQUARE
 
-    WHITESPACE      reduce using rule 2 (FORMULA -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .)
-    $end            reduce using rule 2 (FORMULA -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .)
+    LPAREN          shift and go to state 6
+    INTEGER         shift and go to state 7
+    STRING          shift and go to state 13
+    IDENTIFIER      shift and go to state 10
+    LSQUARE         shift and go to state 8
 
+    ORDERED_PAIR                   shift and go to state 4
+    LIST                           shift and go to state 9
+    FUNCTION_CALL                  shift and go to state 5
+    ASSIGNMENT                     shift and go to state 2
+    MOD_ASSIGNMENT                 shift and go to state 3
+    EXPRESSION                     shift and go to state 43
+    LITERAL                        shift and go to state 12
 
 state 29
 
-    (9) COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN . OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
-    (17) OPT_WHITESPACE -> . WHITESPACE
-    (18) OPT_WHITESPACE -> . empty
-    (19) empty -> .
+    (19) BINARY_OPERATOR -> MINUS .
 
-    WHITESPACE      shift and go to state 4
-    NEG             reduce using rule 19 (empty -> .)
-    LPAREN          reduce using rule 19 (empty -> .)
-    IDENTIFIER      reduce using rule 19 (empty -> .)
-    AND             reduce using rule 19 (empty -> .)
-    OR              reduce using rule 19 (empty -> .)
+    LPAREN          reduce using rule 19 (BINARY_OPERATOR -> MINUS .)
+    INTEGER         reduce using rule 19 (BINARY_OPERATOR -> MINUS .)
+    STRING          reduce using rule 19 (BINARY_OPERATOR -> MINUS .)
+    IDENTIFIER      reduce using rule 19 (BINARY_OPERATOR -> MINUS .)
+    LSQUARE         reduce using rule 19 (BINARY_OPERATOR -> MINUS .)
 
-    empty                          shift and go to state 3
-    OPT_WHITESPACE                 shift and go to state 32
 
 state 30
 
-    (8) SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE . FORM OPT_WHITESPACE RPAREN
-    (3) FORM -> . SIMPLE_FORM
-    (4) FORM -> . COMPOUND_FORM
-    (5) SIMPLE_FORM -> . ATOM
-    (6) SIMPLE_FORM -> . NEG OPT_WHITESPACE ATOM
-    (7) SIMPLE_FORM -> . LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-    (8) SIMPLE_FORM -> . NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-    (9) COMPOUND_FORM -> . OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
-    (12) ATOM -> . IDENTIFIER
-    (13) OP -> . AND_OP
-    (14) OP -> . OR_OP
-    (15) AND_OP -> . AND
-    (16) OR_OP -> . OR
+    (18) BINARY_OPERATOR -> PLUS .
 
-    NEG             shift and go to state 11
-    LPAREN          shift and go to state 14
-    IDENTIFIER      shift and go to state 10
-    AND             shift and go to state 16
-    OR              shift and go to state 20
+    LPAREN          reduce using rule 18 (BINARY_OPERATOR -> PLUS .)
+    INTEGER         reduce using rule 18 (BINARY_OPERATOR -> PLUS .)
+    STRING          reduce using rule 18 (BINARY_OPERATOR -> PLUS .)
+    IDENTIFIER      reduce using rule 18 (BINARY_OPERATOR -> PLUS .)
+    LSQUARE         reduce using rule 18 (BINARY_OPERATOR -> PLUS .)
 
-    OR_OP                          shift and go to state 9
-    FORM                           shift and go to state 33
-    AND_OP                         shift and go to state 18
-    ATOM                           shift and go to state 12
-    OP                             shift and go to state 19
-    COMPOUND_FORM                  shift and go to state 13
-    SIMPLE_FORM                    shift and go to state 15
 
 state 31
 
-    (7) SIMPLE_FORM -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE . RPAREN
+    (2) LINES -> LINE NEWLINE . LINES
+    (1) LINES -> . LINE
+    (2) LINES -> . LINE NEWLINE LINES
+    (3) LINE -> . EXPRESSION
+    (4) EXPRESSION -> . LITERAL
+    (5) EXPRESSION -> . ASSIGNMENT
+    (6) EXPRESSION -> . MOD_ASSIGNMENT
+    (7) EXPRESSION -> . FUNCTION_CALL
+    (8) EXPRESSION -> . LPAREN EXPRESSION RPAREN
+    (24) LITERAL -> . INTEGER
+    (25) LITERAL -> . STRING
+    (26) LITERAL -> . ORDERED_PAIR
+    (27) LITERAL -> . LIST
+    (20) ASSIGNMENT -> . IDENTIFIER EQUALS EXPRESSION
+    (21) MOD_ASSIGNMENT -> . IDENTIFIER ASSIGN_OPERATOR EXPRESSION
+    (9) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN RPAREN
+    (11) FUNCTION_CALL -> . IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (12) FUNCTION_CALL -> . IDENTIFIER LPAREN RPAREN
+    (13) FUNCTION_CALL -> . IDENTIFIER
+    (14) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER
+    (17) FUNCTION_CALL -> . EXPRESSION BINARY_OPERATOR EXPRESSION
+    (28) ORDERED_PAIR -> . LPAREN INTEGER COMMA INTEGER RPAREN
+    (29) LIST -> . LSQUARE RSQUARE
+    (30) LIST -> . LSQUARE ELEMENTS RSQUARE
 
-    RPAREN          shift and go to state 34
+    LPAREN          shift and go to state 6
+    INTEGER         shift and go to state 7
+    STRING          shift and go to state 13
+    IDENTIFIER      shift and go to state 10
+    LSQUARE         shift and go to state 8
 
+    ORDERED_PAIR                   shift and go to state 4
+    FUNCTION_CALL                  shift and go to state 5
+    LINES                          shift and go to state 44
+    LIST                           shift and go to state 9
+    LINE                           shift and go to state 14
+    ASSIGNMENT                     shift and go to state 2
+    MOD_ASSIGNMENT                 shift and go to state 3
+    EXPRESSION                     shift and go to state 11
+    LITERAL                        shift and go to state 12
 
 state 32
 
-    (9) COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN OPT_WHITESPACE . FORM_LIST OPT_WHITESPACE RPAREN
-    (10) FORM_LIST -> . FORM OPT_WHITESPACE
-    (11) FORM_LIST -> . FORM WHITESPACE FORM_LIST
-    (3) FORM -> . SIMPLE_FORM
-    (4) FORM -> . COMPOUND_FORM
-    (5) SIMPLE_FORM -> . ATOM
-    (6) SIMPLE_FORM -> . NEG OPT_WHITESPACE ATOM
-    (7) SIMPLE_FORM -> . LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-    (8) SIMPLE_FORM -> . NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-    (9) COMPOUND_FORM -> . OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
-    (12) ATOM -> . IDENTIFIER
-    (13) OP -> . AND_OP
-    (14) OP -> . OR_OP
-    (15) AND_OP -> . AND
-    (16) OR_OP -> . OR
+    (28) ORDERED_PAIR -> LPAREN INTEGER COMMA . INTEGER RPAREN
 
-    NEG             shift and go to state 11
-    LPAREN          shift and go to state 14
-    IDENTIFIER      shift and go to state 10
-    AND             shift and go to state 16
-    OR              shift and go to state 20
+    INTEGER         shift and go to state 45
 
-    OR_OP                          shift and go to state 9
-    FORM                           shift and go to state 35
-    AND_OP                         shift and go to state 18
-    ATOM                           shift and go to state 12
-    OP                             shift and go to state 19
-    COMPOUND_FORM                  shift and go to state 13
-    FORM_LIST                      shift and go to state 36
-    SIMPLE_FORM                    shift and go to state 15
 
 state 33
 
-    (8) SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM . OPT_WHITESPACE RPAREN
-    (17) OPT_WHITESPACE -> . WHITESPACE
-    (18) OPT_WHITESPACE -> . empty
-    (19) empty -> .
+    (8) EXPRESSION -> LPAREN EXPRESSION RPAREN .
 
-    WHITESPACE      shift and go to state 4
-    RPAREN          reduce using rule 19 (empty -> .)
+    DOT             reduce using rule 8 (EXPRESSION -> LPAREN EXPRESSION RPAREN .)
+    PLUS            reduce using rule 8 (EXPRESSION -> LPAREN EXPRESSION RPAREN .)
+    MINUS           reduce using rule 8 (EXPRESSION -> LPAREN EXPRESSION RPAREN .)
+    NEWLINE         reduce using rule 8 (EXPRESSION -> LPAREN EXPRESSION RPAREN .)
+    $end            reduce using rule 8 (EXPRESSION -> LPAREN EXPRESSION RPAREN .)
+    RPAREN          reduce using rule 8 (EXPRESSION -> LPAREN EXPRESSION RPAREN .)
+    RSQUARE         reduce using rule 8 (EXPRESSION -> LPAREN EXPRESSION RPAREN .)
+    COMMA           reduce using rule 8 (EXPRESSION -> LPAREN EXPRESSION RPAREN .)
 
-    OPT_WHITESPACE                 shift and go to state 37
-    empty                          shift and go to state 3
 
 state 34
 
-    (7) SIMPLE_FORM -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .
+    (30) LIST -> LSQUARE ELEMENTS RSQUARE .
 
-    WHITESPACE      reduce using rule 7 (SIMPLE_FORM -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .)
-    RPAREN          reduce using rule 7 (SIMPLE_FORM -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .)
+    DOT             reduce using rule 30 (LIST -> LSQUARE ELEMENTS RSQUARE .)
+    PLUS            reduce using rule 30 (LIST -> LSQUARE ELEMENTS RSQUARE .)
+    MINUS           reduce using rule 30 (LIST -> LSQUARE ELEMENTS RSQUARE .)
+    NEWLINE         reduce using rule 30 (LIST -> LSQUARE ELEMENTS RSQUARE .)
+    $end            reduce using rule 30 (LIST -> LSQUARE ELEMENTS RSQUARE .)
+    RPAREN          reduce using rule 30 (LIST -> LSQUARE ELEMENTS RSQUARE .)
+    RSQUARE         reduce using rule 30 (LIST -> LSQUARE ELEMENTS RSQUARE .)
+    COMMA           reduce using rule 30 (LIST -> LSQUARE ELEMENTS RSQUARE .)
 
 
 state 35
 
-    (10) FORM_LIST -> FORM . OPT_WHITESPACE
-    (11) FORM_LIST -> FORM . WHITESPACE FORM_LIST
-    (17) OPT_WHITESPACE -> . WHITESPACE
-    (18) OPT_WHITESPACE -> . empty
-    (19) empty -> .
+    (31) ELEMENTS -> ELEMENTS COMMA . ELEMENT
+    (34) ELEMENT -> . EXPRESSION
+    (4) EXPRESSION -> . LITERAL
+    (5) EXPRESSION -> . ASSIGNMENT
+    (6) EXPRESSION -> . MOD_ASSIGNMENT
+    (7) EXPRESSION -> . FUNCTION_CALL
+    (8) EXPRESSION -> . LPAREN EXPRESSION RPAREN
+    (24) LITERAL -> . INTEGER
+    (25) LITERAL -> . STRING
+    (26) LITERAL -> . ORDERED_PAIR
+    (27) LITERAL -> . LIST
+    (20) ASSIGNMENT -> . IDENTIFIER EQUALS EXPRESSION
+    (21) MOD_ASSIGNMENT -> . IDENTIFIER ASSIGN_OPERATOR EXPRESSION
+    (9) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN RPAREN
+    (11) FUNCTION_CALL -> . IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (12) FUNCTION_CALL -> . IDENTIFIER LPAREN RPAREN
+    (13) FUNCTION_CALL -> . IDENTIFIER
+    (14) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER
+    (17) FUNCTION_CALL -> . EXPRESSION BINARY_OPERATOR EXPRESSION
+    (28) ORDERED_PAIR -> . LPAREN INTEGER COMMA INTEGER RPAREN
+    (29) LIST -> . LSQUARE RSQUARE
+    (30) LIST -> . LSQUARE ELEMENTS RSQUARE
 
-  ! shift/reduce conflict for WHITESPACE resolved as shift
-    WHITESPACE      shift and go to state 39
-    RPAREN          reduce using rule 19 (empty -> .)
+    LPAREN          shift and go to state 6
+    INTEGER         shift and go to state 7
+    STRING          shift and go to state 13
+    IDENTIFIER      shift and go to state 10
+    LSQUARE         shift and go to state 8
 
-  ! WHITESPACE      [ reduce using rule 19 (empty -> .) ]
-
-    OPT_WHITESPACE                 shift and go to state 38
-    empty                          shift and go to state 3
+    ORDERED_PAIR                   shift and go to state 4
+    FUNCTION_CALL                  shift and go to state 5
+    LIST                           shift and go to state 9
+    ASSIGNMENT                     shift and go to state 2
+    MOD_ASSIGNMENT                 shift and go to state 3
+    ELEMENT                        shift and go to state 46
+    EXPRESSION                     shift and go to state 21
+    LITERAL                        shift and go to state 12
 
 state 36
 
-    (9) COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST . OPT_WHITESPACE RPAREN
-    (17) OPT_WHITESPACE -> . WHITESPACE
-    (18) OPT_WHITESPACE -> . empty
-    (19) empty -> .
+    (32) ELEMENTS -> INTEGER DOT . DOT INTEGER
 
-    WHITESPACE      shift and go to state 4
-    RPAREN          reduce using rule 19 (empty -> .)
+    DOT             shift and go to state 47
 
-    empty                          shift and go to state 3
-    OPT_WHITESPACE                 shift and go to state 40
 
 state 37
 
-    (8) SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE . RPAREN
+    (11) FUNCTION_CALL -> IDENTIFIER LPAREN COMMA_ARGS . RPAREN
+    (15) COMMA_ARGS -> COMMA_ARGS . COMMA EXPRESSION
 
-    RPAREN          shift and go to state 41
+    RPAREN          shift and go to state 48
+    COMMA           shift and go to state 49
 
 
 state 38
 
-    (10) FORM_LIST -> FORM OPT_WHITESPACE .
+    (12) FUNCTION_CALL -> IDENTIFIER LPAREN RPAREN .
 
-    WHITESPACE      reduce using rule 10 (FORM_LIST -> FORM OPT_WHITESPACE .)
-    RPAREN          reduce using rule 10 (FORM_LIST -> FORM OPT_WHITESPACE .)
+    DOT             reduce using rule 12 (FUNCTION_CALL -> IDENTIFIER LPAREN RPAREN .)
+    PLUS            reduce using rule 12 (FUNCTION_CALL -> IDENTIFIER LPAREN RPAREN .)
+    MINUS           reduce using rule 12 (FUNCTION_CALL -> IDENTIFIER LPAREN RPAREN .)
+    RSQUARE         reduce using rule 12 (FUNCTION_CALL -> IDENTIFIER LPAREN RPAREN .)
+    COMMA           reduce using rule 12 (FUNCTION_CALL -> IDENTIFIER LPAREN RPAREN .)
+    RPAREN          reduce using rule 12 (FUNCTION_CALL -> IDENTIFIER LPAREN RPAREN .)
+    NEWLINE         reduce using rule 12 (FUNCTION_CALL -> IDENTIFIER LPAREN RPAREN .)
+    $end            reduce using rule 12 (FUNCTION_CALL -> IDENTIFIER LPAREN RPAREN .)
 
 
 state 39
 
-    (11) FORM_LIST -> FORM WHITESPACE . FORM_LIST
-    (17) OPT_WHITESPACE -> WHITESPACE .
-    (10) FORM_LIST -> . FORM OPT_WHITESPACE
-    (11) FORM_LIST -> . FORM WHITESPACE FORM_LIST
-    (3) FORM -> . SIMPLE_FORM
-    (4) FORM -> . COMPOUND_FORM
-    (5) SIMPLE_FORM -> . ATOM
-    (6) SIMPLE_FORM -> . NEG OPT_WHITESPACE ATOM
-    (7) SIMPLE_FORM -> . LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-    (8) SIMPLE_FORM -> . NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-    (9) COMPOUND_FORM -> . OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN
-    (12) ATOM -> . IDENTIFIER
-    (13) OP -> . AND_OP
-    (14) OP -> . OR_OP
-    (15) AND_OP -> . AND
-    (16) OR_OP -> . OR
+    (16) COMMA_ARGS -> EXPRESSION .
+    (9) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER LPAREN RPAREN
+    (14) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER
+    (17) FUNCTION_CALL -> EXPRESSION . BINARY_OPERATOR EXPRESSION
+    (18) BINARY_OPERATOR -> . PLUS
+    (19) BINARY_OPERATOR -> . MINUS
 
-    WHITESPACE      reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
-    RPAREN          reduce using rule 17 (OPT_WHITESPACE -> WHITESPACE .)
-    NEG             shift and go to state 11
-    LPAREN          shift and go to state 14
-    IDENTIFIER      shift and go to state 10
-    AND             shift and go to state 16
-    OR              shift and go to state 20
+    RPAREN          reduce using rule 16 (COMMA_ARGS -> EXPRESSION .)
+    COMMA           reduce using rule 16 (COMMA_ARGS -> EXPRESSION .)
+    DOT             shift and go to state 27
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 29
 
-    OR_OP                          shift and go to state 9
-    FORM                           shift and go to state 35
-    AND_OP                         shift and go to state 18
-    ATOM                           shift and go to state 12
-    OP                             shift and go to state 19
-    COMPOUND_FORM                  shift and go to state 13
-    SIMPLE_FORM                    shift and go to state 15
-    FORM_LIST                      shift and go to state 42
+    BINARY_OPERATOR                shift and go to state 28
 
 state 40
 
-    (9) COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE . RPAREN
+    (20) ASSIGNMENT -> IDENTIFIER EQUALS EXPRESSION .
+    (9) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER LPAREN RPAREN
+    (14) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER
+    (17) FUNCTION_CALL -> EXPRESSION . BINARY_OPERATOR EXPRESSION
+    (18) BINARY_OPERATOR -> . PLUS
+    (19) BINARY_OPERATOR -> . MINUS
 
-    RPAREN          shift and go to state 43
+  ! shift/reduce conflict for DOT resolved as shift
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+    NEWLINE         reduce using rule 20 (ASSIGNMENT -> IDENTIFIER EQUALS EXPRESSION .)
+    $end            reduce using rule 20 (ASSIGNMENT -> IDENTIFIER EQUALS EXPRESSION .)
+    RPAREN          reduce using rule 20 (ASSIGNMENT -> IDENTIFIER EQUALS EXPRESSION .)
+    RSQUARE         reduce using rule 20 (ASSIGNMENT -> IDENTIFIER EQUALS EXPRESSION .)
+    COMMA           reduce using rule 20 (ASSIGNMENT -> IDENTIFIER EQUALS EXPRESSION .)
+    DOT             shift and go to state 27
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 29
 
+  ! DOT             [ reduce using rule 20 (ASSIGNMENT -> IDENTIFIER EQUALS EXPRESSION .) ]
+  ! PLUS            [ reduce using rule 20 (ASSIGNMENT -> IDENTIFIER EQUALS EXPRESSION .) ]
+  ! MINUS           [ reduce using rule 20 (ASSIGNMENT -> IDENTIFIER EQUALS EXPRESSION .) ]
+
+    BINARY_OPERATOR                shift and go to state 28
 
 state 41
 
-    (8) SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .
+    (21) MOD_ASSIGNMENT -> IDENTIFIER ASSIGN_OPERATOR EXPRESSION .
+    (9) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER LPAREN RPAREN
+    (14) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER
+    (17) FUNCTION_CALL -> EXPRESSION . BINARY_OPERATOR EXPRESSION
+    (18) BINARY_OPERATOR -> . PLUS
+    (19) BINARY_OPERATOR -> . MINUS
 
-    WHITESPACE      reduce using rule 8 (SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .)
-    RPAREN          reduce using rule 8 (SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN .)
+  ! shift/reduce conflict for DOT resolved as shift
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+    RSQUARE         reduce using rule 21 (MOD_ASSIGNMENT -> IDENTIFIER ASSIGN_OPERATOR EXPRESSION .)
+    COMMA           reduce using rule 21 (MOD_ASSIGNMENT -> IDENTIFIER ASSIGN_OPERATOR EXPRESSION .)
+    NEWLINE         reduce using rule 21 (MOD_ASSIGNMENT -> IDENTIFIER ASSIGN_OPERATOR EXPRESSION .)
+    $end            reduce using rule 21 (MOD_ASSIGNMENT -> IDENTIFIER ASSIGN_OPERATOR EXPRESSION .)
+    RPAREN          reduce using rule 21 (MOD_ASSIGNMENT -> IDENTIFIER ASSIGN_OPERATOR EXPRESSION .)
+    DOT             shift and go to state 27
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 29
 
+  ! DOT             [ reduce using rule 21 (MOD_ASSIGNMENT -> IDENTIFIER ASSIGN_OPERATOR EXPRESSION .) ]
+  ! PLUS            [ reduce using rule 21 (MOD_ASSIGNMENT -> IDENTIFIER ASSIGN_OPERATOR EXPRESSION .) ]
+  ! MINUS           [ reduce using rule 21 (MOD_ASSIGNMENT -> IDENTIFIER ASSIGN_OPERATOR EXPRESSION .) ]
+
+    BINARY_OPERATOR                shift and go to state 28
 
 state 42
 
-    (11) FORM_LIST -> FORM WHITESPACE FORM_LIST .
+    (9) FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER . LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER . LPAREN RPAREN
+    (14) FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER .
 
-    WHITESPACE      reduce using rule 11 (FORM_LIST -> FORM WHITESPACE FORM_LIST .)
-    RPAREN          reduce using rule 11 (FORM_LIST -> FORM WHITESPACE FORM_LIST .)
+    LPAREN          shift and go to state 50
+    DOT             reduce using rule 14 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER .)
+    PLUS            reduce using rule 14 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER .)
+    MINUS           reduce using rule 14 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER .)
+    RSQUARE         reduce using rule 14 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER .)
+    COMMA           reduce using rule 14 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER .)
+    RPAREN          reduce using rule 14 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER .)
+    NEWLINE         reduce using rule 14 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER .)
+    $end            reduce using rule 14 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER .)
 
 
 state 43
 
-    (9) COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN .
+    (17) FUNCTION_CALL -> EXPRESSION BINARY_OPERATOR EXPRESSION .
+    (9) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER LPAREN RPAREN
+    (14) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER
+    (17) FUNCTION_CALL -> EXPRESSION . BINARY_OPERATOR EXPRESSION
+    (18) BINARY_OPERATOR -> . PLUS
+    (19) BINARY_OPERATOR -> . MINUS
 
-    WHITESPACE      reduce using rule 9 (COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN .)
-    RPAREN          reduce using rule 9 (COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN .)
+  ! shift/reduce conflict for DOT resolved as shift
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+    RSQUARE         reduce using rule 17 (FUNCTION_CALL -> EXPRESSION BINARY_OPERATOR EXPRESSION .)
+    COMMA           reduce using rule 17 (FUNCTION_CALL -> EXPRESSION BINARY_OPERATOR EXPRESSION .)
+    RPAREN          reduce using rule 17 (FUNCTION_CALL -> EXPRESSION BINARY_OPERATOR EXPRESSION .)
+    NEWLINE         reduce using rule 17 (FUNCTION_CALL -> EXPRESSION BINARY_OPERATOR EXPRESSION .)
+    $end            reduce using rule 17 (FUNCTION_CALL -> EXPRESSION BINARY_OPERATOR EXPRESSION .)
+    DOT             shift and go to state 27
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 29
+
+  ! DOT             [ reduce using rule 17 (FUNCTION_CALL -> EXPRESSION BINARY_OPERATOR EXPRESSION .) ]
+  ! PLUS            [ reduce using rule 17 (FUNCTION_CALL -> EXPRESSION BINARY_OPERATOR EXPRESSION .) ]
+  ! MINUS           [ reduce using rule 17 (FUNCTION_CALL -> EXPRESSION BINARY_OPERATOR EXPRESSION .) ]
+
+    BINARY_OPERATOR                shift and go to state 28
+
+state 44
+
+    (2) LINES -> LINE NEWLINE LINES .
+
+    $end            reduce using rule 2 (LINES -> LINE NEWLINE LINES .)
+
+
+state 45
+
+    (28) ORDERED_PAIR -> LPAREN INTEGER COMMA INTEGER . RPAREN
+
+    RPAREN          shift and go to state 51
+
+
+state 46
+
+    (31) ELEMENTS -> ELEMENTS COMMA ELEMENT .
+
+    RSQUARE         reduce using rule 31 (ELEMENTS -> ELEMENTS COMMA ELEMENT .)
+    COMMA           reduce using rule 31 (ELEMENTS -> ELEMENTS COMMA ELEMENT .)
+
+
+state 47
+
+    (32) ELEMENTS -> INTEGER DOT DOT . INTEGER
+
+    INTEGER         shift and go to state 52
+
+
+state 48
+
+    (11) FUNCTION_CALL -> IDENTIFIER LPAREN COMMA_ARGS RPAREN .
+
+    DOT             reduce using rule 11 (FUNCTION_CALL -> IDENTIFIER LPAREN COMMA_ARGS RPAREN .)
+    PLUS            reduce using rule 11 (FUNCTION_CALL -> IDENTIFIER LPAREN COMMA_ARGS RPAREN .)
+    MINUS           reduce using rule 11 (FUNCTION_CALL -> IDENTIFIER LPAREN COMMA_ARGS RPAREN .)
+    RSQUARE         reduce using rule 11 (FUNCTION_CALL -> IDENTIFIER LPAREN COMMA_ARGS RPAREN .)
+    COMMA           reduce using rule 11 (FUNCTION_CALL -> IDENTIFIER LPAREN COMMA_ARGS RPAREN .)
+    RPAREN          reduce using rule 11 (FUNCTION_CALL -> IDENTIFIER LPAREN COMMA_ARGS RPAREN .)
+    NEWLINE         reduce using rule 11 (FUNCTION_CALL -> IDENTIFIER LPAREN COMMA_ARGS RPAREN .)
+    $end            reduce using rule 11 (FUNCTION_CALL -> IDENTIFIER LPAREN COMMA_ARGS RPAREN .)
+
+
+state 49
+
+    (15) COMMA_ARGS -> COMMA_ARGS COMMA . EXPRESSION
+    (4) EXPRESSION -> . LITERAL
+    (5) EXPRESSION -> . ASSIGNMENT
+    (6) EXPRESSION -> . MOD_ASSIGNMENT
+    (7) EXPRESSION -> . FUNCTION_CALL
+    (8) EXPRESSION -> . LPAREN EXPRESSION RPAREN
+    (24) LITERAL -> . INTEGER
+    (25) LITERAL -> . STRING
+    (26) LITERAL -> . ORDERED_PAIR
+    (27) LITERAL -> . LIST
+    (20) ASSIGNMENT -> . IDENTIFIER EQUALS EXPRESSION
+    (21) MOD_ASSIGNMENT -> . IDENTIFIER ASSIGN_OPERATOR EXPRESSION
+    (9) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN RPAREN
+    (11) FUNCTION_CALL -> . IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (12) FUNCTION_CALL -> . IDENTIFIER LPAREN RPAREN
+    (13) FUNCTION_CALL -> . IDENTIFIER
+    (14) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER
+    (17) FUNCTION_CALL -> . EXPRESSION BINARY_OPERATOR EXPRESSION
+    (28) ORDERED_PAIR -> . LPAREN INTEGER COMMA INTEGER RPAREN
+    (29) LIST -> . LSQUARE RSQUARE
+    (30) LIST -> . LSQUARE ELEMENTS RSQUARE
+
+    LPAREN          shift and go to state 6
+    INTEGER         shift and go to state 7
+    STRING          shift and go to state 13
+    IDENTIFIER      shift and go to state 10
+    LSQUARE         shift and go to state 8
+
+    ORDERED_PAIR                   shift and go to state 4
+    FUNCTION_CALL                  shift and go to state 5
+    ASSIGNMENT                     shift and go to state 2
+    MOD_ASSIGNMENT                 shift and go to state 3
+    EXPRESSION                     shift and go to state 53
+    LITERAL                        shift and go to state 12
+    LIST                           shift and go to state 9
+
+state 50
+
+    (9) FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN . COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN . RPAREN
+    (15) COMMA_ARGS -> . COMMA_ARGS COMMA EXPRESSION
+    (16) COMMA_ARGS -> . EXPRESSION
+    (4) EXPRESSION -> . LITERAL
+    (5) EXPRESSION -> . ASSIGNMENT
+    (6) EXPRESSION -> . MOD_ASSIGNMENT
+    (7) EXPRESSION -> . FUNCTION_CALL
+    (8) EXPRESSION -> . LPAREN EXPRESSION RPAREN
+    (24) LITERAL -> . INTEGER
+    (25) LITERAL -> . STRING
+    (26) LITERAL -> . ORDERED_PAIR
+    (27) LITERAL -> . LIST
+    (20) ASSIGNMENT -> . IDENTIFIER EQUALS EXPRESSION
+    (21) MOD_ASSIGNMENT -> . IDENTIFIER ASSIGN_OPERATOR EXPRESSION
+    (9) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER LPAREN RPAREN
+    (11) FUNCTION_CALL -> . IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (12) FUNCTION_CALL -> . IDENTIFIER LPAREN RPAREN
+    (13) FUNCTION_CALL -> . IDENTIFIER
+    (14) FUNCTION_CALL -> . EXPRESSION DOT IDENTIFIER
+    (17) FUNCTION_CALL -> . EXPRESSION BINARY_OPERATOR EXPRESSION
+    (28) ORDERED_PAIR -> . LPAREN INTEGER COMMA INTEGER RPAREN
+    (29) LIST -> . LSQUARE RSQUARE
+    (30) LIST -> . LSQUARE ELEMENTS RSQUARE
+
+    RPAREN          shift and go to state 55
+    LPAREN          shift and go to state 6
+    INTEGER         shift and go to state 7
+    STRING          shift and go to state 13
+    IDENTIFIER      shift and go to state 10
+    LSQUARE         shift and go to state 8
+
+    ORDERED_PAIR                   shift and go to state 4
+    COMMA_ARGS                     shift and go to state 54
+    FUNCTION_CALL                  shift and go to state 5
+    ASSIGNMENT                     shift and go to state 2
+    MOD_ASSIGNMENT                 shift and go to state 3
+    EXPRESSION                     shift and go to state 39
+    LITERAL                        shift and go to state 12
+    LIST                           shift and go to state 9
+
+state 51
+
+    (28) ORDERED_PAIR -> LPAREN INTEGER COMMA INTEGER RPAREN .
+
+    DOT             reduce using rule 28 (ORDERED_PAIR -> LPAREN INTEGER COMMA INTEGER RPAREN .)
+    PLUS            reduce using rule 28 (ORDERED_PAIR -> LPAREN INTEGER COMMA INTEGER RPAREN .)
+    MINUS           reduce using rule 28 (ORDERED_PAIR -> LPAREN INTEGER COMMA INTEGER RPAREN .)
+    RSQUARE         reduce using rule 28 (ORDERED_PAIR -> LPAREN INTEGER COMMA INTEGER RPAREN .)
+    COMMA           reduce using rule 28 (ORDERED_PAIR -> LPAREN INTEGER COMMA INTEGER RPAREN .)
+    NEWLINE         reduce using rule 28 (ORDERED_PAIR -> LPAREN INTEGER COMMA INTEGER RPAREN .)
+    $end            reduce using rule 28 (ORDERED_PAIR -> LPAREN INTEGER COMMA INTEGER RPAREN .)
+    RPAREN          reduce using rule 28 (ORDERED_PAIR -> LPAREN INTEGER COMMA INTEGER RPAREN .)
+
+
+state 52
+
+    (32) ELEMENTS -> INTEGER DOT DOT INTEGER .
+
+    RSQUARE         reduce using rule 32 (ELEMENTS -> INTEGER DOT DOT INTEGER .)
+    COMMA           reduce using rule 32 (ELEMENTS -> INTEGER DOT DOT INTEGER .)
+
+
+state 53
+
+    (15) COMMA_ARGS -> COMMA_ARGS COMMA EXPRESSION .
+    (9) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
+    (10) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER LPAREN RPAREN
+    (14) FUNCTION_CALL -> EXPRESSION . DOT IDENTIFIER
+    (17) FUNCTION_CALL -> EXPRESSION . BINARY_OPERATOR EXPRESSION
+    (18) BINARY_OPERATOR -> . PLUS
+    (19) BINARY_OPERATOR -> . MINUS
+
+    RPAREN          reduce using rule 15 (COMMA_ARGS -> COMMA_ARGS COMMA EXPRESSION .)
+    COMMA           reduce using rule 15 (COMMA_ARGS -> COMMA_ARGS COMMA EXPRESSION .)
+    DOT             shift and go to state 27
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 29
+
+    BINARY_OPERATOR                shift and go to state 28
+
+state 54
+
+    (9) FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS . RPAREN
+    (15) COMMA_ARGS -> COMMA_ARGS . COMMA EXPRESSION
+
+    RPAREN          shift and go to state 56
+    COMMA           shift and go to state 49
+
+
+state 55
+
+    (10) FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN RPAREN .
+
+    DOT             reduce using rule 10 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN RPAREN .)
+    PLUS            reduce using rule 10 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN RPAREN .)
+    MINUS           reduce using rule 10 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN RPAREN .)
+    RSQUARE         reduce using rule 10 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN RPAREN .)
+    COMMA           reduce using rule 10 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN RPAREN .)
+    RPAREN          reduce using rule 10 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN RPAREN .)
+    NEWLINE         reduce using rule 10 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN RPAREN .)
+    $end            reduce using rule 10 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN RPAREN .)
+
+
+state 56
+
+    (9) FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN .
+
+    DOT             reduce using rule 9 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN .)
+    PLUS            reduce using rule 9 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN .)
+    MINUS           reduce using rule 9 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN .)
+    RSQUARE         reduce using rule 9 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN .)
+    COMMA           reduce using rule 9 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN .)
+    RPAREN          reduce using rule 9 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN .)
+    NEWLINE         reduce using rule 9 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN .)
+    $end            reduce using rule 9 (FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN .)
 
 WARNING: 
 WARNING: Conflicts:
 WARNING: 
-WARNING: shift/reduce conflict for WHITESPACE in state 35 resolved as shift
+WARNING: shift/reduce conflict for DOT in state 19 resolved as shift
+WARNING: shift/reduce conflict for DOT in state 40 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 40 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 40 resolved as shift
+WARNING: shift/reduce conflict for DOT in state 41 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 41 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 41 resolved as shift
+WARNING: shift/reduce conflict for DOT in state 43 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 43 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 43 resolved as shift

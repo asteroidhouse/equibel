@@ -5,9 +5,9 @@ _tabversion = '3.2'
 
 _lr_method = 'LALR'
 
-_lr_signature = b'~\xb3f\x93v\xfb?\xf8\x1c\x1a\x86\xb2\xf2\xb6\x92i'
+_lr_signature = b'\xab\x83\x1e,\xceOB\xcd\xa4=\x9d$\xfb\xa6\x16\xad'
     
-_lr_action_items = {'NEG':([3,4,6,8,14,22,26,29,30,32,39,],[-18,-17,-19,11,-19,11,-19,-19,11,11,11,]),'$end':([2,3,4,5,7,28,],[0,-18,-17,-19,-1,-2,]),'IDENTIFIER':([3,4,6,8,11,14,21,22,26,29,30,32,39,],[-18,-17,-19,10,-19,-19,10,10,-19,-19,10,10,10,]),'OR':([3,4,6,8,14,22,26,29,30,32,39,],[-18,-17,-19,20,-19,20,-19,-19,20,20,20,]),'RPAREN':([3,4,10,12,13,15,17,23,25,27,31,33,34,35,36,37,38,39,40,41,42,43,],[-18,-17,-12,-5,-4,-3,-19,28,-6,-19,34,-19,-7,-19,-19,41,-10,-17,43,-8,-11,-9,]),'LPAREN':([0,1,3,4,6,8,9,11,14,16,18,19,20,21,22,24,26,29,30,32,39,],[-19,6,-18,-17,-19,14,-14,-19,-19,-15,-13,-19,-16,26,14,29,-19,-19,14,14,14,]),'AND':([3,4,6,8,14,22,26,29,30,32,39,],[-18,-17,-19,16,-19,16,-19,-19,16,16,16,]),'WHITESPACE':([0,3,5,6,9,10,11,12,13,14,15,16,17,18,19,20,25,26,27,28,29,33,34,35,36,38,39,41,42,43,],[4,-18,4,4,-14,-12,4,-5,-4,4,-3,-15,4,-13,4,-16,-6,4,4,-2,4,4,-7,39,4,-10,-17,-8,-11,-9,]),}
+_lr_action_items = {'RPAREN':([2,3,4,5,7,9,10,12,13,15,16,18,22,33,34,37,38,39,40,41,42,43,45,48,50,51,53,54,55,56,],[-5,-6,-26,-7,-24,-27,-13,-4,-25,-24,33,-29,38,-8,-30,48,-12,-16,-20,-21,-14,-17,51,-11,55,-28,-15,56,-10,-9,]),'LPAREN':([0,6,8,10,22,23,24,25,26,28,29,30,31,35,42,49,50,],[6,6,6,22,6,-22,6,-23,6,6,-19,-18,6,6,50,6,6,]),'MINUS':([2,3,4,5,7,9,10,11,12,13,15,16,18,19,21,33,34,38,39,40,41,42,43,48,51,53,55,56,],[-5,-6,-26,-7,-24,-27,-13,29,-4,-25,-24,29,-29,-24,29,-8,-30,-12,29,29,29,-14,29,-11,-28,29,-10,-9,]),'PLUS_EQUALS':([10,],[23,]),'$end':([1,2,3,4,5,7,9,10,11,12,13,14,18,33,34,38,40,41,42,43,44,48,51,55,56,],[0,-5,-6,-26,-7,-24,-27,-13,-3,-4,-25,-1,-29,-8,-30,-12,-20,-21,-14,-17,-2,-11,-28,-10,-9,]),'PLUS':([2,3,4,5,7,9,10,11,12,13,15,16,18,19,21,33,34,38,39,40,41,42,43,48,51,53,55,56,],[-5,-6,-26,-7,-24,-27,-13,30,-4,-25,-24,30,-29,-24,30,-8,-30,-12,30,30,30,-14,30,-11,-28,30,-10,-9,]),'NEWLINE':([2,3,4,5,7,9,10,11,12,13,14,18,33,34,38,40,41,42,43,48,51,55,56,],[-5,-6,-26,-7,-24,-27,-13,-3,-4,-25,31,-29,-8,-30,-12,-20,-21,-14,-17,-11,-28,-10,-9,]),'LSQUARE':([0,6,8,22,23,24,25,26,28,29,30,31,35,49,50,],[8,8,8,8,-22,8,-23,8,8,-19,-18,8,8,8,8,]),'RSQUARE':([2,3,4,5,7,8,9,10,12,13,17,18,19,20,21,33,34,38,40,41,42,43,46,48,51,52,55,56,],[-5,-6,-26,-7,-24,18,-27,-13,-4,-25,34,-29,-24,-33,-34,-8,-30,-12,-20,-21,-14,-17,-31,-11,-28,-32,-10,-9,]),'INTEGER':([0,6,8,22,23,24,25,26,28,29,30,31,32,35,47,49,50,],[7,15,19,7,-22,7,-23,7,7,-19,-18,7,45,7,52,7,7,]),'DOT':([2,3,4,5,7,9,10,11,12,13,15,16,18,19,21,33,34,36,38,39,40,41,42,43,48,51,53,55,56,],[-5,-6,-26,-7,-24,-27,-13,27,-4,-25,-24,27,-29,36,27,-8,-30,47,-12,27,27,27,-14,27,-11,-28,27,-10,-9,]),'STRING':([0,6,8,22,23,24,25,26,28,29,30,31,35,49,50,],[13,13,13,13,-22,13,-23,13,13,-19,-18,13,13,13,13,]),'COMMA':([2,3,4,5,7,9,10,12,13,15,17,18,19,20,21,33,34,37,38,39,40,41,42,43,46,48,51,52,53,54,55,56,],[-5,-6,-26,-7,-24,-27,-13,-4,-25,32,35,-29,-24,-33,-34,-8,-30,49,-12,-16,-20,-21,-14,-17,-31,-11,-28,-32,-15,49,-10,-9,]),'IDENTIFIER':([0,6,8,22,23,24,25,26,27,28,29,30,31,35,49,50,],[10,10,10,10,-22,10,-23,10,42,10,-19,-18,10,10,10,10,]),'EQUALS':([10,],[24,]),'MINUS_EQUALS':([10,],[25,]),}
 
 _lr_action = { }
 for _k, _v in _lr_action_items.items():
@@ -16,7 +16,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'OR_OP':([8,22,30,32,39,],[9,9,9,9,9,]),'FORMULA_LINE':([0,],[2,]),'ATOM':([8,21,22,30,32,39,],[12,25,12,12,12,12,]),'COMPOUND_FORM':([8,22,30,32,39,],[13,13,13,13,13,]),'empty':([0,5,6,11,14,17,19,26,27,29,33,35,36,],[3,3,3,3,3,3,3,3,3,3,3,3,3,]),'SIMPLE_FORM':([8,22,30,32,39,],[15,15,15,15,15,]),'OPT_WHITESPACE':([0,5,6,11,14,17,19,26,27,29,33,35,36,],[1,7,8,21,22,23,24,30,31,32,37,38,40,]),'FORMULA':([1,],[5,]),'FORM':([8,22,30,32,39,],[17,27,33,35,35,]),'AND_OP':([8,22,30,32,39,],[18,18,18,18,18,]),'OP':([8,22,30,32,39,],[19,19,19,19,19,]),'FORM_LIST':([32,39,],[36,42,]),}
+_lr_goto_items = {'ORDERED_PAIR':([0,6,8,22,24,26,28,31,35,49,50,],[4,4,4,4,4,4,4,4,4,4,4,]),'COMMA_ARGS':([22,50,],[37,54,]),'BINARY_OPERATOR':([11,16,21,39,40,41,43,53,],[28,28,28,28,28,28,28,28,]),'FUNCTION_CALL':([0,6,8,22,24,26,28,31,35,49,50,],[5,5,5,5,5,5,5,5,5,5,5,]),'LINES':([0,31,],[1,44,]),'ELEMENTS':([8,],[17,]),'LIST':([0,6,8,22,24,26,28,31,35,49,50,],[9,9,9,9,9,9,9,9,9,9,9,]),'LINE':([0,31,],[14,14,]),'ASSIGNMENT':([0,6,8,22,24,26,28,31,35,49,50,],[2,2,2,2,2,2,2,2,2,2,2,]),'MOD_ASSIGNMENT':([0,6,8,22,24,26,28,31,35,49,50,],[3,3,3,3,3,3,3,3,3,3,3,]),'ELEMENT':([8,35,],[20,46,]),'EXPRESSION':([0,6,8,22,24,26,28,31,35,49,50,],[11,16,21,39,40,41,43,11,21,53,39,]),'LITERAL':([0,6,8,22,24,26,28,31,35,49,50,],[12,12,12,12,12,12,12,12,12,12,12,]),'ASSIGN_OPERATOR':([10,],[26,]),}
 
 _lr_goto = { }
 for _k, _v in _lr_goto_items.items():
@@ -25,24 +25,39 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> FORMULA_LINE","S'",1,None,None,None),
-  ('FORMULA_LINE -> OPT_WHITESPACE FORMULA OPT_WHITESPACE','FORMULA_LINE',3,'p_FORMULA_LINE','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',36),
-  ('FORMULA -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN','FORMULA',5,'p_FORMULA','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',40),
-  ('FORM -> SIMPLE_FORM','FORM',1,'p_FORM','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',45),
-  ('FORM -> COMPOUND_FORM','FORM',1,'p_FORM','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',46),
-  ('SIMPLE_FORM -> ATOM','SIMPLE_FORM',1,'p_SIMPLE_FORM','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',51),
-  ('SIMPLE_FORM -> NEG OPT_WHITESPACE ATOM','SIMPLE_FORM',3,'p_SIMPLE_FORM','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',52),
-  ('SIMPLE_FORM -> LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN','SIMPLE_FORM',5,'p_SIMPLE_FORM','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',53),
-  ('SIMPLE_FORM -> NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN','SIMPLE_FORM',7,'p_SIMPLE_FORM','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',54),
-  ('COMPOUND_FORM -> OP OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM_LIST OPT_WHITESPACE RPAREN','COMPOUND_FORM',7,'p_COMPOUND_FORM','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',66),
-  ('FORM_LIST -> FORM OPT_WHITESPACE','FORM_LIST',2,'p_FORM_LIST','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',70),
-  ('FORM_LIST -> FORM WHITESPACE FORM_LIST','FORM_LIST',3,'p_FORM_LIST','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',71),
-  ('ATOM -> IDENTIFIER','ATOM',1,'p_ATOM','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',76),
-  ('OP -> AND_OP','OP',1,'p_OP','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',81),
-  ('OP -> OR_OP','OP',1,'p_OP','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',82),
-  ('AND_OP -> AND','AND_OP',1,'p_AND_OP','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',90),
-  ('OR_OP -> OR','OR_OP',1,'p_OR_OP','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',97),
-  ('OPT_WHITESPACE -> WHITESPACE','OPT_WHITESPACE',1,'p_OPT_WHITESPACE','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',101),
-  ('OPT_WHITESPACE -> empty','OPT_WHITESPACE',1,'p_OPT_WHITESPACE','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',102),
-  ('empty -> <empty>','empty',0,'p_empty','/Users/paulvicol/Learn/Python/ParserTests/SimpleWorking/FormulaParserSim.py',106),
+  ("S' -> LINES","S'",1,None,None,None),
+  ('LINES -> LINE','LINES',1,'p_LINES','Simplified_Parser4.py',61),
+  ('LINES -> LINE NEWLINE LINES','LINES',3,'p_LINES','Simplified_Parser4.py',62),
+  ('LINE -> EXPRESSION','LINE',1,'p_LINE','Simplified_Parser4.py',73),
+  ('EXPRESSION -> LITERAL','EXPRESSION',1,'p_EXPRESSION','Simplified_Parser4.py',79),
+  ('EXPRESSION -> ASSIGNMENT','EXPRESSION',1,'p_EXPRESSION','Simplified_Parser4.py',80),
+  ('EXPRESSION -> MOD_ASSIGNMENT','EXPRESSION',1,'p_EXPRESSION','Simplified_Parser4.py',81),
+  ('EXPRESSION -> FUNCTION_CALL','EXPRESSION',1,'p_EXPRESSION','Simplified_Parser4.py',82),
+  ('EXPRESSION -> LPAREN EXPRESSION RPAREN','EXPRESSION',3,'p_parenthesized_expression','Simplified_Parser4.py',88),
+  ('FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN','FUNCTION_CALL',6,'p_FUNCTION_CALL','Simplified_Parser4.py',101),
+  ('FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER LPAREN RPAREN','FUNCTION_CALL',5,'p_FUNCTION_CALL','Simplified_Parser4.py',102),
+  ('FUNCTION_CALL -> IDENTIFIER LPAREN COMMA_ARGS RPAREN','FUNCTION_CALL',4,'p_FUNCTION_CALL','Simplified_Parser4.py',103),
+  ('FUNCTION_CALL -> IDENTIFIER LPAREN RPAREN','FUNCTION_CALL',3,'p_FUNCTION_CALL','Simplified_Parser4.py',104),
+  ('FUNCTION_CALL -> IDENTIFIER','FUNCTION_CALL',1,'p_FUNCTION_CALL','Simplified_Parser4.py',105),
+  ('FUNCTION_CALL -> EXPRESSION DOT IDENTIFIER','FUNCTION_CALL',3,'p_member_access','Simplified_Parser4.py',120),
+  ('COMMA_ARGS -> COMMA_ARGS COMMA EXPRESSION','COMMA_ARGS',3,'p_COMMA_ARGS','Simplified_Parser4.py',124),
+  ('COMMA_ARGS -> EXPRESSION','COMMA_ARGS',1,'p_COMMA_ARGS','Simplified_Parser4.py',125),
+  ('FUNCTION_CALL -> EXPRESSION BINARY_OPERATOR EXPRESSION','FUNCTION_CALL',3,'p_operator_call','Simplified_Parser4.py',133),
+  ('BINARY_OPERATOR -> PLUS','BINARY_OPERATOR',1,'p_BINARY_OPERATOR','Simplified_Parser4.py',139),
+  ('BINARY_OPERATOR -> MINUS','BINARY_OPERATOR',1,'p_BINARY_OPERATOR','Simplified_Parser4.py',140),
+  ('ASSIGNMENT -> IDENTIFIER EQUALS EXPRESSION','ASSIGNMENT',3,'p_ASSIGNMENT','Simplified_Parser4.py',147),
+  ('MOD_ASSIGNMENT -> IDENTIFIER ASSIGN_OPERATOR EXPRESSION','MOD_ASSIGNMENT',3,'p_MOD_ASSIGNMENT','Simplified_Parser4.py',153),
+  ('ASSIGN_OPERATOR -> PLUS_EQUALS','ASSIGN_OPERATOR',1,'p_ASSIGN_OPERATOR','Simplified_Parser4.py',157),
+  ('ASSIGN_OPERATOR -> MINUS_EQUALS','ASSIGN_OPERATOR',1,'p_ASSIGN_OPERATOR','Simplified_Parser4.py',158),
+  ('LITERAL -> INTEGER','LITERAL',1,'p_LITERAL','Simplified_Parser4.py',162),
+  ('LITERAL -> STRING','LITERAL',1,'p_LITERAL','Simplified_Parser4.py',163),
+  ('LITERAL -> ORDERED_PAIR','LITERAL',1,'p_LITERAL','Simplified_Parser4.py',164),
+  ('LITERAL -> LIST','LITERAL',1,'p_LITERAL','Simplified_Parser4.py',165),
+  ('ORDERED_PAIR -> LPAREN INTEGER COMMA INTEGER RPAREN','ORDERED_PAIR',5,'p_ORDERED_PAIR','Simplified_Parser4.py',171),
+  ('LIST -> LSQUARE RSQUARE','LIST',2,'p_LIST','Simplified_Parser4.py',177),
+  ('LIST -> LSQUARE ELEMENTS RSQUARE','LIST',3,'p_LIST','Simplified_Parser4.py',178),
+  ('ELEMENTS -> ELEMENTS COMMA ELEMENT','ELEMENTS',3,'p_ELEMENTS','Simplified_Parser4.py',194),
+  ('ELEMENTS -> INTEGER DOT DOT INTEGER','ELEMENTS',4,'p_ELEMENTS','Simplified_Parser4.py',195),
+  ('ELEMENTS -> ELEMENT','ELEMENTS',1,'p_ELEMENTS','Simplified_Parser4.py',196),
+  ('ELEMENT -> EXPRESSION','ELEMENT',1,'p_ELEMENT','Simplified_Parser4.py',209),
 ]

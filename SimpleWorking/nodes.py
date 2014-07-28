@@ -33,12 +33,33 @@ class LiteralNode:
           elif isinstance(self.value, tuple):
                return Runtime["OrderedPair"].new_value(self.value)
           elif isinstance(self.value, list):
-               return Runtime["List"].new_value(list(set(self.value)))
+               return Runtime["Set"].new_value(set(item.evaluate(context).python_value for item in self.value))
+          elif isinstance(self.value, RangeNode):
+               return Runtime["Set"].new_value(set(self.value.evaluate(context)))
           else:
                raise ValueError("Unknown literal type: " + str(type(a)))
 
      def __str__(self):
-          return str(self.value)
+          if isinstance(self.value, list):
+               s = ""
+               for item in self.value:
+                    s += str(item.value)
+               return s
+          else:
+               return str(self.value)
+
+class RangeNode:
+     def __init__(self, start, end):
+          self.start = start
+          self.end = end
+
+     def evaluate(self, context):
+          try:
+               start_int = int(self.start)
+               end_int = int(self.end)
+               return list(range(start_int, end_int + 1))
+          except Exception as err:
+               raise ValueError("Cannot construct non-numeric range: {0}..{1}".format(self.start, self.end))
 
 class CallNode:
      def __init__(self, receiver, method, arguments=[]):
@@ -59,28 +80,9 @@ class CallNode:
                return receiver.call(self.method, arguments)
 
      def __str__(self):
-          print(self.receiver, type(self.receiver), list(type(arg) for arg in self.arguments))
           return "{0}.{1}({2})".format(self.receiver, self.method, list(str(arg) for arg in self.arguments))
 
 
-#TODO: What else needs to be added to this class?
-class ConstructorNode:
-     def __init__(self, constructor, arguments=[]):
-          self.constructor = constructor
-          self.arguments = arguments
-
-     # TODO: Check if this works. Not sure about it, because I haven't made the 
-     #       runtime class yet.
-     #-------------------------------------------------------------------------
-     def evaluate(self, context):
-          receiver = context.current_self
-          arguments = map(lambda arg: arg.evaluate(context), self.arguments)
-          return receiver.call_constructor(self.constructor, arguments)
-
-     def __str__(self):
-          return "{0}({1})".format(self.constructor, list(map(str, self.arguments)))
-
-     
 class SetLocalNode:
      def __init__(self, name, value):
           self.name = name
@@ -88,10 +90,12 @@ class SetLocalNode:
 
      def evaluate(self, context):
           context.locals[self.name] = self.value.evaluate(context)
+          return context.locals[self.name]
 
      def __str__(self):
           return "{0} = {1}".format(self.name, self.value)
 
+# TODO: Could possibly replace this with another call to CallNode.
 class ModAssignNode:
      def __init__(self, name, assign_operator, value):
           self.name = name
@@ -99,16 +103,18 @@ class ModAssignNode:
           self.value = value
 
      def evaluate(self, context):
-          if self.assign_operator == '+=':
-               original_object = context.locals.get(self.name)
-               # TODO: If the variable doesn't exist in the context when you call a += 3, 
-               # we could either throw an error (maybe a good idea) or we can just # set 
-               # a to 3.
-               if original_object is None:
-                    context.locals[self.name] = self.value.evaluate(context)
-               else:
-                    # TODO: This won't work now, because the + operation is not defined.
-                    context.locals[self.name] = original_object + self.value.evaluate(context)
+          original_object = context.locals.get(self.name)
+          if original_object is None:
+               context.locals[self.name] = self.value.evaluate(context)
+          else:
+               argument = self.value.evaluate(context)
+               if self.assign_operator == '+=':
+                    result_object = original_object.call("mod_add", argument)
+               elif self.assign_operator == '-=':
+                    result_object = original_object.call("mod_subtract", argument)
+               context.locals[self.name] = result_object
+
+          return context.locals[self.name]
 
      def __str__(self):
           return "{0} {1} {2}".format(self.name, self.assign_operator, self.value)

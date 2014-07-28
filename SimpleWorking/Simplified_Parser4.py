@@ -7,6 +7,9 @@ from nodes import *
 debug_mode = False
 
 def parse_equibel(text):
+     #-------------------------------------------------------------------------------------------------
+     #                                           LEXER
+     #-------------------------------------------------------------------------------------------------
      tokens = ("IDENTIFIER", "INTEGER", "STRING", "LPAREN", "RPAREN", "COMMA", "EQUALS",
                "PLUS", "MINUS", "PLUS_EQUALS", "MINUS_EQUALS", "LSQUARE", "RSQUARE", 
                "DOT", "NEWLINE")
@@ -54,9 +57,9 @@ def parse_equibel(text):
 
 
 
-     #------------------------------------------------------------------------------------------------------
-     #                                                PARSER
-     #------------------------------------------------------------------------------------------------------
+     #-------------------------------------------------------------------------------------------------
+     #                                           PARSER
+     #-------------------------------------------------------------------------------------------------
      def p_LINES(p):
           """LINES : LINE
                    | LINE NEWLINE LINES"""
@@ -115,6 +118,13 @@ def parse_equibel(text):
                p[0] = CallNode(p[1], p[3], [])
           else:
                p[0] = CallNode(p[1], p[3], p[5])
+
+     # TODO: See if this works for applications like "g2.nodes"
+     def p_member_access(p):
+          """FUNCTION_CALL : EXPRESSION DOT IDENTIFIER"""
+          if debug_mode:
+               print("member access")
+          p[0] = CallNode(p[1], p[3], [])
      
      def p_COMMA_ARGS(p):
           """COMMA_ARGS : COMMA_ARGS COMMA EXPRESSION
@@ -188,7 +198,7 @@ def parse_equibel(text):
      #       appropriate point, and allow for extensions.
      def p_ELEMENTS(p):
           """ELEMENTS : ELEMENTS COMMA ELEMENT
-                      | ELEMENT DOT DOT ELEMENT
+                      | INTEGER DOT DOT INTEGER
                       | ELEMENT"""
           if debug_mode:
                print("elements")
@@ -197,19 +207,12 @@ def parse_equibel(text):
           elif len(p) == 4:
                p[0] = p[1] + [p[3]]
           elif len(p) == 5:
-               try:
-                    start_of_range = int(p[1])
-                    end_of_range   = int(p[4]) + 1
-                    p[0] = list(range(start_of_range, end_of_range))
-               except Exception as err:
-                    raise ValueError("can only construct numeric ranges")
+               p[0] = RangeNode(int(p[1]), int(p[4]))
 
      # Might extend this to allow arbitrary expressions within lists, but this would allow for 
      # nested lists, which are not used for anything in equibel-lang.
      def p_ELEMENT(p):
-          """ELEMENT : INTEGER
-                     | STRING
-                     | ORDERED_PAIR"""
+          """ELEMENT : EXPRESSION"""
           if debug_mode:
                print("element")
           p[0] = p[1]
@@ -230,7 +233,7 @@ def parse_equibel(text):
 
 if __name__ == '__main__':
      if len(sys.argv) < 2:
-          print("usage: python3 Simplified_Parser3.py file")
+          print("usage: python3 Simplified_Parser4.py file")
           sys.exit(1)
 
      filename = sys.argv[1]

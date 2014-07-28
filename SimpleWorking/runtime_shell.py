@@ -1,5 +1,6 @@
-import Simplified_Parser3 as Parser
+import Simplified_Parser4 as Parser
 from runtime_simple import *
+from builtin_functions import *
 
 while True:
      code = input("equibel> ")
@@ -9,8 +10,6 @@ while True:
                print(key)
                value = Runtime.locals[key]
                print(value.python_value)
-     elif code == 'nodes':
-          print(nodes_list)
      else:
           try:
                nodes = Parser.parse_equibel(code)
