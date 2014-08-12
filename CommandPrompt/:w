@@ -1,0 +1,171 @@
+import sys
+import re
+from Graph import Graph
+
+class FormatError(Exception): pass
+
+# Can do one of two things here:
+#    1) check that there is only one item in the tokens list, 
+#       and raise an exception if not, or
+#    2) ignore any items after the first in the tokens list
+# 
+# Using method (1), "t directed blah" is invalid, while using 
+# method (2), it is valid. How strict should the parser be?
+# 
+# Since we want good error reporting for improperly formatted 
+# files, we will go with method (1).
+# 
+# Philosophy: Things MUST be formatted correctly, but the 
+#             program will show you where any problems are.
+#             This is more useful than ignoring an error, since 
+#             that error may be indicative of other problems 
+#             that the user did not notice.
+def process_type_line(tokens, graph, line_num):
+     if len(tokens) != 1:
+          raise FormatError("unexpected tokens on line {0}: \"{1}\"".format(line_num, ", ".join(tokens[1:])))
+
+     graph_type = tokens[0].lower()
+
+     if graph_type == 'directed':
+          graph.directed = True
+     elif graph_type == 'undirected':
+          graph.directed = False
+     else:
+          raise FormatError("unrecognized graph type on line {0}: \"{1}\"".format(line_num, graph_type))
+
+
+def process_node_line(tokens, graph, line_num):
+     # There are two cases for valid tokens:
+     #    1) The token can be an individual positive integer, like 3, or
+     #    2) The token can be a range of the form x..y, where x and y are 
+     #       positive integers. To keep the parsing simple, whitespace is 
+     #       not allowed anywhere in the token, so "3.. 5" is invalid.
+
+     # Not strictly necessary; purely for error reporting.
+     if not tokens:
+          raise FormatError("empty node line on line {0}".format(line_num))
+
+     for token in tokens:
+          if '..' in token:
+               m = re.match('([0-9]+)\.\.([0-9]+)', token)
+               if not m:
+                    raise FormatError("unrecognized range on line {0}: \"{1}\"".format(line_num, token))
+
+               range_start = int(m.group(1))
+               range_end   = int(m.group(2))
+
+               if range_start > range_end:
+                    raise FormatError("end of range is smaller than start of range on line {0}: \"{1}\""\
+                                      .format(line_num, token))
+               
+               node_nums = range(range_start, range_end + 1)
+               graph.add_nodes(node_nums)
+          elif token.isdigit():
+               node_num = int(token)
+               graph.add_node(node_num)
+          else:
+               raise FormatError("unrecognized node token on line {0}: \"{1}\"".format(line_num, token))
+
+
+def process_atom_line(tokens, graph, line_num):
+     if not tokens:
+          raise FormatError("empty atom line on line {0}".format(line_num))
+
+     for token in tokens:
+          if not re.match(r'[a-zA-Z][a-zA-Z0-9]*', token):
+               raise FormatError("invalid atom name on line {0}: {1}".format(line_num, token))
+
+          graph.add_atom(token)
+
+     print("processed atom line")
+     print(graph.nodes[1].weights)
+
+
+def parse_bcf(filename):
+     f = open(filename, 'r')
+     
+     result = []
+     # Creates the graph used to accumulate the information in the 
+     # BCF file. As each line is parsed, this graph is updated to
+     # maintain the nodes, edges, atoms, weights, and formulas.
+     graph = Graph()
+
+     line_num = 1
+
+     line = f.readline()
+
+     while line:
+          tokens = line.split()
+          print(tokens)
+
+          if tokens:
+               line_type = tokens[0]
+               if line_type == 't':
+                    print("type line")
+                    process_type_line(tokens[1:], graph, line_num)
+               elif line_type == 'n':
+                    print("node line")
+                    process_node_line(tokens[1:], graph, line_num)
+               elif line_type == 'a':
+                    print("atom line")
+                    #result.append(("atom", tokens[1:]))
+                    process_atom_line(tokens[1:], graph, line_num)
+               elif line_type == 'w':
+                    print("weight line")
+                    result.append(("weight", tokens[1:]))
+               elif line_type == 'e':
+                    print("edge line")
+                    result.append(("edge", tokens[1:]))
+               elif line_type == 'f':
+                    print("formula line")
+                    line_contents = "".join(tokens[1:])
+                    while not balanced_parentheses(line_contents):
+                         next_line = f.readline()
+                         line_num += 1
+                         if not next_line:
+                              raise FormatError("unbalanced parentheses")
+                         line_contents += next_line.strip()
+                    result.append(("formula", line_contents))
+               elif line_type == 'c':
+                    pass
+               else:
+                    raise FormatError("Error: unrecognized line type \"{0}\" on line {1}".format(line_type, line_num))
+
+          print(result)
+
+          line_num += 1
+          line = f.readline()
+
+     f.close()
+
+
+# From StackOverflow
+def balanced_parentheses(s):
+     stack = []
+     pushChars, popChars = "({[", ")}]"
+     for c in s:
+          if c in pushChars:
+               stack.append(c)
+          elif c in popChars:
+               if not len(stack):
+                    return False
+               else:
+                    stackTop = stack.pop()
+                    balancingBracket = pushChars[popChars.index(c)]
+                    if stackTop != balancingBracket:
+                         return False
+
+     return not len(stack)
+
+
+if __name__ == '__main__':
+     if len(sys.argv) < 2:
+          print('usage: python3 BCF_Parser.py filename')
+          sys.exit(1)
+
+     filename = sys.argv[1]
+
+     try:
+          parse_bcf(filename)
+     except FormatError as err:
+          print(err)
