@@ -1,108 +1,57 @@
-from cmd import Cmd
+import sys
+import os
 import readline
-from ply import lex
-from ply import yacc
+from cmd import Cmd
 
 import ASP_Formatter
+import BCF_Formatter
 import Simplified_Parser4 as Parser
 from runtime_simple import *
 from builtin_functions import *
 
-class EdgeError(Exception): pass
+import CmdLineParser
+import FormulaParserSim
 
-def parse(text):
-     tokens = ("STRING", "INTEGER", "COMMA", "DOT", "LPAREN", "RPAREN", "LSQUARE", "RSQUARE")
+import BCF_Parser
 
-     t_STRING = r'\w+'
-     t_COMMA = r','
-     t_DOT = r'\.'
-     t_LPAREN = r'\('
-     t_RPAREN = r'\)'
-     t_LSQUARE = r'\['
-     t_RSQUARE = r'\]'
+#TODO: Urgent: Create a new module structure to make imports simpler.
 
-     t_ignore = " \t\n"
+sys.path.append("ASP")
+sys.path.append("ASP/PredicateTree")
+sys.path.append("simbool")
 
+from simbool.proposition import *
+from simbool.simplify import *
 
-     def t_INTEGER(t):
-          r"0|[1-9][0-9]*"
-          t.value = int(t.value)
-          return t
+from ASP import SolverInterface
 
-     def t_NEWLINE(t):
-          r"\n+"
-          t.lexer.lineno += len(t.value)
-          return t
-
-     def t_error(t):
-          line = t.value.lstrip()
-          i = line.find("\n")
-          line = line if i == -1 else line[:i]
-          raise ValueError("Syntax error, line {0}: {1}".format(t.lineno + 1, line))
-
-     def p_LIST_OR_TUPLE(p):
-          """LIST_OR_TUPLE : LIST
-                           | TUPLE"""
-          p[0] = p[1]
-
-     def p_LIST(p):
-          """LIST : LSQUARE ITEMS RSQUARE
-                  | LSQUARE RANGE RSQUARE
-                  | LSQUARE RSQUARE"""
-          p[0] = [] if len(p) == 3 else p[2]
-
-     def p_RANGE(p):
-          """RANGE : INTEGER DOT DOT INTEGER"""
-          p[0] = list(range(p[1], p[4] + 1))
-
-     def p_ITEMS(p):
-          """ITEMS : ITEM
-                   | ITEM COMMA ITEMS"""
-          p[0] = [p[1]] if len(p) == 2 else [p[1]] + p[3]
-     
-     def p_ITEM(p):
-          """ITEM : INTEGER
-                  | STRING
-                  | TUPLE"""
-          p[0] = p[1]
-
-     def p_TUPLE(p):
-          """TUPLE : LPAREN INTEGER COMMA INTEGER RPAREN"""
-          p[0] = (int(p[2]), int(p[4]))
-
-     def p_error(p):
-          if p is None:
-               raise ValueError("Unknown error")
-          raise ValueError("Syntax error, line {0}: {1}".format(p.lineno + 1, p.type))
-
-     lexer = lex.lex()
-     parser = yacc.yacc()
-     
-     try:
-          return parser.parse(text, lexer=lexer)
-     except ValueError as err:
-          print(err)
-
-
-
+class ArgumentError(Exception): pass
 class ManagerError(Exception): pass
 
 class GraphManager:
      def __init__(self):
           self.graphs = dict()
           self.current_context = None
+          self.current_context_name = None
 
      def __iter__(self):
           return iter(self.graphs)
 
-     def add(self, graph_name, graph):
-          self.graphs[graph_name] = graph
-          if not self.current_context:
-               self.current_context = graph
-
      def __getitem__(self, key):
           return self.graphs.get(key, None)
+
+     def add(self, graph_name, graph):
+          self.graphs[graph_name] = graph
+          # The first graph added to the manager becomes the current context automatically.
+          if not self.current_context:
+               self.current_context = graph
+               self.current_context_name = graph_name
+
+     def update_context(self, graph):
+          self.graphs[self.current_context_name] = graph
+          self.current_context = graph
      
+
      def remove(self, graph_name):
           if graph_name not in self.graphs:
                raise ManagerError("graph \"{0}\" does not exist".format(graph_name))
@@ -112,6 +61,7 @@ class GraphManager:
           if graph_name not in self.graphs:
                raise ManagerError("graph \"{0}\" does not exist".format(graph_name))
           self.current_context = self.graphs[graph_name]
+          self.current_context_name = graph_name
      
 manager = GraphManager()
 g = Graph()
@@ -127,12 +77,14 @@ class EquibelPrompt(Cmd):
              function returns the string unmodified, as well as the boolean 
              False to indicate that the output should not be silenced."""
           verbose = True
-          if arg_str.strip().endswith(';'):
-               arg_str = arg_str.strip()[:-1]
+          arg_str = arg_str.strip()
+          if arg_str.endswith(';'):
+               arg_str = arg_str[:-1]
                verbose = False
           return (arg_str, verbose)
 
 
+     
      def default(self, line):
           """Default behaviour if the command prefix is not recognized."""
           line, verbose = self.check_silencing_terminator(line)
@@ -173,6 +125,7 @@ class EquibelPrompt(Cmd):
           if verbose:
                self.print_graphs()
 
+     # TODO: Not finished.
      def do_create_chain(self, arg_str):
           """Creates a chain graph."""
           arg_str, verbose = self.check_silencing_terminator(arg_str)
@@ -220,7 +173,7 @@ class EquibelPrompt(Cmd):
           else:
                node_str = args[0]
                if not node_str.isdigit():
-                    print("add_node requires an integer argument!")
+                    raise ValueError("add_node requires an integer argument!")
                else:
                     graph.add_node(int(node_str))
                     if verbose:
@@ -233,10 +186,10 @@ class EquibelPrompt(Cmd):
           graph = manager.current_context
 
           try:
-               node_list = parse(arg_str)
+               node_list = CmdLineParser.parse_list(arg_str)
                for node_num in node_list:
                     graph.add_node(node_num)
-          except EdgeError as err:
+          except Exception as err:
                print(err)
 
           if verbose:
@@ -259,6 +212,18 @@ class EquibelPrompt(Cmd):
                     graph.remove_node(int(node_str))
                     if verbose:
                          self.print_nodes()
+     
+
+     def do_remove_nodes(self, arg_str):
+          """Removes all the nodes in a list from the nodes set."""
+          arg_str, verbose = self.check_silencing_terminator(arg_str)
+          graph = manager.current_context
+          
+          nodes = CmdLineParser.parse_list(arg_str)
+          graph.remove_nodes(nodes)
+
+          if verbose:
+               self.print_nodes()
 
 
      def do_edges(self, arg_str):
@@ -290,11 +255,11 @@ class EquibelPrompt(Cmd):
           arg_str, verbose = self.check_silencing_terminator(arg_str)
 
           try:
-               edge = parse(arg_str)
+               edge = CmdLineParser.parse_tuple(arg_str)
                self.add_edge(edge)
                if verbose:
                     self.print_edges()
-          except EdgeError as err:
+          except Exception as err:
                print(err)
 
 
@@ -303,13 +268,13 @@ class EquibelPrompt(Cmd):
           arg_str, verbose = self.check_silencing_terminator(arg_str)
 
           try:
-               edge_list = parse(arg_str)
+               edge_list = CmdLineParser.parse_list(arg_str)
                for edge in edge_list:
                     self.add_edge(edge)
                
                if verbose:
                     self.print_edges()
-          except EdgeError as err:
+          except Exception as err:
                print(err)
 
 
@@ -329,16 +294,16 @@ class EquibelPrompt(Cmd):
           graph = manager.current_context
 
           try:
-               edge = parse(arg_str)
+               edge = CmdLineParser.parse_tuple(arg_str)
                graph.remove_edge(edge)
                if verbose:
                     self.print_edges()
-          except EdgeError as err:
+          except Exception as err:
                print(err)
 
 
      # Directed/Undirected Functions
-     #---------------------------------------------------------------------
+     #--------------------------------------------------------------------------------
      
      def do_directed(self, arg_str):
           """Makes the edges in the current context directed."""
@@ -356,7 +321,7 @@ class EquibelPrompt(Cmd):
 
 
      # Atom Functions
-     #---------------------------------------------------------------------
+     #--------------------------------------------------------------------------------
 
      def do_add_atom(self, arg_str):
           """Adds an atom to the alphabet of the current context."""
@@ -378,7 +343,7 @@ class EquibelPrompt(Cmd):
           graph = manager.current_context
 
           try:
-               atom_list = parse(arg_str)
+               atom_list = CmdLineParser.parse_list(arg_str)
                for atom in atom_list:
                     graph.add_atom(atom)
                
@@ -409,6 +374,7 @@ class EquibelPrompt(Cmd):
                self.print_atoms()
 
      def print_atoms(self):
+          """Prints the atoms in the alphabet of the current context."""
           atoms = manager.current_context.get_atoms()
           if not atoms:
                print("\n\tatoms: {}\n")
@@ -417,19 +383,131 @@ class EquibelPrompt(Cmd):
           
 
      # Weight Functions
-     #---------------------------------------------------------------------
+     #--------------------------------------------------------------------------------
 
      # TODO: These are sort of temporary in their current form.
      def do_add_weight(self, arg_str):
           arg_str, verbose = self.check_silencing_terminator(arg_str)
           args = arg_str.split()
-          # TODO: Finish this function, with error checking.
+          # DONE: Finish this function, with error checking.
+          if len(args) != 3:
+               raise ArgumentError("Expected 3 arguments to add_weight!\nusage: add_weight NODE_NUM ATOM WEIGHT")
+
+          node_str, atom, weight_str = args
+          if not node_str.isdigit():
+               raise ArgumentError("The node identifier must be an integer: \"{0}\"".format(node_str))
+          if not weight_str.isdigit():
+               raise ArgumentError("The weight must be an integer: \"{0}\"".format(weight_str))
+
+          node = int(node_str)
+          weight = int(weight_str)
+          manager.current_context.add_weight(node, atom, weight)
+
+          if verbose:
+               self.print_weights(node)
+
+
+     def print_weights(self, node_num):
+          weights = manager.current_context.get_weights(node_num)
           
+          print()
+          print("\tnode {0}:".format(node_num))
+          for atom in weights:
+               print("\t\t{0}: {1}".format(atom, weights[atom]))
+          print()
 
 
+     def print_all_weights(self):
+          nodes = manager.current_context.get_nodes()
+          
+          print()
+          for node in nodes:
+               print("\tnode {0}:".format(node))
+               weights = manager.current_context.get_weights(node)
+               for atom in weights:
+                    print("\t\t{0}: {1}".format(atom, weights[atom]))
+          print()
 
+
+     def do_weights(self, arg_str):
+          arg_str, verbose = self.check_silencing_terminator(arg_str)
+          args = arg_str.split()
+          
+          if len(args) == 0:
+               if verbose:
+                    self.print_all_weights()
+          elif len(args) == 1:
+               node_str = args[0]
+               if not node_str.isdigit():
+                    raise ArgumentError("the node identifier must be an integer: \"{0}\"".format(node_str))
+               if verbose:
+                    self.print_weights(int(node_str))
+          else:
+               raise ArgumentError("Expected 0 or 1 argument to weights!\nusage: weights [NODE_NUM]")
+
+
+     # Formula Functions
+     #--------------------------------------------------------------------------------
+
+     def do_add_formula(self, arg_str):
+          arg_str, verbose = self.check_silencing_terminator(arg_str)
+          args = arg_str.split(maxsplit=1)
+
+          if len(args) != 2:
+               raise ArgumentError("Expected exactly 2 arguments to add_formula.\nusage: add_formula NODE_NUM FORMULA")
+
+          node_str, formula_str = args
+
+          if not node_str.isdigit():
+               raise ArgumentError("The node identifier must be an integer.")
+
+          node_num = int(node_str)
+          formula = FormulaParserSim.parse_formula(formula_str)
+          manager.current_context.add_formula(node_num, formula)
+
+          if verbose:
+               self.print_formulas(node_num)
+
+     
+     def do_formulas(self, arg_str):
+          arg_str, verbose = self.check_silencing_terminator(arg_str)
+          args = arg_str.split()
+          
+          if len(args) == 0:
+               if verbose:
+                    self.print_all_formulas()
+          elif len(args) == 1:
+               node_str = args[0]
+               if not node_str.isdigit():
+                    raise ArgumentError("the node identifier must be an integer: \"{0}\"".format(node_str))
+               if verbose:
+                    self.print_formulas(int(node_str))
+          else:
+               raise ArgumentError("Expected 0 or 1 argument to formulas!\nusage: formulas [NODE_NUM]")
+
+     def print_formulas(self, node_num):
+          formulas = manager.current_context.get_formulas(node_num)
+          
+          print()
+          print("\tnode {0}:".format(node_num))
+          for formula in formulas:
+               print("\t\t{0}".format(repr(formula)))
+          print()
+
+
+     def print_all_formulas(self):
+          nodes = manager.current_context.get_nodes()
+          
+          print()
+          for node in nodes:
+               print("\tnode {0}:".format(node))
+               formulas = manager.current_context.get_formulas(node)
+               for formula in formulas:
+                    print("\t\t{0}".format(repr(formula)))
+          print()
+               
      # ASP Functions
-     #---------------------------------------------------------------------
+     #--------------------------------------------------------------------------------
 
      def do_asp(self, arg_str):
           arg_str, verbose = self.check_silencing_terminator(arg_str)
@@ -438,6 +516,98 @@ class EquibelPrompt(Cmd):
           if verbose:
                print("\n" + ASP_Formatter.convert_to_asp(graph))
           
+
+
+     # Load/Store Functions
+     #--------------------------------------------------------------------------------
+     def do_load(self, arg_str):
+          """Loads a graph from a BCF file into the current context (overwriting it)."""
+          arg_str, verbose = self.check_silencing_terminator(arg_str)
+          args = arg_str.split()
+
+          if len(args) != 1:
+               raise ArgumentError("Expected exactly 1 argument to load().")
+
+          filename = args[0]
+          parsed_graph = BCF_Parser.parse_bcf(filename)
+          manager.update_context(parsed_graph)
+
+          if verbose:
+               print("\n\tgraph successfully loaded from \"{0}\"\n".format(filename))
+          
+
+     # DONE: Change the output format from ASP to BCF (after completing BCF_Formatter.py).
+     def do_store(self, arg_str):
+          arg_str, verbose = self.check_silencing_terminator(arg_str)
+          args = arg_str.split()
+
+          graph = manager.current_context
+          graph_name = manager.current_context_name
+
+          if len(args) != 1:
+               raise ArgumentError("Expected exactly 1 argument to store().")
+
+          filename = args[0]
+          if os.path.isfile(filename):
+               confirm_overwrite = self.yes_or_no(("\tFile \"{0}\" already exists. Do you want to overwrite it? (y/n) ")
+                                                   .format(filename))
+
+               if not confirm_overwrite:
+                    print("\n\t\"{0}\" left unchanged.\n".format(filename))
+                    return
+
+          f = open(filename, 'w')
+          f.write(BCF_Formatter.convert_to_bcf(graph))
+          if verbose:
+               print("\n\tSuccessfully saved graph {0} to {1}.\n".format(graph_name, filename))
+          
+
+     def yes_or_no(self, question):
+          yes_answers = ['yes', 'y']
+          no_answers  = ['no', 'n']
+
+          answer = input(question)
+          while answer not in (yes_answers + no_answers):
+               print("\t\"{0}\" is not a valid response.".format(answer))
+               answer = input(question)
+
+          if answer in yes_answers:
+               return True
+          return False 
+
+
+
+
+
+
+
+
+
+     # Belief Change Operations
+     #--------------------------------------------------------------------------------
+     def do_one_shot(self, arg_str):
+          arg_str, verbose = self.check_silencing_terminator(arg_str)
+          graph = manager.current_context
+          new_graph = SolverInterface.one_shot(graph)
+          manager.update_context(new_graph)
+          if verbose:
+               print("\n\tOne-shot belief change completed.\n")
+
+
+
+
+
+
+     # Shell Functions -- (To help locate files to load.)
+     #--------------------------------------------------------------------------------
+
+     # TODO: This function.
+     def do_shell(self, arg_str):
+          proc = Popen(arg_str, shell=True, stdout=PIPE, universal_newlines=True)
+          for line in proc.stdout:
+               line = line.strip()
+               print(line)
+
      
      def do_quit(self, args):
           """Quits the program."""
@@ -446,6 +616,13 @@ class EquibelPrompt(Cmd):
 
 
 if __name__ == '__main__':
+     print("Equibel version 0.8.2")
+
      prompt = EquibelPrompt(completekey='tab')
      prompt.prompt = "equibel> "
-     prompt.cmdloop("Equibel version 0.8.2")
+
+     while True:
+          try:
+               prompt.cmdloop()
+          except Exception as err:
+               print(err)

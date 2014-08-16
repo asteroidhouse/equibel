@@ -3,6 +3,7 @@ import re
 from Graph import Graph
 import FormulaParserSim
 import ASP_Formatter
+import BCF_Formatter
 
 class FormatError(Exception): pass
 
@@ -139,7 +140,6 @@ def process_formula_line(node_str, formula_str, graph, line_num):
 def parse_bcf(filename):
      f = open(filename, 'r')
      
-     result = []
      # Creates the graph used to accumulate the information in the 
      # BCF file. As each line is parsed, this graph is updated to
      # maintain the nodes, edges, atoms, weights, and formulas.
@@ -151,7 +151,7 @@ def parse_bcf(filename):
 
      while line:
           tokens = line.split()
-          print(tokens)
+          #print(tokens)
 
           if tokens:
                line_type = tokens[0]
@@ -223,6 +223,7 @@ if __name__ == '__main__':
 
      try:
           graph = parse_bcf(filename)
-          print(ASP_Formatter.convert_to_asp(graph))
+          #print(ASP_Formatter.convert_to_asp(graph))
+          print(BCF_Formatter.convert_to_bcf(graph))
      except FormatError as err:
           print(err)

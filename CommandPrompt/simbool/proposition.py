@@ -1,4 +1,6 @@
 from __future__ import print_function
+from functools import reduce
+import operator
 
 class Prop:
     def __init__(self, *args):
@@ -26,6 +28,12 @@ class Prop:
             self.oper = args[0]
             self.terms = frozenset(args[1:])
             self.atomic = False
+
+    # My function to get all the atom names.
+    def get_atoms(self):
+        if self.atomic:
+            return [self.name]
+        return reduce(operator.add, [term.get_atoms() for term in self.terms])
 
     def is_atomic(self):
         return self.atomic

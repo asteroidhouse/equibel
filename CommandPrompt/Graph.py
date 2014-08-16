@@ -14,11 +14,12 @@ class Graph:
           self.atoms = set()
           self.directed = True
 
+     #------------------------------------------------------------------------
      # Node Functions
      #------------------------------------------------------------------------
 
      def get_nodes(self):
-          return list(self.nodes.keys())
+          return sorted(self.nodes.keys())
 
      def add_node(self, node_num):
           if node_num not in self.nodes:
@@ -41,21 +42,17 @@ class Graph:
           for node_num in node_nums:
                self.remove_node(node_num)
 
-
-     # TODO: Check if this deletion works, because we're modifying 
-     #       the list as we're iterating through it.
+     # DONE: This method of removing edges works.
      def __remove_associated_edges(self, node_num):
-          for (start_node, end_node) in self.edges:
-               if start_node == node_num or end_node == node_num:
-                    self.edges.discard((start_node, end_node))
+          self.edges = {(start, end) for (start, end) in self.edges if start != node_num and end != node_num}
 
 
+     #------------------------------------------------------------------------
      # Edge Functions
      #------------------------------------------------------------------------
           
      def get_edges(self):
-          return list(self.edges)
-
+          return sorted(self.edges)
 
      # TODO: Check how the start and end points should be passed 
      #       to the function--as separate points, or as a tuple?
@@ -82,37 +79,49 @@ class Graph:
                self.remove_edge(edge)
 
 
+     #------------------------------------------------------------------------
      # Formula Functions
      #------------------------------------------------------------------------
 
-     # TODO: Think about where to parse the formula.
-     def add_formula(self, node_num, formula):
-          if node_num in self.nodes:
-               self.nodes[node_num].add_formula(formula)
-          else:
+     def get_formulas(self, node_num):
+          if node_num not in self.nodes:
                raise GraphError("node {0} does not exist".format(node_num))
-     
-     def add_formulas(self, formula_strs):
-          if node_num in self.nodes:
-               for formula_str in formula_strs:
-                    self.add_formula(node_num, formula_str)
-          else:
-               raise GraphError("node {0} does not exist".format(node_num))
+          return self.nodes[node_num].formulas
 
-     def remove_formula(self, node_num, formula_str):
-          if node_num in self.nodes:
-               formula = FormulaParser.parse(formula_str)
-               self.nodes[node_num].remove_formula(formula)
-          else:
+     # TODO: Think about where to parse the formula. -> NOT HERE
+     def add_formula(self, node_num, formula):
+          if node_num not in self.nodes:
                raise GraphError("node {0} does not exist".format(node_num))
+          self.nodes[node_num].add_formula(formula)
+
+          # Extracts the atoms used in the formula, and adds them to the 
+          # common alphabet of the graph and each node in the graph.
+          formula_atoms = formula.get_atoms()
+          self.add_atoms(formula_atoms)
+     
+
+     # DONE: We are working with formulas here, not formula strings.
+     def add_formulas(self, formulas):
+          if node_num not in self.nodes:
+               raise GraphError("node {0} does not exist".format(node_num))
+          for formula in formulas:
+               self.add_formula(node_num, formula)
+
+
+     def remove_formula(self, node_num, formula):
+          if node_num not in self.nodes:
+               raise GraphError("node {0} does not exist".format(node_num))
+          self.nodes[node_num].remove_formula(formula)
+
 
      def remove_formulas(self, node_num, formula_strs):
-          if node_num in self.nodes:
-               for formula_str in formula_strs:
-                    self.remove_formula(node_num, formula_str)
-          else:
+          if node_num not in self.nodes:
                raise GraphError("node {0} does not exist".format(node_num))
+          for formula_str in formula_strs:
+               self.remove_formula(node_num, formula_str)
 
+
+     #------------------------------------------------------------------------
      # Atom Functions
      #------------------------------------------------------------------------
 
@@ -120,6 +129,10 @@ class Graph:
           self.atoms.add(atom_name)
           for node in self.nodes.values():
                node.add_atom(atom_name)
+
+     def add_atoms(self, atom_list):
+          for atom in atom_list:
+               self.add_atom(atom)
 
      def remove_atom(self, atom_name):
           self.atoms.discard(atom_name)
@@ -130,15 +143,29 @@ class Graph:
           return list(self.atoms)
 
      
+     #------------------------------------------------------------------------
      # Weight Functions
      #------------------------------------------------------------------------
 
+     def get_weights(self, node_num):
+          if node_num not in self.nodes:
+               raise GraphError("node {0} does not exist".format(node_num))
+          return self.nodes[node_num].weights
+
+     # DONE: When a weight is added to one node for an atom that doesn't 
+     #       exist in the common alphabet, that atom name should be entered 
+     #       into the common alphabet, and all other nodes should be given 
+     #       the default weight for that node.
      def add_weight(self, node_num, atom_name, weight):
           if node_num not in self.nodes:
                raise GraphError("node {0} does not exist".format(node_num))
           self.nodes[node_num].add_weight(atom_name, weight)
+
+          # Add the atom with weight 1 to all other nodes, if it is new.
+          if atom_name not in self.atoms:
+               self.add_atom(atom_name)
           
-     # TODO: Either set_weight or add_weight can be defined in terms of the
+     # DONE: Either set_weight or add_weight can be defined in terms of the
      #       other, since the functionality is identical.
      def set_weight(self, node_num, atom_name, weight):
           self.add_weight(node_num, atom_name, weight)

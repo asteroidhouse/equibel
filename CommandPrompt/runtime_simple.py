@@ -75,5 +75,4 @@ Runtime["Set"]           = EquibelClass()
 
 Runtime["Graph"]         = EquibelClass()
 
-
-Runtime["Class"].methods["new"] = lambda receiver, arguments: receiver.new()
+#Runtime["Class"].methods["new"] = lambda receiver, arguments: receiver.new()

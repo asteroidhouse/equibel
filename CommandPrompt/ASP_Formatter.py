@@ -43,8 +43,8 @@ def convert_to_asp(graph):
      for node in graph.nodes.values():
           for formula in node.formulas:
                formatted_formula = convert_formula_to_asp(formula)
-               asp_str += FORMULA_TEMPLATE.format(node.num, formatted_formula)
-               #asp_str += FORMULA_TEMPLATE.format(node.num, repr(formula))
+               #asp_str += FORMULA_TEMPLATE.format(node.num, formatted_formula)
+               asp_str += FORMULA_TEMPLATE.format(formatted_formula, node.num)
      
      return asp_str
 
