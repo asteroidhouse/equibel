@@ -1,0 +1,21 @@
+t undirected
+n 1
+n 2
+n 3
+n 4
+a p
+a q
+e 1 2
+e 2 3
+e 3 4
+w 1 p 1
+w 1 q 1
+w 2 p 1
+w 2 q 1
+w 3 p 1
+w 3 q 1
+w 4 p 1
+w 4 q 1
+f 1 (p)
+f 2 (-(p))
+f 4 (q)

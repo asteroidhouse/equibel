@@ -1,0 +1,4 @@
+node(1)
+formula(1, p)
+formula(1, and(p,or(neg(r), q)))
+weight(2, q, 5)
