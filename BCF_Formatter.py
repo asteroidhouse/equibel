@@ -1,5 +1,4 @@
 import sys
-sys.path.append('simbool')
 from simbool.proposition import *
 
 TYPE_TEMPLATE    = "t {0}\n"

@@ -1,5 +1,4 @@
 import sys
-sys.path.append('PredicateTree')
 from PredicateTree import PredicateParser 
 
 #TODO: Handle cases where the input is UNSATISFIABLE - now an error occurs somewhere else.

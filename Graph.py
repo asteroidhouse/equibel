@@ -1,4 +1,4 @@
-from Node import *
+from Node import Node
 
 class GraphError(Exception): pass
 

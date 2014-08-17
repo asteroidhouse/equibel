@@ -2,9 +2,6 @@ import sys
 import ply.lex
 import ply.yacc
 
-sys.path.append("..")
-sys.path.append("../simbool")
-
 from simbool.proposition import *
 from simbool.simplify import *
 

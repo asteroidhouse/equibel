@@ -1,5 +1,4 @@
 import sys
-sys.path.append('simbool')
 from simbool.proposition import *
 
 NODE_TEMPLATE    = "node({0}).\n"

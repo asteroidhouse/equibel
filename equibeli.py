@@ -7,7 +7,9 @@ import ASP_Formatter
 import BCF_Formatter
 import Simplified_Parser4 as Parser
 from runtime import *
-from builtin_functions import *
+from builtins import *
+
+from Graph import Graph
 
 import CmdLineParser
 import FormulaParserSim
@@ -23,7 +25,7 @@ sys.path.append("simbool")
 from simbool.proposition import *
 from simbool.simplify import *
 
-from ASP import SolverInterface
+import SolverInterface
 
 class ArgumentError(Exception): pass
 class ManagerError(Exception): pass

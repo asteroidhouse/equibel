@@ -1,9 +1,6 @@
 import sys
 import FormulaParserASP
 
-sys.path.append("..")
-sys.path.append("../simbool")
-
 from simbool.proposition import *
 from simbool.simplify import *
 

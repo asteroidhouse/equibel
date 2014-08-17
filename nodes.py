@@ -1,4 +1,4 @@
-from runtime_simple import *
+from runtime import *
 
 class RootNode:
      def __init__(self, nodes=[]):
