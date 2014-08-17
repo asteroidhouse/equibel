@@ -6,7 +6,7 @@ from cmd import Cmd
 import ASP_Formatter
 import BCF_Formatter
 import Simplified_Parser4 as Parser
-from runtime_simple import *
+from runtime import *
 from builtin_functions import *
 
 import CmdLineParser
