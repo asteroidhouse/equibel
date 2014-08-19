@@ -29,10 +29,20 @@ class Prop:
             self.terms = frozenset(args[1:])
             self.atomic = False
 
+    # My function to handle return the names of True and False propositions as the
+    # lowercase strings 'true' and 'false'
+    def get_name(self):
+        if self.name == True:
+            return 'true'
+        elif self.name == False:
+            return 'false'
+        return self.name
+        
+
     # My function to get all the atom names.
     def get_atoms(self):
         if self.atomic:
-            return [self.name]
+            return [self.get_name()]
         return reduce(operator.add, [term.get_atoms() for term in self.terms])
 
     def is_atomic(self):
@@ -78,7 +88,7 @@ class Prop:
             return s.atomic or s.oper == '~'
         
         if self.atomic:
-            return str(self.name)
+            return self.get_name()
         
         oper = self.oper
         if oper == '~':

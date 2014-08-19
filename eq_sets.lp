@@ -55,11 +55,11 @@ satisfied(F,X) :- F = neg(A),		not satisfied(A,   X),	subformula(F;A,   X).
 % All original formulas must be satisfied in order for the EQ set to be valid.
 :- formula(F,X), not satisfied(F,X).
 
-#maximize { eq(P,X,Y) }.
+%#maximize { eq(P,X,Y) }.
 
 % This heuristic is used to find maximal sets of equivalences, with respect to set containment.
-%_heuristic(eq(P,X,Y), true, 1) :- atom(P), edge(X,Y), X < Y.
+_heuristic(eq(P,X,Y), true, 1) :- atom(P), edge(X,Y), X < Y.
 
 #hide.
-%#show _heuristic/3.
+#show _heuristic/3.
 #show eq/3.

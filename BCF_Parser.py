@@ -1,6 +1,6 @@
 import sys
 import re
-from Graph import Graph
+from graph import Graph
 import FormulaParserSim
 import ASP_Formatter
 import BCF_Formatter

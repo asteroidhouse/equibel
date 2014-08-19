@@ -1,11 +1,8 @@
 import sys
 
 import SolverInterface
+from graph import Graph
 
-sys.path.append("..")
-from Graph import Graph
-
-sys.path.append("../simbool")
 from simbool.simplify import *
 
 if __name__ == '__main__':
@@ -20,11 +17,19 @@ if __name__ == '__main__':
      
      g = Graph()
      g.add_nodes([1,2,3,4])
-     g.add_formula(1, Prop('q'))
      g.add_edge((1,2))
+     g.add_edge((1,3))
+     g.add_edge((3,4))
+     g.add_edge((2,4))
+     g.add_formula(1, Prop('p'))
+     g.add_formula(2, ~Prop('p'))
+     g.add_formula(2, Prop('q'))
      print(g)
 
+     print(SolverInterface.get_opt_models(g))
+     """
      new_graph = SolverInterface.one_shot(g)
      for node in new_graph.nodes:
           print("Node {0}:".format(node))
           print("Formulas: {0}".format(new_graph.get_formulas(node)))
+     """

@@ -1,5 +1,5 @@
-from runtime_simple import *
-from Graph import Graph
+from runtime import *
+from graph import Graph
 
 #---------------------------------------------------------------------------------
 #                        Printing Functions

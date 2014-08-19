@@ -1,5 +1,5 @@
 import sys
-from simbool.proposition import *
+from simbool.proposition import Prop
 
 NODE_TEMPLATE    = "node({0}).\n"
 RANGE_TEMPLATE   = "node({0}..{1}).\n"
@@ -51,7 +51,7 @@ def convert_to_asp(graph):
 def convert_formula_to_asp(formula):
      # Atomic propositions are the base case for the recursion.
      if formula.is_atomic():
-          return formula.name
+          return formula.get_name()
 
      if formula.get_op() == '~':
           term = formula.get_terms()[0]

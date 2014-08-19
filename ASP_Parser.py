@@ -6,6 +6,7 @@ from PredicateTree import PredicateParser
 def parse_model(line):
      predicate_strs = line.split()
      predicates = [PredicateParser.parse_predicate(pred_str) for pred_str in predicate_strs]
+     #print([str(pred) for pred in predicates])
 
      predicate_groups = dict()
      predicate_names = set(pred.name for pred in predicates)
@@ -16,11 +17,13 @@ def parse_model(line):
      
 
 def parse_models(lines):
+     ignore_lines = ['Optimization', 'OPTIMUM', 'Answer', 'SATISFIABLE']
+
      models = []
      for line in lines:
           if not line:
                continue
-          if line.startswith('Optimization') or line.startswith('OPTIMUM') or line.startswith('Answer'):
+          if any(line.startswith(ignore) for ignore in ignore_lines):
                continue
           models.append(parse_model(line))
      return models

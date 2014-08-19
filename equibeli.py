@@ -2,6 +2,7 @@ import sys
 import os
 import readline
 from cmd import Cmd
+from subprocess import Popen, PIPE
 
 import ASP_Formatter
 import BCF_Formatter
@@ -9,7 +10,7 @@ import Simplified_Parser4 as Parser
 from runtime import *
 from builtins import *
 
-from Graph import Graph
+from graph import Graph
 
 import CmdLineParser
 import FormulaParserSim
@@ -18,9 +19,6 @@ import BCF_Parser
 
 #TODO: Urgent: Create a new module structure to make imports simpler.
 
-sys.path.append("ASP")
-sys.path.append("ASP/PredicateTree")
-sys.path.append("simbool")
 
 from simbool.proposition import *
 from simbool.simplify import *
@@ -603,7 +601,7 @@ class EquibelPrompt(Cmd):
      # Shell Functions -- (To help locate files to load.)
      #--------------------------------------------------------------------------------
 
-     # TODO: This function.
+     # DONE: This function.
      def do_shell(self, arg_str):
           proc = Popen(arg_str, shell=True, stdout=PIPE, universal_newlines=True)
           for line in proc.stdout:

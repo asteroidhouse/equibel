@@ -1,6 +1,6 @@
 import Simplified_Parser4 as Parser
-from runtime_simple import *
-from builtin_functions import *
+from runtime import *
+from builtins import *
 
 while True:
      code = input("equibel> ")

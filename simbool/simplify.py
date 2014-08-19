@@ -1,4 +1,4 @@
-from proposition import Prop
+from simbool.proposition import Prop
 
 __falseProp = Prop(False)
 __trueProp = Prop(True)

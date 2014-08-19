@@ -4,4 +4,4 @@ class Predicate:
           self.children = children
 
      def __str__(self):
-          return "{0}({1})".format(self.name, ", ".join([str(child) for child in self.children]))
+          return "{0}({1})".format(self.name, ",".join([str(child) for child in self.children]))
