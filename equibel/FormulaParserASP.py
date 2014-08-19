@@ -2,8 +2,8 @@ import sys
 import ply.lex
 import ply.yacc
 
-from simbool.proposition import *
-from simbool.simplify import *
+from equibel.simbool.proposition import *
+from equibel.simbool.simplify import *
 
 # ---------------------------------------------------------------------------------------
 #                                       LEXER

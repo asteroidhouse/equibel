@@ -1,9 +1,9 @@
 import sys
 
-import SolverInterface
-from graph import Graph
+import equibel.SolverInterface
+from equibel.graph import Graph
 
-from simbool.simplify import *
+from equibel.simbool.simplify import *
 
 if __name__ == '__main__':
      if len(sys.argv) < 2:

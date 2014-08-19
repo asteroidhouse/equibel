@@ -3,7 +3,7 @@ import sys
 from ply import lex
 from ply import yacc
 
-from PredicateTree.Predicate import Predicate
+from equibel.PredicateTree.Predicate import Predicate
 
 tokens = ("IDENTIFIER", "INTEGER", "LPAREN", "RPAREN", "COMMA")
 

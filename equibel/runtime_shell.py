@@ -1,6 +1,6 @@
-import Simplified_Parser4 as Parser
-from runtime import *
-from builtins import *
+import equibel.Simplified_Parser4 as Parser
+from equibel.runtime import *
+from equibel.builtins import *
 
 while True:
      code = input("equibel> ")

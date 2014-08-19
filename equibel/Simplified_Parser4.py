@@ -2,7 +2,7 @@ import ply.lex
 import ply.yacc
 import sys
 import pprint
-from nodes import *
+from equibel.nodes import *
 
 debug_mode = False
 

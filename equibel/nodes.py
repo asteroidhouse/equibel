@@ -1,4 +1,4 @@
-from runtime import *
+from equibel.runtime import *
 
 class RootNode:
      def __init__(self, nodes=[]):

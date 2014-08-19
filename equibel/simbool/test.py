@@ -1,6 +1,6 @@
 import unittest
-from proposition import *
-from simplify import *
+from equibel.simbool.proposition import *
+from equibel.simbool.simplify import *
 
 class TestSet(unittest.TestCase):
     def setUp(self):

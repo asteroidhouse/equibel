@@ -1,5 +1,5 @@
 import sys
-from PredicateTree import PredicateParser 
+from equibel.PredicateTree import PredicateParser 
 
 #TODO: Handle cases where the input is UNSATISFIABLE - now an error occurs somewhere else.
 

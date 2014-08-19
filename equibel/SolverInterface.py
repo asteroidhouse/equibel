@@ -5,15 +5,15 @@ import re
 
 from subprocess import Popen, PIPE
 
-import FormulaExtractor
+import equibel.FormulaExtractor as FormulaExtractor
 
-import ASP_Formatter
-import ASP_Parser
+import equibel.ASP_Formatter as ASP_Formatter
+import equibel.ASP_Parser as ASP_Parser
 
 
 OPT_VALUE_TEMPLATE = "gringo eq_sets.lp transitive.lp translate.lp {0} | clasp --quiet=2,1 --verbose=0"
 OPT_MODEL_TEMPLATE = "gringo eq_sets.lp transitive.lp translate.lp {0} | clasp --quiet=0,2 --verbose=0 --opt-all={1}"
-CONTAINMENT_TEMPLATE = "gringo eq_sets.lp transitive.lp translate.lp {0} | hclasp-1.1.5 -e record 0 --verbose=0"
+CONTAINMENT_TEMPLATE = "gringo equibel/eq_sets.lp equibel/transitive.lp equibel/translate.lp {0} | hclasp-1.1.5 -e record 0 --verbose=0"
 
 class UnsatisfiableError(Exception): pass
 

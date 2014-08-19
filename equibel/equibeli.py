@@ -4,26 +4,26 @@ import readline
 from cmd import Cmd
 from subprocess import Popen, PIPE
 
-import ASP_Formatter
-import BCF_Formatter
-import Simplified_Parser4 as Parser
-from runtime import *
-from builtins import *
+import equibel.ASP_Formatter as ASP_Formatter
+import equibel.BCF_Formatter as BCF_Formatter
+import equibel.Simplified_Parser4 as Parser
+from equibel.runtime import *
+from equibel.builtins import *
 
-from graph import Graph
+from equibel.graph import Graph
 
-import CmdLineParser
-import FormulaParserSim
+import equibel.CmdLineParser as CmdLineParser
+import equibel.FormulaParserSim as FormulaParserSim
 
-import BCF_Parser
+import equibel.BCF_Parser as BCF_Parser
 
 #TODO: Urgent: Create a new module structure to make imports simpler.
 
 
-from simbool.proposition import *
-from simbool.simplify import *
+from equibel.simbool.proposition import *
+from equibel.simbool.simplify import *
 
-import SolverInterface
+import equibel.SolverInterface as SolverInterface
 
 class ArgumentError(Exception): pass
 class ManagerError(Exception): pass

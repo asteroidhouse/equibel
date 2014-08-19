@@ -1,10 +1,8 @@
 import sys
-import FormulaExtractor
-import ASP_Parser
+import equibel.FormulaExtractor as FormulaExtractor
+import equibel.ASP_Parser as ASP_Parser
 
-sys.path.append("..")
-sys.path.append("../simbool")
-from simbool.simplify import *
+from equibel.simbool.simplify import *
 
 if __name__ == '__main__':
      if len(sys.argv) < 2:

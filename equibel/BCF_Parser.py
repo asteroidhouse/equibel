@@ -1,9 +1,9 @@
 import sys
 import re
-from graph import Graph
-import FormulaParserSim
-import ASP_Formatter
-import BCF_Formatter
+from equibel.graph import Graph
+import equibel.FormulaParserSim as FormulaParserSim
+import equibel.ASP_Formatter as ASP_Formatter
+import equibel.BCF_Formatter as BCF_Formatter
 
 class FormatError(Exception): pass
 

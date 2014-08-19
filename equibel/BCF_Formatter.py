@@ -1,5 +1,5 @@
 import sys
-from simbool.proposition import *
+from equibel.simbool.proposition import *
 
 TYPE_TEMPLATE    = "t {0}\n"
 NODE_TEMPLATE    = "n {0}\n"

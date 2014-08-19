@@ -1,5 +1,5 @@
 import sys
-from simbool.proposition import Prop
+from equibel.simbool.proposition import Prop
 
 NODE_TEMPLATE    = "node({0}).\n"
 RANGE_TEMPLATE   = "node({0}..{1}).\n"

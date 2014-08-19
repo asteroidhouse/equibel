@@ -1,8 +1,8 @@
 import sys
-import FormulaParserASP
+import equibel.FormulaParserASP as FormulaParserASP
 
-from simbool.proposition import *
-from simbool.simplify import *
+from equibel.simbool.proposition import *
+from equibel.simbool.simplify import *
 
 # TODO: See if this can be made cleaner.
 def combined_formulas(models):

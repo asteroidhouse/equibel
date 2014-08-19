@@ -1,5 +1,5 @@
-from runtime import *
-from graph import Graph
+from equibel.runtime import *
+from equibel.graph import Graph
 
 #---------------------------------------------------------------------------------
 #                        Printing Functions

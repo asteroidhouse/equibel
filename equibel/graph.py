@@ -1,4 +1,4 @@
-from node import Node
+from equibel.node import Node
 
 class GraphError(Exception): pass
 

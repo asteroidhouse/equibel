@@ -4,8 +4,8 @@ import sys
 import ply.lex
 import ply.yacc
 
-from simbool.proposition import *
-from simbool.simplify import *
+from equibel.simbool.proposition import *
+from equibel.simbool.simplify import *
 
 def parse_formula(text):
      tokens = ("NEG", "AND", "OR", "LPAREN", "RPAREN", "IDENTIFIER", "WHITESPACE", "NEWLINE")
