@@ -32,7 +32,10 @@ manager = GraphManager()
 g = Graph()
 manager.add('g', g)
 
+cardinality_maximal = False
+
 class EquibelPrompt(Cmd):
+
 
      def check_silencing_terminator(self, arg_str):
           """Checks if arg_str ends with a 'silencing' terminator, such as 
@@ -123,7 +126,7 @@ class EquibelPrompt(Cmd):
           """Prints the nodes in the current context."""
           nodes = manager.current_context.get_nodes()
           if not nodes:
-               print("\n\tnodes: {}\n")
+               print("\n\tnodes: []\n")
           else:
                print("\n\tnodes: {0}\n".format(nodes))
           
@@ -203,7 +206,7 @@ class EquibelPrompt(Cmd):
           edges = manager.current_context.get_edges()
           directed = manager.current_context.directed
           if not edges:
-               print("\n\tedges: {}\n")
+               print("\n\tedges: []\n")
           else:
                if directed:
                     arrow = '->'
@@ -433,6 +436,25 @@ class EquibelPrompt(Cmd):
           if verbose:
                self.print_formulas(node_num)
 
+     def do_remove_formula(self, arg_str):
+          arg_str, verbose = self.check_silencing_terminator(arg_str)
+          args = arg_str.split(maxsplit=1)
+
+          if len(args) != 2:
+               raise ArgumentError("Expected exactly 2 arguments to add_formula.\nusage: add_formula NODE_NUM FORMULA")
+
+          node_str, formula_str = args
+
+          if not node_str.isdigit():
+               raise ArgumentError("The node identifier must be an integer.")
+
+          node_num = int(node_str)
+          formula = FormulaParserSim.parse_formula(formula_str)
+          manager.current_context.remove_formula(node_num, formula)
+
+          if verbose:
+               self.print_formulas(node_num)
+          
      
      def do_formulas(self, arg_str):
           arg_str, verbose = self.check_silencing_terminator(arg_str)
@@ -553,13 +575,52 @@ class EquibelPrompt(Cmd):
      def do_one_shot(self, arg_str):
           arg_str, verbose = self.check_silencing_terminator(arg_str)
           graph = manager.current_context
-          new_graph = SolverInterface.one_shot(graph)
+          new_graph = SolverInterface.one_shot(graph, cardinality_maximal)
           manager.update_context(new_graph)
           if verbose:
                print("\n\tOne-shot belief change completed.\n")
 
 
+     def do_cardinality(self, arg_str):
+          arg_str, verbose = self.check_silencing_terminator(arg_str)
+          cardinality_maximal = True
+          if verbose:
+               print("\n\tone_shot will use cardinality-maximal EQ sets.\n")
 
+     def do_containment(self, arg_str):
+          arg_str, verbose = self.check_silencing_terminator(arg_str)
+          cardinality_maximal = False
+          if verbose:
+               print("\n\tone_shot will use containment-maximal EQ sets.\n")
+          
+
+     def do_iterate(self, arg_str):
+          arg_str, verbose = self.check_silencing_terminator(arg_str)
+          args = arg_str.split()
+
+          if len(args) == 0:
+               num_iterations = 1
+          elif len(args) == 1:
+               num_str = args[0]
+               if not num_str.isdigit():
+                    raise ArgumentError("the number of iterations must be an integer: \"{0}\"".format(num_str))
+               num_iterations = int(num_str)
+          else:
+               raise ArgumentError("Expected 0 or 1 argument to iterate()!\nusage: iterate [NUM_ITERATIONS]")
+
+          graph = manager.current_context
+          new_graph = SolverInterface.iterate(graph, num_iterations, cardinality_maximal)
+          manager.update_context(new_graph)
+
+          if verbose:
+               print("\n\t{0} iterations completed.\n".format(num_iterations))
+
+          
+
+          
+          
+
+          
 
 
 

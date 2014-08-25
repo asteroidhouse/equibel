@@ -88,7 +88,6 @@ class Graph:
                raise GraphError("node {0} does not exist".format(node_num))
           return self.nodes[node_num].formulas
 
-     # TODO: Think about where to parse the formula. -> NOT HERE
      def add_formula(self, node_num, formula):
           if node_num not in self.nodes:
                raise GraphError("node {0} does not exist".format(node_num))
@@ -114,11 +113,11 @@ class Graph:
           self.nodes[node_num].remove_formula(formula)
 
 
-     def remove_formulas(self, node_num, formula_strs):
+     def remove_formulas(self, node_num, formulas):
           if node_num not in self.nodes:
                raise GraphError("node {0} does not exist".format(node_num))
-          for formula_str in formula_strs:
-               self.remove_formula(node_num, formula_str)
+          for formula in formulas:
+               self.remove_formula(node_num, formula)
 
 
      #------------------------------------------------------------------------
