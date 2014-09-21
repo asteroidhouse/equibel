@@ -51,7 +51,13 @@ def convert_to_asp(graph):
 def convert_formula_to_asp(formula):
      # Atomic propositions are the base case for the recursion.
      if formula.is_atomic():
-          return formula.get_name()
+          name = formula.get_name()
+          if name == True:
+               return 'true'
+          elif name == False:
+               return 'false'
+          else:
+               return name
 
      if formula.get_op() == '~':
           term = formula.get_terms()[0]

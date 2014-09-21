@@ -613,7 +613,10 @@ class EquibelPrompt(Cmd):
           manager.update_context(new_graph)
 
           if verbose:
-               print("\n\t{0} iterations completed.\n".format(num_iterations))
+               if num_iterations == 1:
+                    print("\n\t1 iteration completed.\n")
+               else:
+                    print("\n\t{0} iterations completed.\n".format(num_iterations))
 
           
 

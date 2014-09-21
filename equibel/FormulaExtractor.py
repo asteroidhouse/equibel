@@ -25,7 +25,7 @@ def combined_formulas(models):
                else:
                     disjunctions[node_num] = conjunction
                
-     # TODO: This is somewhat ad-hoc simplification.
+     # TODO: Some simplification.
      for node_num in disjunctions:
           disjunctions[node_num] = simplify(disjunctions[node_num])
 

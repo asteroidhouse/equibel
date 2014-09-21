@@ -67,10 +67,10 @@ def p_error(p):
           raise ValueError("Unknown error")
      raise ValueError("Syntax error, line {0}: {1}".format(p.lineno + 1, p.type))
 
-lexer = lex.lex()
+lexer = lex.lex(debug=False)
 
-tuple_parser = yacc.yacc(start='TUPLE')
-list_parser  = yacc.yacc(start='LIST')
+tuple_parser = yacc.yacc(start='TUPLE', debug=False)
+list_parser  = yacc.yacc(start='LIST', debug=False)
 
 
 def parse_tuple(text):

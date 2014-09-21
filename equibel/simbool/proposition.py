@@ -32,12 +32,17 @@ class Prop:
     # My function to handle return the names of True and False propositions as the
     # lowercase strings 'true' and 'false'
     def get_name(self):
-        if self.name == True:
-            return 'true'
-        elif self.name == False:
-            return 'false'
-        return self.name
+        if self.atomic:
+            if self.name == True:
+                return 'true'
+            elif self.name == False:
+                return 'false'
+            return self.name
+        else:
+            return None
         
+    def is_true(self):
+        return self.atomic and self.name == True
 
     # My function to get all the atom names.
     def get_atoms(self):
@@ -88,7 +93,7 @@ class Prop:
             return s.atomic or s.oper == '~'
         
         if self.atomic:
-            return self.get_name()
+            return str(self.get_name())
         
         oper = self.oper
         if oper == '~':

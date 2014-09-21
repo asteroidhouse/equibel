@@ -10,6 +10,8 @@ import equibel.FormulaExtractor as FormulaExtractor
 import equibel.ASP_Formatter as ASP_Formatter
 import equibel.ASP_Parser as ASP_Parser
 
+from equibel.simbool.simplify import simplify
+
 CARDINALITY_TEMPLATE = "gringo equibel/eq_sets3.lp equibel/cardinality_max.lp equibel/transitive.lp equibel/translate.lp {0}" + \
                        "| clasp --opt-mode=optN --quiet=1,2 --verbose=0"
 
@@ -33,7 +35,7 @@ def one_shot(graph, cardinality_maximal=False):
      #temp_file = tempfile.NamedTemporaryFile(mode='w')
      temp_file = open('temp_asp_file', 'w')
      asp_str = ASP_Formatter.convert_to_asp(graph)
-     print("INPUT:\n", asp_str)
+     #print("INPUT:\n", asp_str)
 
      temp_file.write(asp_str)
      temp_file.close()
@@ -42,12 +44,13 @@ def one_shot(graph, cardinality_maximal=False):
           output = run_one_shot_cardinality(temp_file.name)
      else:
           output = run_one_shot_containment(temp_file.name)
-     print("OUTPUT:\n", output)
+     #print("OUTPUT:\n", output)
 
      models = ASP_Parser.parse_asp(output)
      node_formulas = FormulaExtractor.combined_formulas(models)
      new_graph = updated_graph(graph, node_formulas)
      return new_graph
+
 
 
 
@@ -62,7 +65,7 @@ def run_iterate_cardinality(filename):
      return proc.stdout.read()
 
 def run_iterate_containment(filename):
-     print("FILENAME: ", filename)
+     #print("FILENAME: ", filename)
      proc = Popen(ITERATE_CONT_TEMPLATE.format(filename), shell=True, stdout=PIPE, universal_newlines=True)
      return proc.stdout.read()
      
@@ -75,14 +78,24 @@ def iterate(graph, num_iterations=1, cardinality_maximal=False):
 
      return resultant_graph
 
+def iterate_steady(graph, cardinality_maximal=False):
+     old_graph = graph
+     resultant_graph = iterate_once(old_graph, cardinality_maximal)
+
+     while resultant_graph != old_graph:
+          old_graph = resultant_graph
+          resultant_graph = iterate_once(old_graph, cardinality_maximal)
+     
+     return resultant_graph
+
 
 def iterate_once(graph, cardinality_maximal=False):
-     print("ITERATION")
+     #print("ITERATION")
 
      temp_file = open('temp_asp_file', 'w')
      asp_str = ASP_Formatter.convert_to_asp(graph)
 
-     print("Iteration input:\n", asp_str)
+     #print("Iteration input:\n", asp_str)
      temp_file.write(asp_str)
      temp_file.close()
 
@@ -90,7 +103,7 @@ def iterate_once(graph, cardinality_maximal=False):
           output = run_iterate_cardinality(temp_file.name)
      else:
           output = run_iterate_containment(temp_file.name)
-     print("Iteration output:\n", output)
+     #print("Iteration output:\n", output)
 
      models = ASP_Parser.parse_asp(output)
      node_formulas = FormulaExtractor.combined_formulas(models)
@@ -103,5 +116,8 @@ def updated_graph(graph, node_formulas):
      new_graph = copy.deepcopy(graph)
      for node_num in node_formulas:
           formula = node_formulas[node_num]
-          new_graph.add_formula(node_num, formula)
+
+          # NOTE: This makes it so that true propositions are not added as new formulas.
+          if not formula.is_true():
+               new_graph.add_formula(node_num, formula)
      return new_graph

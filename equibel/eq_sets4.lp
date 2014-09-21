@@ -28,7 +28,7 @@ atom(P)   :- atom(P,_).
 
 % We generate a set of equivalences linking together atoms in nodes that are directly connected.
 { eq(P,X,Y) : atom(P,X) , edge(X,Y) }.
-{ eq(P,X,Y) : atom(P,Y) , edge(X,Y) }.
+%{ eq(P,X,Y) : atom(P,Y) , edge(X,Y) }.
 
 % Can we find an assignment of truth values (restricted by our set of equivalences) such that all the original formulas are satisfied?
 % We want to see if truth values can be assigned to the atoms such that all the original formulas hold.
