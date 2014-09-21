@@ -1,0 +1,1 @@
+gringo eq_sets2.lp case3.lp | clasp 0 --heuristic=domain --enum-mode=domRec --verbose=0
