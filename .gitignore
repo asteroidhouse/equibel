@@ -1,1 +1,5 @@
+__pycache__
+.DS_Store
+parser.out
+parsetab.py
 *.pyc
