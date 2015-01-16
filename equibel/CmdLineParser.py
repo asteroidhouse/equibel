@@ -6,14 +6,15 @@ from ply import yacc
 #--------------------------------------------------------------------------------
 tokens = ("STRING", "INTEGER", "COMMA", "DOT", "LPAREN", "RPAREN", "LSQUARE", "RSQUARE")
 
-t_STRING = r'\w+'
-t_COMMA = r','
-t_DOT = r'\.'
-t_LPAREN = r'\('
-t_RPAREN = r'\)'
+t_STRING  = r'\w+'
+t_COMMA   = r','
+t_DOT     = r'\.'
+t_LPAREN  = r'\('
+t_RPAREN  = r'\)'
 t_LSQUARE = r'\['
 t_RSQUARE = r'\]'
 
+# Ignore whitespace
 t_ignore = " \t\n"
 
 

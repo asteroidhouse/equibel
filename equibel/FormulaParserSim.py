@@ -41,15 +41,15 @@ def parse_formula(text):
 
     def p_FORM(p):
         """FORM : SIMPLE_FORM
-               | COMPOUND_FORM"""
+                | COMPOUND_FORM"""
         #print("form")
         p[0] = p[1]
 
     def p_SIMPLE_FORM(p):
         """SIMPLE_FORM : ATOM
-                    | NEG OPT_WHITESPACE ATOM
-                    | LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
-                    | NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN"""
+                       | NEG OPT_WHITESPACE ATOM
+                       | LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN
+                       | NEG OPT_WHITESPACE LPAREN OPT_WHITESPACE FORM OPT_WHITESPACE RPAREN"""
         #print("simple form")
         if len(p) == 2:
             p[0] = p[1]
@@ -66,7 +66,7 @@ def parse_formula(text):
     
     def p_FORM_LIST(p):
         """FORM_LIST : FORM OPT_WHITESPACE
-                   | FORM WHITESPACE FORM_LIST"""
+                     | FORM WHITESPACE FORM_LIST"""
         #print("form list")
         p[0] = [p[1]] if len(p) == 3 else [p[1]] + p[3]
 

@@ -18,9 +18,6 @@ import equibel.FormulaParserSim as FormulaParserSim
 
 import equibel.BCF_Parser as BCF_Parser
 
-# DONE: Urgent: Create a new module structure to make imports simpler.
-
-
 from equibel.simbool.proposition import *
 from equibel.simbool.simplify import *
 
@@ -420,7 +417,9 @@ class EquibelPrompt(Cmd):
 
     def do_add_formula(self, arg_str):
         arg_str, verbose = self.check_silencing_terminator(arg_str)
-        args = arg_str.split(maxsplit=1)
+        #args = arg_str.split(maxsplit=1)
+        # Python2 version of split does not accept keywork args, so we use:
+        args = arg_str.split(None, 1)
 
         if len(args) != 2:
             raise ArgumentError("Expected exactly 2 arguments to add_formula.\nusage: add_formula NODE_NUM FORMULA")
@@ -439,7 +438,9 @@ class EquibelPrompt(Cmd):
 
     def do_remove_formula(self, arg_str):
         arg_str, verbose = self.check_silencing_terminator(arg_str)
-        args = arg_str.split(maxsplit=1)
+        #args = arg_str.split(maxsplit=1)
+        # Python2 version of split does not accept keywork args, so we use:
+        args = arg_str.split(None, 1)
 
         if len(args) != 2:
             raise ArgumentError("Expected exactly 2 arguments to add_formula.\nusage: add_formula NODE_NUM FORMULA")
@@ -631,7 +632,6 @@ class EquibelPrompt(Cmd):
     # Shell Functions -- (To help locate files to load.)
     #--------------------------------------------------------------------------------
 
-    # DONE: This function.
     def do_shell(self, arg_str):
         proc = Popen(arg_str, shell=True, stdout=PIPE, universal_newlines=True)
         for line in proc.stdout:

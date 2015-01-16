@@ -13,7 +13,7 @@ OR_TEMPLATE    = "or({0},{1})"
 NEG_TEMPLATE   = "neg({0})"
 
 # TODO: Think about how to handle directed vs undirected edges, 
-#      both here and in the Graph class.
+#       both here and in the Graph class.
 def convert_to_asp(graph):
     asp_str = ""
     
@@ -25,7 +25,7 @@ def convert_to_asp(graph):
         asp_str += ATOM_TEMPLATE.format(atom)
     
     # DONE: This is one way to handle undirected edges: when writing the ASP
-    #      code, explicitly encode both directions if the graph is undirected.
+    #       code, explicitly encode both directions if the graph is undirected.
     for (start_node_num, end_node_num) in graph.edges:
         asp_str += EDGE_TEMPLATE.format(start_node_num, end_node_num)
         if not graph.directed:

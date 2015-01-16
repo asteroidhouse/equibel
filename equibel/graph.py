@@ -3,10 +3,10 @@ from equibel.node import Node
 class GraphError(Exception): pass
 
 # DONE: Keep track of the atoms in use at the graph level, not just 
-#      at the level of individual nodes. This is needed so that 
-#      when a new node is added, it can be "loaded up" with the 
-#      atoms that are in the common alphabet. So, the add_node
-#      function and such MAY need to be changed.
+#       at the level of individual nodes. This is needed so that 
+#       when a new node is added, it can be "loaded up" with the 
+#       atoms that are in the common alphabet. So, the add_node
+#       function and such MAY need to be changed.
 class Graph:
     def __init__(self):
         self.nodes = dict()
@@ -46,19 +46,40 @@ class Graph:
     def __remove_associated_edges(self, node_num):
         self.edges = {(start, end) for (start, end) in self.edges if start != node_num and end != node_num}
 
+    #------------------------------------------------------------------------
+    # Node Special Functions
+    #------------------------------------------------------------------------
+    
+    # TODO: ALL of these functions need to be tested.
+    
+    def __contains__(self, node_num):
+        return node_num in self.nodes
+
+    def __delitem__(self, node_num):
+        self.remove_node(node_num)
+
+    def __getitem__(self, node_num):
+        return self.nodes[node_num]
+
+    def __iter__(self):
+        return iter(self.nodes)
+
+    def __len__(self):
+        return len(self.nodes)
+
 
     #------------------------------------------------------------------------
     # Edge Functions
     #------------------------------------------------------------------------
-        
+    
     def get_edges(self):
         return sorted(self.edges)
 
     # TODO: Check how the start and end points should be passed 
-    #      to the function--as separate points, or as a tuple?
-    #      Changed it to a tuple, so "edge" is i.e. (1,2)
+    #       to the function--as separate points, or as a tuple?
+    #       Changed it to a tuple, so "edge" is i.e. (1,2)
     def add_edge(self, edge):
-        # TODO: Do some better error checking here to make sure that the endpoints exist.
+        # DONE: Do some better error checking here to make sure that the endpoints exist.
         start_node, end_node = edge
         if start_node in self.nodes and end_node in self.nodes:
             self.edges.add(edge)
@@ -152,9 +173,9 @@ class Graph:
         return self.nodes[node_num].weights
 
     # DONE: When a weight is added to one node for an atom that doesn't 
-    #      exist in the common alphabet, that atom name should be entered 
-    #      into the common alphabet, and all other nodes should be given 
-    #      the default weight for that node.
+    #       exist in the common alphabet, that atom name should be entered 
+    #       into the common alphabet, and all other nodes should be given 
+    #       the default weight for that node.
     def add_weight(self, node_num, atom_name, weight):
         if node_num not in self.nodes:
             raise GraphError("node {0} does not exist".format(node_num))
@@ -165,7 +186,7 @@ class Graph:
             self.add_atom(atom_name)
         
     # DONE: Either set_weight or add_weight can be defined in terms of the
-    #      other, since the functionality is identical.
+    #       other, since the functionality is identical.
     def set_weight(self, node_num, atom_name, weight):
         self.add_weight(node_num, atom_name, weight)
     

@@ -12,11 +12,16 @@ import equibel.ASP_Parser as ASP_Parser
 
 from equibel.simbool.simplify import simplify
 
-CARDINALITY_TEMPLATE = "gringo equibel/eq_sets3.lp equibel/cardinality_max.lp equibel/transitive.lp equibel/translate.lp {0}" + \
-                   "| clasp --opt-mode=optN --quiet=1,2 --verbose=0"
+#CARDINALITY_TEMPLATE = "gringo equibel/eq_sets3.lp equibel/cardinality_max.lp equibel/transitive.lp equibel/translate.lp {0}" + \
+#                   "| clasp --opt-mode=optN --quiet=1,2 --verbose=0"
 
-CONTAINMENT_TEMPLATE = "gringo equibel/eq_sets3.lp equibel/transitive.lp equibel/translate.lp {0}" + \
-                   "| clasp 0 --heuristic=domain --enum-mode=domRec --verbose=0"
+CARDINALITY_TEMPLATE = "clingo equibel/eq_sets.lp equibel/cardinality_max.lp equibel/transitive.lp equibel/translate.lp {0} --opt-mode=optN --quiet=1,2 --verbose=0"
+
+
+#CONTAINMENT_TEMPLATE = "gringo equibel/eq_sets3.lp equibel/transitive.lp equibel/translate.lp {0}" + \
+#                   "| clasp 0 --heuristic=domain --enum-mode=domRec --verbose=0"
+
+CONTAINMENT_TEMPLATE = "clingo equibel/eq_sets.lp equibel/transitive.lp equibel/translate.lp {0} 0 --heuristic=domain --enum-mode=domRec --verbose=0"
 
 class UnsatisfiableError(Exception): pass
 

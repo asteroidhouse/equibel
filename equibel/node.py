@@ -16,10 +16,10 @@ class Node:
             self.add_atom(atom)
 
     # TODO: What about formulas using the atom to be removed?
-    #      Should they automatically be removed? Or should an
-    #      exception be raised, like FormulaDependencyError?
-    #      Or should the user be prompted to choose whether 
-    #      all formulas that use the atom should be deleted?
+    #       Should they automatically be removed? Or should an
+    #       exception be raised, like FormulaDependencyError?
+    #       Or should the user be prompted to choose whether 
+    #       all formulas that use the atom should be deleted?
     def remove_atom(self, atom_name):
         if atom_name in self.weights:
             del self.weights[atom_name]
@@ -33,12 +33,12 @@ class Node:
             self.weights[atom_name] = 1 
 
     # DONE: Now it extracts and adds the atoms used in the 
-    #      formula here, for lower coupling.
-    #      Should this extract the atoms used in the formula
-    #      and add them to the weights list if they are not 
-    #      already there? Currently, this is done from the 
-    #      Graph class, but should it be separated out for 
-    #      lower coupling?
+    #       formula here, for lower coupling.
+    #       Should this extract the atoms used in the formula
+    #       and add them to the weights list if they are not 
+    #       already there? Currently, this is done from the 
+    #       Graph class, but should it be separated out for 
+    #       lower coupling?
     def add_formula(self, formula):
         self.formulas.add(formula)
         self.__add_atoms_from_formula(formula)

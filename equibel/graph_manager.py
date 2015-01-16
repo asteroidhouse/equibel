@@ -1,4 +1,4 @@
-class ManagerError(Exception): pass
+class GraphManagerError(Exception): pass
 
 class GraphManager:
     def __init__(self):
@@ -25,11 +25,11 @@ class GraphManager:
     
     def remove(self, graph_name):
         if graph_name not in self.graphs:
-            raise ManagerError("graph \"{0}\" does not exist".format(graph_name))
+            raise GraphManagerError("graph \"{0}\" does not exist".format(graph_name))
         del self.graphs[graph_name]
 
     def set_context(self, graph_name):
         if graph_name not in self.graphs:
-            raise ManagerError("graph \"{0}\" does not exist".format(graph_name))
+            raise GraphManagerError("graph \"{0}\" does not exist".format(graph_name))
         self.current_context = self.graphs[graph_name]
         self.current_context_name = graph_name
