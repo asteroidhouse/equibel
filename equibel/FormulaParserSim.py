@@ -77,7 +77,7 @@ def parse_formula(text):
 
     def p_OP(p):
         """OP : AND_OP
-             | OR_OP"""
+              | OR_OP"""
         #print("op")
         p[0] = p[1]
 
@@ -97,7 +97,7 @@ def parse_formula(text):
 
     def p_OPT_WHITESPACE(p):
         """OPT_WHITESPACE : WHITESPACE
-                       | empty"""
+                          | empty"""
         pass
     
     def p_empty(p):

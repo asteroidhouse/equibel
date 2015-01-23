@@ -10,8 +10,8 @@ def parse_equibel(text):
     #                                   LEXER
     #-------------------------------------------------------------------------------------------------
     tokens = ("IDENTIFIER", "INTEGER", "STRING", "LPAREN", "RPAREN", "COMMA", "EQUALS",
-            "PLUS", "MINUS", "PLUS_EQUALS", "MINUS_EQUALS", "LSQUARE", "RSQUARE", 
-            "DOT", "NEWLINE")
+              "PLUS", "MINUS", "PLUS_EQUALS", "MINUS_EQUALS", "LSQUARE", "RSQUARE", 
+              "DOT", "NEWLINE")
 
     t_IDENTIFIER = r'[_a-zA-Z][_a-zA-Z0-9]*'
 
@@ -61,7 +61,7 @@ def parse_equibel(text):
     #-------------------------------------------------------------------------------------------------
     def p_LINES(p):
         """LINES : LINE
-                | LINE NEWLINE LINES"""
+                 | LINE NEWLINE LINES"""
         if debug_mode:
             print("lines")
         p[0] = RootNode([p[1]]) if len(p) == 2 else p[3].append(p[1])
@@ -79,9 +79,9 @@ def parse_equibel(text):
 
     def p_EXPRESSION(p):
         """EXPRESSION : LITERAL
-                    | ASSIGNMENT
-                    | MOD_ASSIGNMENT
-                    | FUNCTION_CALL"""
+                      | ASSIGNMENT
+                      | MOD_ASSIGNMENT
+                      | FUNCTION_CALL"""
         if debug_mode:
             print("expression")
         p[0] = p[1]
@@ -101,10 +101,10 @@ def parse_equibel(text):
     #            add_nodes [1,2,3,4]
     def p_FUNCTION_CALL(p):
         """FUNCTION_CALL : EXPRESSION DOT IDENTIFIER LPAREN COMMA_ARGS RPAREN
-                      | EXPRESSION DOT IDENTIFIER LPAREN RPAREN
-                      | IDENTIFIER LPAREN COMMA_ARGS RPAREN
-                      | IDENTIFIER LPAREN RPAREN
-                      | IDENTIFIER"""
+                         | EXPRESSION DOT IDENTIFIER LPAREN RPAREN
+                         | IDENTIFIER LPAREN COMMA_ARGS RPAREN
+                         | IDENTIFIER LPAREN RPAREN
+                         | IDENTIFIER"""
         if debug_mode:
             print("function call")
         if len(p) == 2:
@@ -127,7 +127,7 @@ def parse_equibel(text):
     
     def p_COMMA_ARGS(p):
         """COMMA_ARGS : COMMA_ARGS COMMA EXPRESSION
-                    | EXPRESSION"""
+                      | EXPRESSION"""
         if debug_mode:
             print("comma args")
         p[0] = [p[1]] if len(p) == 2 else p[1] + [p[3]]
@@ -142,7 +142,7 @@ def parse_equibel(text):
 
     def p_BINARY_OPERATOR(p):
         """BINARY_OPERATOR : PLUS
-                        | MINUS"""
+                           | MINUS"""
         if debug_mode:
             print("binary operator")
         p[0] = p[1]
@@ -160,14 +160,14 @@ def parse_equibel(text):
 
     def p_ASSIGN_OPERATOR(p):
         """ASSIGN_OPERATOR : PLUS_EQUALS
-                        | MINUS_EQUALS"""
+                           | MINUS_EQUALS"""
         p[0] = p[1]
 
     def p_LITERAL(p):
         """LITERAL : INTEGER
-                 | STRING
-                 | ORDERED_PAIR
-                 | LIST"""
+                   | STRING
+                   | ORDERED_PAIR
+                   | LIST"""
         if debug_mode:
             print("literal")
         p[0] = LiteralNode(p[1])
@@ -180,7 +180,7 @@ def parse_equibel(text):
 
     def p_LIST(p):
         """LIST : LSQUARE RSQUARE
-               | LSQUARE ELEMENTS RSQUARE"""
+                | LSQUARE ELEMENTS RSQUARE"""
         if len(p) == 3:
             if debug_mode:
                 print("empty list")
@@ -197,8 +197,8 @@ def parse_equibel(text):
     #      appropriate point, and allow for extensions.
     def p_ELEMENTS(p):
         """ELEMENTS : ELEMENTS COMMA ELEMENT
-                  | INTEGER DOT DOT INTEGER
-                  | ELEMENT"""
+                    | INTEGER DOT DOT INTEGER
+                    | ELEMENT"""
         if debug_mode:
             print("elements")
         if len(p) == 2:

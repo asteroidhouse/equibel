@@ -41,7 +41,7 @@ def t_error(t):
 
 def p_FORMULA(p):
     """FORMULA : ATOM
-             | COMPOUND"""
+               | COMPOUND"""
     p[0] = p[1]
 
 def p_ATOM(p):
