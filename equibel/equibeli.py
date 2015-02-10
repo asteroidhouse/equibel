@@ -95,6 +95,8 @@ class EquibelPrompt(Cmd):
         graph_name = args[0]
         manager.add(graph_name, Graph())
         manager.set_context(graph_name)
+        # TODO: TESTING NEW FEATURE
+        self.prompt = "equibel ({0}) > ".format(graph_name)
         if verbose:
             self.print_graphs()
 
