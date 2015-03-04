@@ -143,7 +143,6 @@ class EquibelPrompt(Cmd):
         graph_name = args[0]
         try:
             manager.set_context(graph_name)
-            # TODO: TESTING NEW FEATURE
             self.prompt = "equibel ({0}) > ".format(graph_name)
             #if verbose:
             #    self.print_graphs()
@@ -194,11 +193,18 @@ class EquibelPrompt(Cmd):
                 raise ValueError("Error: add_node requires an integer argument!")
             else:
                 node_id = int(node_str)
+                #------
                 self.add_node_to_graph(G, node_id)
+                #------
+                # To be replaced with:
+                # G.add_node(node_id)
                 if verbose:
                     self.print_nodes()
 
 
+    # TODO: Build this functionality into the EquibelGraph class, to make it 
+    #       easier to add nodes here.
+    # To be removed after EquibelGraph is implemented.
     def add_node_to_graph(self, G, node_id):
         G.add_node(node_id)
         G.node[node_id][WEIGHTS_KEY]  = dict()
@@ -225,11 +231,16 @@ class EquibelPrompt(Cmd):
 
         try:
             node_list = CmdLineParser.parse_list(arg_str)
+            #------
             for node_id in node_list:
                 graph.add_node(node_id)
-                G.node[node_id][WEIGHTS_KEY] = dict()
-                G.node[node_id][FORMULAS_KEY] = set()
-                self.add_atoms_to_new_node(G, node_id)
+                graph.node[node_id][WEIGHTS_KEY] = dict()
+                graph.node[node_id][FORMULAS_KEY] = set()
+                self.add_atoms_to_new_node(graph, node_id)
+            #------
+            # To be replaced with:
+            # graph.add_nodes(node_list)
+
         except Exception as err:
             print(err)
 
@@ -329,12 +340,17 @@ class EquibelPrompt(Cmd):
             (from_node_id, to_node_id) = CmdLineParser.parse_tuple(arg_str)
             # DONE: Add the nodes properly to the graph, loading them up with 
             # the existing atoms, if the nodes are not already in the graph.
+            #------
             if from_node_id not in G:
                 self.add_node_to_graph(G, from_node_id)
             if to_node_id not in G:
                 self.add_node_to_graph(G, to_node_id)
 
             G.add_edge(from_node_id, to_node_id)
+            #------
+            # To be replaced with:
+            # G.add_edge(from_node_id, to_node_id)
+
             if verbose:
                 self.print_edges()
         except Exception as err:
@@ -354,6 +370,7 @@ class EquibelPrompt(Cmd):
 
         try:
             edge_list = CmdLineParser.parse_list(arg_str)
+            #------
             for (from_node_id, to_node_id) in edge_list:
                 if from_node_id not in G:
                     self.add_node_to_graph(G, from_node_id)
@@ -361,6 +378,9 @@ class EquibelPrompt(Cmd):
                     self.add_node_to_graph(G, to_node_id)
 
                 G.add_edge(from_node_id, to_node_id)
+            #------
+            # Replaced with:
+            # G.add_edges(edge_list)
             
             if verbose:
                 self.print_edges()
@@ -443,6 +463,7 @@ class EquibelPrompt(Cmd):
             if verbose:
                 self.print_atoms()
 
+    # TODO: Build this functionality into the add_atom method of EquibelGraph.
     def add_atom_to_context(self, atom):
         G = manager.current_context
         G.graph[ATOMS_KEY].add(atom)
@@ -481,6 +502,7 @@ class EquibelPrompt(Cmd):
         except Exception as err:
             print(err)
 
+    # TODO: LEFT OFF HERE IN TRYING TO RE-FACTOR CODE INTO EQUIBELGRAPH CLASS!!
     def do_remove_atom(self, arg_str):
         """
         Usage: remove_atom ATOM_NAME 
