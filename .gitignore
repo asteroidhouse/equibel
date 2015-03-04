@@ -2,6 +2,7 @@ __pycache__
 .DS_Store
 parser.out
 parsetab.py
+lextab.py
 temp_asp_file
 *.pyc
 .env
