@@ -1,5 +1,19 @@
-class Node:
+class Agent:
+    """
+    The Agent class is intended to represent an intelligent 
+    agent in a belief change scenario. An Agent is identified 
+    by an integer, and maintains a set of formulas that 
+    represent its beliefs about the world. 
+
+    Examples
+    --------
+
+    >>> a1 = Agent(1)
+    """
     def __init__(self, num):
+        """
+
+        """
         self.num = num
         self.weights = dict()
         self.formulas = set()
@@ -49,3 +63,6 @@ class Node:
 
     def remove_formula(self, formula):
         self.formulas.discard(formula)
+
+    def __repr__(self):
+        return 'Node({0})'.format(self.num)

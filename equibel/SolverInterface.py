@@ -6,21 +6,12 @@ import re
 from subprocess import Popen, PIPE
 
 import equibel.FormulaExtractor as FormulaExtractor
-
-import equibel.ASP_Formatter as ASP_Formatter
-import equibel.ASP_Parser as ASP_Parser
+import equibel.format.ASP_Formatter as ASP_Formatter
+import equibel.parse.ASP_Parser as ASP_Parser
 
 from equibel.simbool.simplify import simplify
 
-#CARDINALITY_TEMPLATE = "gringo equibel/eq_sets3.lp equibel/cardinality_max.lp equibel/transitive.lp equibel/translate.lp {0}" + \
-#                   "| clasp --opt-mode=optN --quiet=1,2 --verbose=0"
-
 CARDINALITY_TEMPLATE = "clingo equibel/eq_sets.lp equibel/cardinality_max.lp equibel/transitive.lp equibel/translate.lp {0} --opt-mode=optN --quiet=1,2 --verbose=0"
-
-
-#CONTAINMENT_TEMPLATE = "gringo equibel/eq_sets3.lp equibel/transitive.lp equibel/translate.lp {0}" + \
-#                   "| clasp 0 --heuristic=domain --enum-mode=domRec --verbose=0"
-
 CONTAINMENT_TEMPLATE = "clingo equibel/eq_sets.lp equibel/transitive.lp equibel/translate.lp {0} 0 --heuristic=domain --enum-mode=domRec --verbose=0"
 
 class UnsatisfiableError(Exception): pass
@@ -58,12 +49,8 @@ def one_shot(graph, cardinality_maximal=False):
 
 
 
-
-ITERATE_CARD_TEMPLATE = "gringo equibel/eq_sets4.lp equibel/cardinality_max.lp equibel/translate2.lp {0}" + \
-                    "| clasp --opt-mode=optN --quiet=1,2 --verbose=0"
-
-ITERATE_CONT_TEMPLATE = "gringo equibel/eq_sets4.lp equibel/translate2.lp {0}" + \
-                    "| clasp 0 --heuristic=domain --enum-mode=domRec --verbose=0"
+ITERATE_CARD_TEMPLATE = "clingo equibel/eq_sets.lp equibel/cardinality_max.lp equibel/translate.lp {0} --opt-mode=optN --quiet=1,2 --verbose=0"
+ITERATE_CONT_TEMPLATE = "clingo equibel/eq_sets.lp equibel/translate.lp {0} 0 --heuristic=domain --enum-mode=domRec --verbose=0"
 
 def run_iterate_cardinality(filename):
     proc = Popen(ITERATE_CARD_TEMPLATE.format(filename), shell=True, stdout=PIPE, universal_newlines=True)
@@ -114,7 +101,6 @@ def iterate_once(graph, cardinality_maximal=False):
     node_formulas = FormulaExtractor.combined_formulas(models)
     new_graph = updated_graph(graph, node_formulas)
     return new_graph
-
 
 
 def updated_graph(graph, node_formulas):
