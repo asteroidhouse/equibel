@@ -49,7 +49,8 @@ class EquibelPrompt(Cmd):
         and returns the modified string, as well as the boolean True to 
         indicate that the output should be silenced. If it does not, this 
         function returns the string unmodified, as well as the boolean 
-        False to indicate that the output should not be silenced."""
+        False to indicate that the output should not be silenced.
+        """
         verbose = True
         arg_str = arg_str.strip()
         if arg_str.endswith(';'):
@@ -64,8 +65,9 @@ class EquibelPrompt(Cmd):
         Default behaviour if the command prefix is not recognized.
         """
         line, verbose = self.check_silencing_terminator(line)
-        if int(line) in manager.current_context.nodes():
-            print(manager.current_context.node[int(line)])
+        if line.isdigit():
+            if int(line) in manager.current_context.nodes():
+                print(manager.current_context.node[int(line)])
         else:
             print("\tUnrecognized command! Type \"help\" for a list of commands.")
 
@@ -110,8 +112,12 @@ class EquibelPrompt(Cmd):
         args = arg_str.split()
 
         graph_name = args[0]
+        #------
         R = Graph()
         R.graph[ATOMS_KEY] = set()
+        #------
+        # To be replaced by:
+        # R = EquibelGraph()
         manager.add(graph_name, R)
         manager.set_context(graph_name)
         self.prompt = "equibel ({0}) > ".format(graph_name)
@@ -290,6 +296,7 @@ class EquibelPrompt(Cmd):
         graph = manager.current_context
         
         nodes = CmdLineParser.parse_list(arg_str)
+        # choose either "remove_nodes_from" or "remove_nodes"
         graph.remove_nodes_from(nodes)
 
         if verbose:
@@ -452,29 +459,40 @@ class EquibelPrompt(Cmd):
                   add_atom the_sky_is_blue
         """
         arg_str, verbose = self.check_silencing_terminator(arg_str)
+        #======
+        # To be added for EquibelGraph:
+        # G = manager.current_context
+        #======
 
         args = arg_str.split()
         if len(args) != 1:
             print("Expected 1 argument to add_atom!")
         else:
             atom_str = args[0]
+            #------
             self.add_atom_to_context(atom_str)
+            #------
+            # To be replaced with:
+            # G.add_atom(atom_str)
             
             if verbose:
                 self.print_atoms()
 
     # TODO: Build this functionality into the add_atom method of EquibelGraph.
+    # To be removed for EquibelGraph:
     def add_atom_to_context(self, atom):
         G = manager.current_context
         G.graph[ATOMS_KEY].add(atom)
         self.add_new_atom_to_nodes(G, atom)
 
+    # To be removed for EquibelGraph:
     def add_new_atom_to_nodes(self, G, atom):
         for node_id in G.nodes():
             weights = G.node[node_id][WEIGHTS_KEY]
             if atom not in weights:
                 weights[atom] = 1
 
+    # To be removed for EquibelGraph:
     def add_atoms_to_new_node(self, G, node_id):
         atoms = G.graph[ATOMS_KEY]
         for atom in atoms:
@@ -494,8 +512,12 @@ class EquibelPrompt(Cmd):
 
         try:
             atom_list = CmdLineParser.parse_list(arg_str)
+            #------
             for atom in atom_list:
                 self.add_atom_to_context(atom)
+            #------
+            # To be replaced by:
+            # G.add_atoms(atom_list)
             
             if verbose:
                 self.print_atoms()
@@ -573,8 +595,12 @@ class EquibelPrompt(Cmd):
 
         G = manager.current_context
         G.node[node_id][WEIGHTS_KEY][atom] = weight
+
+        # TODO IMPORTANT: add these lines to "set_atom_weight" in EquibelGraph?
+        #------
         if atom not in G.graph[ATOMS_KEY]:
             self.add_atom_to_context(atom)
+        #------
 
         if verbose:
             self.print_weights(node_id)
@@ -909,7 +935,23 @@ if __name__ == '__main__':
     print("Equibel version 0.8.5")
 
     print(Fore.GREEN + Style.BRIGHT)
+
     print("""
+                                       ..                    ..
+                                       ||                    ||
+   ______     _______   ..      ..  ** ||_____      ______   || **
+ //`````\\\\   //`````\\\\  ||      ||  || ||````\\\\   //`````\\\\  || ||
+||_______|| ||       || ||      ||  || ||     || ||_______|| || ||
+||````````  ||       || ||      ||  || ||     || ||````````  || ||
+ \\\\______    \\\\_____//|  \\\\____//|  || ||____//   \\\\______   || ||
+  ```````     ```````||   `````` \\\\ `` ```````     ```````   `` ``
+                     ||                     
+                      \\\\
+                       ``
+    """)
+
+    """
+    print("
                                          ..                  ..
                           ..      ..     ||                  ||
        ____       ____    ||      ||  ** ||___.      ____    || **
@@ -920,7 +962,8 @@ if __name__ == '__main__':
                        ||                     
                         \\\\
                          ``
-    """)
+    ")
+    """
     print(Fore.RESET + Style.RESET_ALL)
 
     prompt = EquibelPrompt(completekey='tab')
