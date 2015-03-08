@@ -22,6 +22,7 @@ from equibel.simbool.simplify import *
 
 import equibel.SolverInterface as SolverInterface
 from equibel.graph_manager import GraphManager
+#from equibel.EquibelGraph import EquibelGraph
 
 import equibel.solver as solver
 
@@ -524,7 +525,6 @@ class EquibelPrompt(Cmd):
         except Exception as err:
             print(err)
 
-    # TODO: LEFT OFF HERE IN TRYING TO RE-FACTOR CODE INTO EQUIBELGRAPH CLASS!!
     def do_remove_atom(self, arg_str):
         """
         Usage: remove_atom ATOM_NAME 
@@ -541,11 +541,16 @@ class EquibelPrompt(Cmd):
             print("Expected 1 argument to remove_atom!")
         else:
             atom_str = args[0]
+            #------
             G.graph[ATOMS_KEY].discard(atom_str)
             self.remove_atom_from_nodes(G, atom_str)
+            #------
+            # To be replaced by:
+            # G.remove_atom(atom_str)
             if verbose:
                 self.print_atoms()
 
+    # To be removed for EquibelGraph
     def remove_atom_from_nodes(self, G, atom):
         for node_id in G.nodes():
             weights = G.node[node_id][WEIGHTS_KEY]
@@ -565,7 +570,11 @@ class EquibelPrompt(Cmd):
     def print_atoms(self):
         """Prints the atoms in the alphabet of the current context."""
         G = manager.current_context
+        #------
         atoms = G.graph[ATOMS_KEY]
+        #------
+        # To be replaced by
+        # atoms = G.atoms()
         if not atoms:
             print("\n\tatoms: {}\n")
         else:
@@ -594,21 +603,25 @@ class EquibelPrompt(Cmd):
         weight = int(weight_str)
 
         G = manager.current_context
-        G.node[node_id][WEIGHTS_KEY][atom] = weight
-
-        # TODO IMPORTANT: add these lines to "set_atom_weight" in EquibelGraph?
         #------
+        G.node[node_id][WEIGHTS_KEY][atom] = weight
         if atom not in G.graph[ATOMS_KEY]:
             self.add_atom_to_context(atom)
         #------
+        # To be replaced by:
+        # G.add_weight(node_id, atom, weight)
 
         if verbose:
             self.print_weights(node_id)
 
 
     def print_weights(self, node_id):
+        #------
         weights = manager.current_context.node[node_id][WEIGHTS_KEY]
-        
+        #------
+        # To be replaced by:
+        # weights = manager.current_context.atom_weights(node_id)
+
         print()
         print("\tnode {0}:".format(node_id))
         for atom in weights:
@@ -622,7 +635,11 @@ class EquibelPrompt(Cmd):
         print()
         for node_id in G.nodes():
             print("\tnode {0}:".format(node_id))
+            #------
             weights = G.node[node_id][WEIGHTS_KEY]
+            #------
+            # To be replaced by
+            # weights = G.atom_weights(node_id)
             for atom in weights:
                 print("\t\t{0}: {1}".format(atom, weights[atom]))
         print()
@@ -675,15 +692,18 @@ class EquibelPrompt(Cmd):
 
         node_id = int(node_str)
         formula = FormulaParserSim.parse_formula(formula_str)
+        #------
         G.node[node_id][FORMULAS_KEY].add(formula)
-
         self.add_formula_atoms_to_context(formula)
+        #------
+        # To be replaced by
+        # G.add_formula(node_id, formula)
 
         if verbose:
             self.print_formulas(node_id)
 
 
-
+    # To be removed for EquibelGraph:
     def add_formula_atoms_to_context(self, formula):
         G = manager.current_context
         atoms = formula.get_atoms()
@@ -711,7 +731,12 @@ class EquibelPrompt(Cmd):
 
         node_id = int(node_str)
         formula = FormulaParserSim.parse_formula(formula_str)
+
+        #------
         G.node[node_id][FORMULAS_KEY].discard(formula)
+        #------
+        # To be replaced by
+        # G.remove_formula(node_id, formula)
 
         if verbose:
             self.print_formulas(node_id)
@@ -742,8 +767,12 @@ class EquibelPrompt(Cmd):
             raise ArgumentError("Expected 0 or 1 argument to formulas!\nusage: formulas [NODE_NUM]")
 
     def print_formulas(self, node_id):
+        #------
         formulas = manager.current_context.node[node_id][FORMULAS_KEY]
-        
+        #------
+        # To be replaced by
+        # formulas = manager.current_context.formulas(node_id)
+
         print()
         print("\tnode {0}:".format(node_id))
         for formula in formulas:
@@ -757,7 +786,11 @@ class EquibelPrompt(Cmd):
         print()
         for node_id in G.nodes():
             print("\tnode {0}:".format(node_id))
+            #------
             formulas = G.node[node_id][FORMULAS_KEY]
+            #------
+            # to be replaced by
+            # formulas = G.formulas(node_id)
             for formula in formulas:
                 print("\t\t{0}".format(repr(formula)))
         print()
@@ -777,7 +810,7 @@ class EquibelPrompt(Cmd):
         arg_str, verbose = self.check_silencing_terminator(arg_str)
         G = manager.current_context
 
-        # TODO: Fix ASP_Formatter to work with the networkx graph class.
+        # TODO: Fix ASP_Formatter to work with the EquibelGraph class.
         if verbose:
             print("\n" + ASP_Formatter.convert_to_asp(G))
         
@@ -786,7 +819,6 @@ class EquibelPrompt(Cmd):
     # Load/Store Functions
     #--------------------------------------------------------------------------------
 
-    # TODO: Needs checking for networkx
     def do_load(self, arg_str):
         """Loads a graph from a BCF file into the current context (overwriting it)."""
         arg_str, verbose = self.check_silencing_terminator(arg_str)
@@ -796,6 +828,7 @@ class EquibelPrompt(Cmd):
             raise ArgumentError("Expected exactly 1 argument to load().")
 
         filename = args[0]
+        # TODO: Needs to be updated for EquibelGraph
         parsed_graph = BCF_Parser.parse_bcf(filename)
         manager.update_context(parsed_graph)
 
@@ -804,7 +837,6 @@ class EquibelPrompt(Cmd):
         
 
     # DONE: Change the output format from ASP to BCF (after completing BCF_Formatter.py).
-    # TODO: Needs checking for networkx
     def do_store(self, arg_str):
         arg_str, verbose = self.check_silencing_terminator(arg_str)
         args = arg_str.split()
@@ -825,6 +857,7 @@ class EquibelPrompt(Cmd):
                 return
 
         f = open(filename, 'w')
+        # TODO: Fix for EquibelGraph
         f.write(BCF_Formatter.convert_to_bcf(graph))
         if verbose:
             print("\n\tSuccessfully saved graph {0} to {1}.\n".format(graph_name, filename))
@@ -851,7 +884,7 @@ class EquibelPrompt(Cmd):
 
     # Belief Change Operations
     #--------------------------------------------------------------------------------
-    # TODO: Needs checking for networkx
+    # TODO: Needs checking for EquibelGraph
     def do_one_shot(self, arg_str):
         arg_str, verbose = self.check_silencing_terminator(arg_str)
         graph = manager.current_context
@@ -866,7 +899,7 @@ class EquibelPrompt(Cmd):
             self.print_all_formulas()
 
 
-    # TODO: Needs checking for networkx
+    # TODO: Needs checking for EquibelGraph
     def do_cardinality(self, arg_str):
         arg_str, verbose = self.check_silencing_terminator(arg_str)
         # cardinality_maximal = True
@@ -875,7 +908,7 @@ class EquibelPrompt(Cmd):
             print("\n\tNow using cardinality-maximal EQ sets.\n")
 
 
-    # TODO: Needs checking for networkx
+    # TODO: Needs checking for EquibelGraph
     def do_containment(self, arg_str):
         arg_str, verbose = self.check_silencing_terminator(arg_str)
         # cardinality_maximal = False
@@ -884,7 +917,7 @@ class EquibelPrompt(Cmd):
             print("\n\tNow using containment-maximal EQ sets.\n")
         
 
-    # TODO: Needs checking for networkx
+    # TODO: Needs checking for EquibelGraph
     def do_iterate(self, arg_str):
         arg_str, verbose = self.check_silencing_terminator(arg_str)
         args = arg_str.split()
@@ -950,20 +983,6 @@ if __name__ == '__main__':
                        ``
     """)
 
-    """
-    print("
-                                         ..                  ..
-                          ..      ..     ||                  ||
-       ____       ____    ||      ||  ** ||___.      ____    || **
-     //````\\\\   //````\\\\  ||      ||  || ||```\\\\   //````\\\\  || ||
-    ||======|| ||      || ||      ||  || ||    || ||======|| || ||
-     \\\\......   \\\\____//|  \\\\____//|  || ||___//   \\\\......  || ||
-      ```````     `````||   `````` \\\\ `` ``````     ```````  `` ``
-                       ||                     
-                        \\\\
-                         ``
-    ")
-    """
     print(Fore.RESET + Style.RESET_ALL)
 
     prompt = EquibelPrompt(completekey='tab')

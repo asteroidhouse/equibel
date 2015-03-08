@@ -1,16 +1,18 @@
-class GraphManagerError(Exception): pass
+class GraphManagerError(Exception):
+    pass
+
 
 class GraphManager:
     """
-    The GraphManager class is used to manage multiple 
-    graphs during an interactive session, and to keep 
-    track of which graph is the current context for 
+    The GraphManager class is used to manage multiple
+    graphs during an interactive session, and to keep
+    track of which graph is the current context for
     commands issued at the prompt.
 
     Example
     -------
     Create two graphs:
-    
+
     >>> g = Graph()
     >>> g2 = Graph()
 
@@ -19,16 +21,16 @@ class GraphManager:
     >>> manager = GraphManager()
     >>> manager.add('g', g)
     >>> manager.add('g2', g2)
-    
-    Retrieve the name of the current context. Note that 
-    the first graph added to the manager (graph 'g' above) 
+
+    Retrieve the name of the current context. Note that
+    the first graph added to the manager (graph 'g' above)
     automatically becomes the current context:
 
     >>> manager.current_context_name
     'g'
 
-    Retrieve the current context graph, perform an operation 
-    on it to obtain a modified graph, and update the current 
+    Retrieve the current context graph, perform an operation
+    on it to obtain a modified graph, and update the current
     context to reflect the changes:
 
     >>> context_graph = manager.current_context
@@ -48,7 +50,7 @@ class GraphManager:
 
     def __getitem__(self, key):
         """
-        Finds a graph by name. If the graph is not in 
+        Finds a graph by name. If the graph is not in
         the graph manager, returns None.
 
         Example
@@ -66,12 +68,12 @@ class GraphManager:
     def add(self, graph_name, graph):
         """
         Adds a graph object to this manager. The given
-        graph name is used as the key to access the graph 
+        graph name is used as the key to access the graph
         object later.
 
         Example
         -------
-        Create a graph and a manager, and add the graph to 
+        Create a graph and a manager, and add the graph to
         the manager:
 
         >>> g2 = Graph()
@@ -79,7 +81,7 @@ class GraphManager:
         >>> manager.add('g2', g2)
         """
         self.graphs[graph_name] = graph
-        # The first graph added to the manager becomes the 
+        # The first graph added to the manager becomes the
         # current context automatically.
         if not self.current_context:
             self.current_context = graph
@@ -87,9 +89,9 @@ class GraphManager:
 
     def update_context(self, graph):
         """
-        Overwrites the graph in the current context with 
+        Overwrites the graph in the current context with
         the given graph (to reflect changes to the context).
-        That is, this associates the current context name 
+        That is, this associates the current context name
         with a new graph.
 
         Example
@@ -97,13 +99,13 @@ class GraphManager:
         >>> manager = GraphManager()
         >>> manager.add('g', Graph())
 
-        Retrieve graph 'g' and perform an operation on it, 
+        Retrieve graph 'g' and perform an operation on it,
         creating a new graph:
 
         >>> working_graph = manager['g']
         >>> updated_graph = equibel.completion(working_graph)
 
-        Update the context, associating the name 'g' with 
+        Update the context, associating the name 'g' with
         the updated_graph, and losing the reference to the
         working_graph:
 
@@ -111,11 +113,11 @@ class GraphManager:
         """
         self.graphs[self.current_context_name] = graph
         self.current_context = graph
-    
+
     def remove(self, graph_name):
         """
-        Removes a graph from the graph manager. Note that 
-        if the manager contains the only reference to the 
+        Removes a graph from the graph manager. Note that
+        if the manager contains the only reference to the
         graph in question, then the graph will be lost.
 
         Example
@@ -128,7 +130,7 @@ class GraphManager:
 
     def set_context(self, graph_name):
         """
-        Sets the current context to the graph identified by 
+        Sets the current context to the graph identified by
         the given name.
 
         Example

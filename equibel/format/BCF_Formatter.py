@@ -1,6 +1,3 @@
-import sys
-from equibel.simbool.proposition import *
-
 TYPE_TEMPLATE    = "t {0}\n"
 NODE_TEMPLATE    = "n {0}\n"
 RANGE_TEMPLATE   = "n {0}..{1}\n"
@@ -20,46 +17,46 @@ bcf_op_dict = {
     '~': '-'
 }
 
-# TODO: Think about how to handle directed vs undirected edges, 
-#      both here and in the Graph class.
-def convert_to_bcf(graph):
+
+def convert_to_bcf(G):
     bcf_str = ""
-    
-    if graph.directed:
+
+    if G.is_directed():
         bcf_str += TYPE_TEMPLATE.format("directed")
     else:
         bcf_str += TYPE_TEMPLATE.format("undirected")
 
-    for node_num in graph.nodes:
-        bcf_str += NODE_TEMPLATE.format(node_num)
-    
-    for atom in graph.atoms:
+    for node_id in G.nodes():
+        bcf_str += NODE_TEMPLATE.format(node_id)
+
+    for atom in G.atoms():
         bcf_str += ATOM_TEMPLATE.format(atom)
-    
-    for (start_node_num, end_node_num) in graph.edges:
-        bcf_str += EDGE_TEMPLATE.format(start_node_num, end_node_num)
-    
-    for node in graph.nodes.values():
-        for atom in node.weights:
-            # TODO: Create a public interface to access weights?
-            weight = node.weights[atom]
-            bcf_str += WEIGHT_TEMPLATE.format(node.num, atom, weight)
-    
-    # This is separated from the above for loop for prettiness, to group 
+
+    for (from_node_id, to_node_id) in G.edges():
+        bcf_str += EDGE_TEMPLATE.format(from_node_id, to_node_id)
+        if not G.is_directed():
+            bcf_str += EDGE_TEMPLATE.format(to_node_id, from_node_id)
+
+    for node_id in G.nodes():
+        for atom in G.atom_weights(node_id):
+            weight = G.weight(node_id, atom)
+            bcf_str += WEIGHT_TEMPLATE.format(node_id, atom, weight)
+
+    # This is separated from the above for loop for prettiness, to group
     # all the formulas together.
-    for node in graph.nodes.values():
-        for formula in node.formulas:
+    for node_id in G.nodes():
+        for formula in G.formulas(node_id):
             formatted_formula = "({0})".format(convert_formula_to_bcf(formula))
-            bcf_str += FORMULA_TEMPLATE.format(node.num, formatted_formula)
-    
+            bcf_str += FORMULA_TEMPLATE.format(node_id, formatted_formula)
+
     return bcf_str
 
 
 def convert_formula_to_bcf(formula):
-    # Atomic propositions are the base case for the recursion.
     if formula.is_atomic():
-        return formula.name
+        return formula.get_name()
 
     terms = formula.get_terms()
     bcf_op = bcf_op_dict[formula.get_op()]
-    return "{0}({1})".format(bcf_op, " ".join([convert_formula_to_bcf(term) for term in terms]))
+    return "{0}({1})".format(bcf_op,
+                             " ".join([convert_formula_to_bcf(term) for term in terms]))
