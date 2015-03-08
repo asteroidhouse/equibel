@@ -11,6 +11,11 @@ class EquibelGraph:
         self.graph = nx.Graph()
         self.graph.graph[ATOMS_KEY] = set()
 
+
+    # Returns the underlying networkx graph.
+    def graph(self):
+        return self.graph
+
     # ================================================
     #                NODE METHODS
     # ================================================
@@ -59,13 +64,15 @@ class EquibelGraph:
     def remove_edge(self, from_node_id, to_node_id):
         self.graph.remove_edge(from_node_id, to_node_id)
 
-    # ROUTING to G.to_directed()
+    # (not quite) ROUTING to G.to_directed()
     def to_directed(self):
-        self.graph.to_directed()
+        #self.graph = self.graph.to_directed()
+        return self.graph.to_directed()
 
-    # ROUTING to G.to_undirected()
+    # (not quite) ROUTING to G.to_undirected()
     def to_undirected(self):
-        self.graph.to_undirected()
+        #self.graph = self.graph.to_undirected()
+        return self.graph.to_undirected()
 
     # ROUTING to G.is_directed()
     def is_directed(self):

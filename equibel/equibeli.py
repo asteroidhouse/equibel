@@ -1,14 +1,13 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-import sys
+#import sys
 import os
-import readline
+#import readline
 from cmd import Cmd
 from subprocess import Popen, PIPE
 
-from colorama import Fore, Back, Style
-from networkx import Graph
+from colorama import Fore, Style
 
 import equibel.format.ASP_Formatter as ASP_Formatter
 import equibel.format.BCF_Formatter as BCF_Formatter
@@ -17,39 +16,33 @@ import equibel.parse.CmdLineParser as CmdLineParser
 import equibel.parse.FormulaParserSim as FormulaParserSim
 import equibel.parse.BCF_Parser as BCF_Parser
 
-from equibel.simbool.proposition import *
-from equibel.simbool.simplify import *
-
-import equibel.SolverInterface as SolverInterface
+#import equibel.SolverInterface as SolverInterface
 from equibel.graph_manager import GraphManager
-#from equibel.EquibelGraph import EquibelGraph
+from equibel.EquibelGraph import EquibelGraph
 
 import equibel.solver as solver
 
-class ArgumentError(Exception): pass
 
-ATOMS_KEY    = 'atoms'
-WEIGHTS_KEY  = 'weights'
-FORMULAS_KEY = 'formulas'
+class ArgumentError(Exception):
+    pass
 
 manager = GraphManager()
-G = Graph()
-G.graph[ATOMS_KEY] = set()
+G = EquibelGraph()
 manager.add('g', G)
 
 # cardinality_maximal = False
 solving_method = solver.CONTAINMENT
 
-class EquibelPrompt(Cmd):
 
+class EquibelPrompt(Cmd):
 
     def check_silencing_terminator(self, arg_str):
         """
-        Checks if arg_str ends with a 'silencing' terminator, such as 
-        a semicolon. If it does, this function strips off the terminator 
-        and returns the modified string, as well as the boolean True to 
-        indicate that the output should be silenced. If it does not, this 
-        function returns the string unmodified, as well as the boolean 
+        Checks if arg_str ends with a 'silencing' terminator, such as
+        a semicolon. If it does, this function strips off the terminator
+        and returns the modified string, as well as the boolean True to
+        indicate that the output should be silenced. If it does not, this
+        function returns the string unmodified, as well as the boolean
         False to indicate that the output should not be silenced.
         """
         verbose = True
@@ -60,7 +53,6 @@ class EquibelPrompt(Cmd):
         return (arg_str, verbose)
 
 
-    
     def default(self, line):
         """
         Default behaviour if the command prefix is not recognized.
@@ -73,18 +65,16 @@ class EquibelPrompt(Cmd):
             print("\tUnrecognized command! Type \"help\" for a list of commands.")
 
 
-
     def do_graphs(self, arg_str):
         """
         Usage: graphs
 
-        Prints the names of all existing graphs, and shows which graph is 
+        Prints the names of all existing graphs, and shows which graph is
         the current context.
         """
         _, verbose = self.check_silencing_terminator(arg_str)
         if verbose:
             self.print_graphs()
-
 
 
     def print_graphs(self):
@@ -97,8 +87,7 @@ class EquibelPrompt(Cmd):
             else:
                 print(graph_name, end="  ")
         print("\n")
-        
-    
+
 
     def do_create_graph(self, arg_str):
         """
@@ -113,18 +102,13 @@ class EquibelPrompt(Cmd):
         args = arg_str.split()
 
         graph_name = args[0]
-        #------
-        R = Graph()
-        R.graph[ATOMS_KEY] = set()
-        #------
-        # To be replaced by:
-        # R = EquibelGraph()
+        R = EquibelGraph()
         manager.add(graph_name, R)
         manager.set_context(graph_name)
+
         self.prompt = "equibel ({0}) > ".format(graph_name)
         if verbose:
             self.print_graphs()
-
 
 
     # TODO: Not finished.
@@ -134,7 +118,6 @@ class EquibelPrompt(Cmd):
         args = arg_str.split()
         if verbose:
             self.print_graphs()
-
 
 
     def do_use(self, arg_str):
@@ -151,8 +134,6 @@ class EquibelPrompt(Cmd):
         try:
             manager.set_context(graph_name)
             self.prompt = "equibel ({0}) > ".format(graph_name)
-            #if verbose:
-            #    self.print_graphs()
         except Exception as err:
             print(err)
         
@@ -168,7 +149,6 @@ class EquibelPrompt(Cmd):
             self.print_nodes()
 
 
-
     def print_nodes(self):
         """Prints the nodes in the current context."""
         nodes = manager.current_context.nodes()
@@ -178,7 +158,6 @@ class EquibelPrompt(Cmd):
         else:
             print("\n\tnodes: {0}\n".format(nodes))
         
-
 
     def do_add_node(self, arg_str):
         """
@@ -200,23 +179,9 @@ class EquibelPrompt(Cmd):
                 raise ValueError("Error: add_node requires an integer argument!")
             else:
                 node_id = int(node_str)
-                #------
-                self.add_node_to_graph(G, node_id)
-                #------
-                # To be replaced with:
-                # G.add_node(node_id)
+                G.add_node(node_id)
                 if verbose:
                     self.print_nodes()
-
-
-    # TODO: Build this functionality into the EquibelGraph class, to make it 
-    #       easier to add nodes here.
-    # To be removed after EquibelGraph is implemented.
-    def add_node_to_graph(self, G, node_id):
-        G.add_node(node_id)
-        G.node[node_id][WEIGHTS_KEY]  = dict()
-        G.node[node_id][FORMULAS_KEY] = set()
-        self.add_atoms_to_new_node(G, node_id)
 
 
     def do_add_nodes(self, arg_str):
@@ -238,15 +203,7 @@ class EquibelPrompt(Cmd):
 
         try:
             node_list = CmdLineParser.parse_list(arg_str)
-            #------
-            for node_id in node_list:
-                graph.add_node(node_id)
-                graph.node[node_id][WEIGHTS_KEY] = dict()
-                graph.node[node_id][FORMULAS_KEY] = set()
-                self.add_atoms_to_new_node(graph, node_id)
-            #------
-            # To be replaced with:
-            # graph.add_nodes(node_list)
+            graph.add_nodes(node_list)
 
         except Exception as err:
             print(err)
@@ -317,8 +274,9 @@ class EquibelPrompt(Cmd):
 
     def print_edges(self):
         """Prints the existing edges."""
-        edges = manager.current_context.edges()
-        directed = manager.current_context.is_directed()
+        G = manager.current_context
+        edges = G.edges()
+        directed = G.is_directed()
 
         if not edges:
             print("\n\tedges: []\n")
@@ -346,18 +304,7 @@ class EquibelPrompt(Cmd):
 
         try:
             (from_node_id, to_node_id) = CmdLineParser.parse_tuple(arg_str)
-            # DONE: Add the nodes properly to the graph, loading them up with 
-            # the existing atoms, if the nodes are not already in the graph.
-            #------
-            if from_node_id not in G:
-                self.add_node_to_graph(G, from_node_id)
-            if to_node_id not in G:
-                self.add_node_to_graph(G, to_node_id)
-
             G.add_edge(from_node_id, to_node_id)
-            #------
-            # To be replaced with:
-            # G.add_edge(from_node_id, to_node_id)
 
             if verbose:
                 self.print_edges()
@@ -378,17 +325,7 @@ class EquibelPrompt(Cmd):
 
         try:
             edge_list = CmdLineParser.parse_list(arg_str)
-            #------
-            for (from_node_id, to_node_id) in edge_list:
-                if from_node_id not in G:
-                    self.add_node_to_graph(G, from_node_id)
-                if to_node_id not in G:
-                    self.add_node_to_graph(G, to_node_id)
-
-                G.add_edge(from_node_id, to_node_id)
-            #------
-            # Replaced with:
-            # G.add_edges(edge_list)
+            G.add_edges(edge_list)
             
             if verbose:
                 self.print_edges()
@@ -406,11 +343,11 @@ class EquibelPrompt(Cmd):
         Example: remove_edge (1,2)
         """
         arg_str, verbose = self.check_silencing_terminator(arg_str)
-        graph = manager.current_context
+        G = manager.current_context
 
         try:
             (from_node_id, to_node_id) = CmdLineParser.parse_tuple(arg_str)
-            graph.remove_edge(from_node_id, to_node_id)
+            G.remove_edge(from_node_id, to_node_id)
             if verbose:
                 self.print_edges()
         except Exception as err:
@@ -427,8 +364,9 @@ class EquibelPrompt(Cmd):
         Makes the edges in the current context directed.
         """
         _, verbose = self.check_silencing_terminator(arg_str)
-        graph = manager.current_context
-        directed_graph = graph.to_directed()
+        G = manager.current_context
+        directed_graph = G.to_directed()
+        #G.to_directed()
         manager.update_context(directed_graph)
         if verbose:
             self.print_edges()
@@ -440,8 +378,9 @@ class EquibelPrompt(Cmd):
         Makes the edges in the current context undirected.
         """
         _, verbose = self.check_silencing_terminator(arg_str)
-        graph = manager.current_context
-        undirected_graph = graph.to_undirected()
+        G = manager.current_context
+        undirected_graph = G.to_undirected()
+        #G.to_undirected()
         manager.update_context(undirected_graph)
         if verbose:
             self.print_edges()
@@ -460,44 +399,18 @@ class EquibelPrompt(Cmd):
                   add_atom the_sky_is_blue
         """
         arg_str, verbose = self.check_silencing_terminator(arg_str)
-        #======
-        # To be added for EquibelGraph:
-        # G = manager.current_context
-        #======
+        G = manager.current_context
 
         args = arg_str.split()
         if len(args) != 1:
             print("Expected 1 argument to add_atom!")
         else:
             atom_str = args[0]
-            #------
-            self.add_atom_to_context(atom_str)
-            #------
-            # To be replaced with:
-            # G.add_atom(atom_str)
+            G.add_atom(atom_str)
             
             if verbose:
                 self.print_atoms()
 
-    # TODO: Build this functionality into the add_atom method of EquibelGraph.
-    # To be removed for EquibelGraph:
-    def add_atom_to_context(self, atom):
-        G = manager.current_context
-        G.graph[ATOMS_KEY].add(atom)
-        self.add_new_atom_to_nodes(G, atom)
-
-    # To be removed for EquibelGraph:
-    def add_new_atom_to_nodes(self, G, atom):
-        for node_id in G.nodes():
-            weights = G.node[node_id][WEIGHTS_KEY]
-            if atom not in weights:
-                weights[atom] = 1
-
-    # To be removed for EquibelGraph:
-    def add_atoms_to_new_node(self, G, node_id):
-        atoms = G.graph[ATOMS_KEY]
-        for atom in atoms:
-            G.node[node_id][WEIGHTS_KEY][atom] = 1
 
     def do_add_atoms(self, arg_str):
         """
@@ -513,12 +426,7 @@ class EquibelPrompt(Cmd):
 
         try:
             atom_list = CmdLineParser.parse_list(arg_str)
-            #------
-            for atom in atom_list:
-                self.add_atom_to_context(atom)
-            #------
-            # To be replaced by:
-            # G.add_atoms(atom_list)
+            G.add_atoms(atom_list)
             
             if verbose:
                 self.print_atoms()
@@ -541,22 +449,11 @@ class EquibelPrompt(Cmd):
             print("Expected 1 argument to remove_atom!")
         else:
             atom_str = args[0]
-            #------
-            G.graph[ATOMS_KEY].discard(atom_str)
-            self.remove_atom_from_nodes(G, atom_str)
-            #------
-            # To be replaced by:
-            # G.remove_atom(atom_str)
+            G.remove_atom(atom_str)
             if verbose:
                 self.print_atoms()
 
-    # To be removed for EquibelGraph
-    def remove_atom_from_nodes(self, G, atom):
-        for node_id in G.nodes():
-            weights = G.node[node_id][WEIGHTS_KEY]
-            if atom in weights:
-                del weights[atom]
-        
+
     def do_atoms(self, arg_str):
         """
         Usage: atoms
@@ -570,11 +467,7 @@ class EquibelPrompt(Cmd):
     def print_atoms(self):
         """Prints the atoms in the alphabet of the current context."""
         G = manager.current_context
-        #------
-        atoms = G.graph[ATOMS_KEY]
-        #------
-        # To be replaced by
-        # atoms = G.atoms()
+        atoms = G.atoms()
         if not atoms:
             print("\n\tatoms: {}\n")
         else:
@@ -603,24 +496,14 @@ class EquibelPrompt(Cmd):
         weight = int(weight_str)
 
         G = manager.current_context
-        #------
-        G.node[node_id][WEIGHTS_KEY][atom] = weight
-        if atom not in G.graph[ATOMS_KEY]:
-            self.add_atom_to_context(atom)
-        #------
-        # To be replaced by:
-        # G.add_weight(node_id, atom, weight)
+        G.add_weight(node_id, atom, weight)
 
         if verbose:
             self.print_weights(node_id)
 
 
     def print_weights(self, node_id):
-        #------
-        weights = manager.current_context.node[node_id][WEIGHTS_KEY]
-        #------
-        # To be replaced by:
-        # weights = manager.current_context.atom_weights(node_id)
+        weights = manager.current_context.atom_weights(node_id)
 
         print()
         print("\tnode {0}:".format(node_id))
@@ -635,11 +518,7 @@ class EquibelPrompt(Cmd):
         print()
         for node_id in G.nodes():
             print("\tnode {0}:".format(node_id))
-            #------
-            weights = G.node[node_id][WEIGHTS_KEY]
-            #------
-            # To be replaced by
-            # weights = G.atom_weights(node_id)
+            weights = G.atom_weights(node_id)
             for atom in weights:
                 print("\t\t{0}: {1}".format(atom, weights[atom]))
         print()
@@ -692,25 +571,10 @@ class EquibelPrompt(Cmd):
 
         node_id = int(node_str)
         formula = FormulaParserSim.parse_formula(formula_str)
-        #------
-        G.node[node_id][FORMULAS_KEY].add(formula)
-        self.add_formula_atoms_to_context(formula)
-        #------
-        # To be replaced by
-        # G.add_formula(node_id, formula)
+        G.add_formula(node_id, formula)
 
         if verbose:
             self.print_formulas(node_id)
-
-
-    # To be removed for EquibelGraph:
-    def add_formula_atoms_to_context(self, formula):
-        G = manager.current_context
-        atoms = formula.get_atoms()
-        for atom in atoms:
-            if atom not in G.graph[ATOMS_KEY]:
-                self.add_atom_to_context(atom)
-
 
 
     def do_remove_formula(self, arg_str):
@@ -732,11 +596,7 @@ class EquibelPrompt(Cmd):
         node_id = int(node_str)
         formula = FormulaParserSim.parse_formula(formula_str)
 
-        #------
-        G.node[node_id][FORMULAS_KEY].discard(formula)
-        #------
-        # To be replaced by
-        # G.remove_formula(node_id, formula)
+        G.remove_formula(node_id, formula)
 
         if verbose:
             self.print_formulas(node_id)
@@ -766,12 +626,9 @@ class EquibelPrompt(Cmd):
         else:
             raise ArgumentError("Expected 0 or 1 argument to formulas!\nusage: formulas [NODE_NUM]")
 
+
     def print_formulas(self, node_id):
-        #------
-        formulas = manager.current_context.node[node_id][FORMULAS_KEY]
-        #------
-        # To be replaced by
-        # formulas = manager.current_context.formulas(node_id)
+        formulas = manager.current_context.formulas(node_id)
 
         print()
         print("\tnode {0}:".format(node_id))
@@ -786,18 +643,14 @@ class EquibelPrompt(Cmd):
         print()
         for node_id in G.nodes():
             print("\tnode {0}:".format(node_id))
-            #------
-            formulas = G.node[node_id][FORMULAS_KEY]
-            #------
-            # to be replaced by
-            # formulas = G.formulas(node_id)
+            formulas = G.formulas(node_id)
             for formula in formulas:
                 print("\t\t{0}".format(repr(formula)))
         print()
             
 
     # ASP Functions
-    #--------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------
 
     def do_asp(self, arg_str):
         """
@@ -810,14 +663,13 @@ class EquibelPrompt(Cmd):
         arg_str, verbose = self.check_silencing_terminator(arg_str)
         G = manager.current_context
 
-        # TODO: Fix ASP_Formatter to work with the EquibelGraph class.
         if verbose:
             print("\n" + ASP_Formatter.convert_to_asp(G))
         
 
 
     # Load/Store Functions
-    #--------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------
 
     def do_load(self, arg_str):
         """Loads a graph from a BCF file into the current context (overwriting it)."""
@@ -828,7 +680,6 @@ class EquibelPrompt(Cmd):
             raise ArgumentError("Expected exactly 1 argument to load().")
 
         filename = args[0]
-        # TODO: Needs to be updated for EquibelGraph
         parsed_graph = BCF_Parser.parse_bcf(filename)
         manager.update_context(parsed_graph)
 
@@ -857,7 +708,6 @@ class EquibelPrompt(Cmd):
                 return
 
         f = open(filename, 'w')
-        # TODO: Fix for EquibelGraph
         f.write(BCF_Formatter.convert_to_bcf(graph))
         if verbose:
             print("\n\tSuccessfully saved graph {0} to {1}.\n".format(graph_name, filename))
@@ -879,17 +729,14 @@ class EquibelPrompt(Cmd):
 
 
 
-
-
-
     # Belief Change Operations
-    #--------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------
     # TODO: Needs checking for EquibelGraph
     def do_one_shot(self, arg_str):
         arg_str, verbose = self.check_silencing_terminator(arg_str)
         graph = manager.current_context
 
-        #new_graph = SolverInterface.one_shot(graph, cardinality_maximal)
+        # new_graph = SolverInterface.one_shot(graph, cardinality_maximal)
         new_graph = solver.completion(graph, solving_method)
         manager.update_context(new_graph)
 
@@ -915,7 +762,7 @@ class EquibelPrompt(Cmd):
         solving_method = solver.CONTAINMENT
         if verbose:
             print("\n\tNow using containment-maximal EQ sets.\n")
-        
+
 
     # TODO: Needs checking for EquibelGraph
     def do_iterate(self, arg_str):
@@ -942,14 +789,9 @@ class EquibelPrompt(Cmd):
             else:
                 print("\n\t{0} iterations completed.\n".format(num_iterations))
 
-        
-
-        
-        
-
 
     # Shell Functions -- (To help locate files to load.)
-    #--------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------
 
     def do_shell(self, arg_str):
         proc = Popen(arg_str, shell=True, stdout=PIPE, universal_newlines=True)
@@ -978,7 +820,7 @@ if __name__ == '__main__':
 ||````````  ||       || ||      ||  || ||     || ||````````  || ||
  \\\\______    \\\\_____//|  \\\\____//|  || ||____//   \\\\______   || ||
   ```````     ```````||   `````` \\\\ `` ```````     ```````   `` ``
-                     ||                     
+                     ||
                       \\\\
                        ``
     """)
