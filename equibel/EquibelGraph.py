@@ -7,14 +7,22 @@ FORMULAS_KEY = "formulas"
 
 class EquibelGraph:
 
-    def __init__(self):
-        self.graph = nx.Graph()
-        self.graph.graph[ATOMS_KEY] = set()
+    def __init__(self, G=None):
+        if G:
+            self.graph = G.copy()
+            self.graph.graph[ATOMS_KEY] = set()
+            for node_id in G.nodes():
+                self.graph.node[node_id][WEIGHTS_KEY] = dict()
+                self.graph.node[node_id][FORMULAS_KEY] = set()
+        else:
+            self.graph = nx.Graph()
+            self.graph.graph[ATOMS_KEY] = set()
 
+    def __iter__(self):
+        return iter(self.graph.nodes())
 
-    # Returns the underlying networkx graph.
-    def graph(self):
-        return self.graph
+    def __getitem__(self, value):
+        return self.graph[value]
 
     # ================================================
     #                NODE METHODS
@@ -146,6 +154,18 @@ class EquibelGraph:
         for atom in formula.get_atoms():
             if atom not in self.atoms():
                 self.add_atom(atom)
+
+    def set_formulas(self, node_id, formula_list):
+        self.clear_formulas_from(node_id)
+        for formula in formula_list:
+            self.graph.node[node_id][FORMULAS_KEY].add(formula)
+
+    def clear_formulas_from(self, node_id):
+        self.graph.node[node_id][FORMULAS_KEY].clear()
+
+    def clear_formulas(self):
+        for node_id in self.nodes():
+            self.graph.node[node_id][FORMULAS_KEY].clear()
 
     def remove_formula(self, node_id, formula):
         self.graph.node[node_id][FORMULAS_KEY].discard(formula)

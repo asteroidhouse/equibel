@@ -8,12 +8,10 @@ import equibel.FormulaExtractor as FormulaExtractor
 from equibel.simbool.proposition import Prop
 from equibel.simbool.simplify import simplify
 
-ATOMS_KEY    = 'atoms'
-WEIGHTS_KEY  = 'weights'
-FORMULAS_KEY = 'formulas'
 
 CONTAINMENT = 'containment'
 CARDINALITY = 'cardinality'
+
 
 class EqSolver:
 
@@ -37,7 +35,6 @@ class EqSolver:
         ctl.solve(on_model=self.capture_optimal_models)
 
         return self.optimal_models
-
 
     def iteration(self, asp_string, method=CONTAINMENT):
         self.optimal_models = set()
@@ -75,7 +72,6 @@ class EqSolver:
 
         return model_list
 
-
     def _configure_control(self, ctl, method):
         if method == CONTAINMENT:
             ctl.conf.solve.opt_mode   = 'ignore'
@@ -87,9 +83,8 @@ class EqSolver:
             ctl.conf.solve.enum_mode  = 'auto'
             ctl.conf.solver.heuristic = 'none'
 
-
     def capture_optimal_models(self, model):
-        #model_atoms = frozenset(atom for atom in model.atoms(Model.SHOWN) if atom.name() == 'new_formula')
+        # model_atoms = frozenset(atom for atom in model.atoms(Model.SHOWN) if atom.name() == 'new_formula')
         model_atoms = frozenset(model.atoms(Model.SHOWN))
         opt_values = model.optimization()
 
@@ -108,20 +103,20 @@ class EqSolver:
 def completion(G, solving_method=CONTAINMENT):
     solver = EqSolver()
     models = solver.one_shot_dicts(ASP_Formatter.convert_to_asp(G), solving_method)
+    print(models)
     node_formulas = FormulaExtractor.combine_formulas(models)
 
     R = copy.deepcopy(G)
 
-    # TODO: Decide whether to always represent "multiple formulas" as a 
+    # TODO: Decide whether to always represent "multiple formulas" as a
     # single conjunction, or whether to keep them separate.
     for node_id in R.nodes():
         if node_id in node_formulas:
             new_formula = node_formulas[node_id]
-            old_formula = conjunction(R.node[node_id][FORMULAS_KEY])
-            R.node[node_id][FORMULAS_KEY] = set([simplify(old_formula & new_formula)])
+            old_formula = conjunction(R.formulas(node_id))
+            R.set_formulas(node_id, [simplify(old_formula & new_formula)])
 
     return R
-
 
 # TEST TEST TEST
 def iterate(G, num_iterations=1, solving_method=CONTAINMENT):
@@ -132,6 +127,7 @@ def iterate(G, num_iterations=1, solving_method=CONTAINMENT):
 
     for i in range(num_iterations):
         models = solver.iteration_dicts(asp_string)
+        print(models)
         node_formulas = FormulaExtractor.combine_formulas(models)
         for node_id in node_formulas:
             formula = node_formulas[node_id]
@@ -139,16 +135,15 @@ def iterate(G, num_iterations=1, solving_method=CONTAINMENT):
 
     R = copy.deepcopy(G)
 
-    # TODO: Decide whether to always represent "multiple formulas" as a 
     # single conjunction, or whether to keep them separate.
+    # TODO: Decide whether to always represent "multiple formulas" as a 
     for node_id in R.nodes():
         if node_id in node_formulas:
             new_formula = node_formulas[node_id]
-            old_formula = conjunction(R.node[node_id][FORMULAS_KEY])
-            R.node[node_id][FORMULAS_KEY] = set([simplify(old_formula & new_formula)])
+            old_formula = conjunction(R.formulas(node_id))
+            R.set_formulas(node_id, [simplify(old_formula & new_formula)])
 
     return R
-
 
 def conjunction(formulas):
     result = Prop(True)
