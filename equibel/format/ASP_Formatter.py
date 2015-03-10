@@ -11,10 +11,6 @@ AND_TEMPLATE   = "and({0},{1})"
 OR_TEMPLATE    = "or({0},{1})"
 NEG_TEMPLATE   = "neg({0})"
 
-ATOMS_KEY    = 'atoms'
-WEIGHTS_KEY  = 'weights'
-FORMULAS_KEY = 'formulas'
-
 
 def convert_to_asp(G):
     asp_str = ""
