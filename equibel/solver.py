@@ -51,6 +51,25 @@ class EqSolver:
         ctl.solve(on_model=self.capture_optimal_models)
 
         return self.optimal_models
+    
+    def expanding_iteration(self, asp_string, method=CONTAINMENT):
+        self.optimal_models = set()
+        self.optimal_values = None
+
+        # 1. Update formulas for each node based on the formulas 
+        #    at nodes 1 hop away.
+        ctl = gringo.Control()
+        ctl.load('equibel/eq_expanding.lp')
+        ctl.load('equibel/translate.lp')
+
+        self._configure_control(ctl, method)
+
+        ctl.add('base', [], asp_string)
+        ctl.ground([('base', [])])
+        ctl.solve(on_model=self.capture_optimal_models)
+
+        return self.optimal_models
+
 
     def one_shot_dicts(self, asp_string, method=CONTAINMENT):
         models = self.find_models(asp_string, method)
@@ -58,6 +77,10 @@ class EqSolver:
 
     def iteration_dicts(self, asp_string, method=CONTAINMENT):
         models = self.iteration(asp_string, method)
+        return self.model_dicts(models)
+    
+    def expanding_iteration_dicts(self, asp_string, method=CONTAINMENT):
+        models = self.expanding_iteration(asp_string, method)
         return self.model_dicts(models)
 
     def model_dicts(self, models):
@@ -135,8 +158,8 @@ def iterate(G, num_iterations=1, solving_method=CONTAINMENT):
 
     R = copy.deepcopy(G)
 
-    # single conjunction, or whether to keep them separate.
     # TODO: Decide whether to always represent "multiple formulas" as a 
+    # single conjunction, or whether to keep them separate.
     for node_id in R.nodes():
         if node_id in node_formulas:
             new_formula = node_formulas[node_id]
@@ -152,6 +175,48 @@ def conjunction(formulas):
         result &= formula
 
     return simplify(result)
+
+
+# TEST TEMPORARY
+def expanding_iteration(G, num_iterations=1, solving_method=CONTAINMENT):
+    solver = EqSolver()
+    asp_string = ASP_Formatter.convert_to_asp(G)
+
+    if G.is_directed():
+        D = G.reverse()
+        length = nx.all_pairs_shortest_path_length(D)
+    else:
+        length = nx.all_pairs_shortest_path_length(D)
+
+    for from_node_id in length:
+        dists = length[from_node_id]
+        for to_node_id in dists:
+            distance = dists[to_node_id]
+            asp_string += "dist({0},{1},{2}).".format(from_node_id, to_node_id, distance)
+
+    print(asp_string)
+
+    """
+    models = solver.expanding_iteration_dicts(asp_string)
+    print(models)
+    node_formulas = FormulaExtractor.combine_formulas(models)
+    for node_id in node_formulas:
+        formula = node_formulas[node_id]
+        asp_string += "formula({formula}, {node}).".format(formula=formula, node=node_id)
+
+    R = copy.deepcopy(G)
+
+    # TODO: Decide whether to always represent "multiple formulas" as a 
+    # single conjunction, or whether to keep them separate.
+    for node_id in R.nodes():
+        if node_id in node_formulas:
+            new_formula = node_formulas[node_id]
+            old_formula = conjunction(R.formulas(node_id))
+            R.set_formulas(node_id, [simplify(old_formula & new_formula)])
+
+    return R
+    """
+    
 
 
 

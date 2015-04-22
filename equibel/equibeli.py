@@ -790,6 +790,33 @@ class EquibelPrompt(Cmd):
                 print("\n\t{0} iterations completed.\n".format(num_iterations))
 
 
+    # TODO: Needs checking for EquibelGraph
+    def do_e_iterate(self, arg_str):
+        arg_str, verbose = self.check_silencing_terminator(arg_str)
+        args = arg_str.split()
+
+        if len(args) == 0:
+            num_iterations = 1
+        elif len(args) == 1:
+            num_str = args[0]
+            if not num_str.isdigit():
+                raise ArgumentError("The number of iterations must be an integer: \"{0}\"".format(num_str))
+            num_iterations = int(num_str)
+        else:
+            raise ArgumentError("Expected 0 or 1 argument to iterate()!\ Usage: iterate [NUM_ITERATIONS]")
+
+        graph = manager.current_context
+        #new_graph = solver.expanding_iteration(graph, num_iterations, solver.CONTAINMENT)
+        solver.expanding_iteration(graph, num_iterations, solver.CONTAINMENT)
+        #manager.update_context(new_graph)
+
+        if verbose:
+            if num_iterations == 1:
+                print("\n\t1 iteration completed.\n")
+            else:
+                print("\n\t{0} iterations completed.\n".format(num_iterations))
+
+
     # Shell Functions -- (To help locate files to load.)
     # -------------------------------------------------------------------------------
 
