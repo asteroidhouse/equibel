@@ -115,9 +115,8 @@ class EquibelGraph:
                 self.set_atom_weight(node_id, atom, 1)
 
     def __add_atoms_to_new_node(self, node_id):
-        if node_id not in self.nodes():
-            for atom in self.atoms():
-                self.set_atom_weight(node_id, atom, 1)
+        for atom in self.atoms():
+            self.set_atom_weight(node_id, atom, 1)
 
     def set_atom_weight(self, node_id, atom, weight):
         self.graph.node[node_id][WEIGHTS_KEY][atom] = weight
