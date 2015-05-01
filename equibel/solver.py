@@ -1,10 +1,13 @@
+from __future__ import absolute_import
+from __future__ import print_function
+
 import copy
 
 import gringo
 from gringo import Control, Model, Fun
 
-import equibel.format.ASP_Formatter as ASP_Formatter
 import equibel.FormulaExtractor as FormulaExtractor
+import equibel.format.ASP_Formatter as ASP_Formatter
 from equibel.simbool.proposition import Prop
 from equibel.simbool.simplify import simplify
 

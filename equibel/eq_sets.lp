@@ -56,7 +56,8 @@ satisfied(F,X) :- F = neg(A),        not satisfied(A,X), subformula(F,X), subfor
 
 % This heuristic is used to find maximal sets of equivalences, with respect to set containment.
 % _heuristic(eq(P,X,Y), true, 1) :- atom(P), edge(X,Y), X < Y.
-_heuristic(eq(P,X,Y), true, 1) :- atom(P), edge(X,Y).
+
+%_heuristic(eq(P,X,Y), true, 1) :- atom(P), edge(X,Y).
 
 #show _heuristic/3.
 #show eq/3.

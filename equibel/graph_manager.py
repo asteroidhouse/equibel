@@ -1,3 +1,16 @@
+"""Manage multiple graphs during an interactive session.
+
+The GraphManager class keeps track of graph objects by 
+associating them with names. This makes it easy to manage 
+multiple graphs w.r.t switching between them and maintaining 
+which is the current interactive context.
+"""
+
+#    Copyright (C) 2014-2015 by
+#    Paul Vicol <pvicol@sfu.ca>
+#    All rights reserved.
+#    BSD license.
+
 class GraphManagerError(Exception):
     pass
 
@@ -42,11 +55,13 @@ class GraphManager:
         self.current_context = None
         self.current_context_name = None
 
+
     def __iter__(self):
         """
         Returns an iterator over the graphs.
         """
         return iter(self.graphs)
+
 
     def __getitem__(self, key):
         """
@@ -64,6 +79,7 @@ class GraphManager:
         >>> manager['g2']
         """
         return self.graphs.get(key, None)
+
 
     def add(self, graph_name, graph):
         """
@@ -86,6 +102,7 @@ class GraphManager:
         if not self.current_context:
             self.current_context = graph
             self.current_context_name = graph_name
+
 
     def update_context(self, graph):
         """
@@ -114,6 +131,7 @@ class GraphManager:
         self.graphs[self.current_context_name] = graph
         self.current_context = graph
 
+
     def remove(self, graph_name):
         """
         Removes a graph from the graph manager. Note that
@@ -127,6 +145,7 @@ class GraphManager:
         if graph_name not in self.graphs:
             raise GraphManagerError("Graph \"{0}\" does not exist".format(graph_name))
         del self.graphs[graph_name]
+
 
     def set_context(self, graph_name):
         """

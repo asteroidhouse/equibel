@@ -1,9 +1,7 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-#import sys
 import os
-#import readline
 from cmd import Cmd
 from subprocess import Popen, PIPE
 
@@ -16,7 +14,6 @@ import equibel.parse.CmdLineParser as CmdLineParser
 import equibel.parse.FormulaParserSim as FormulaParserSim
 import equibel.parse.BCF_Parser as BCF_Parser
 
-#import equibel.SolverInterface as SolverInterface
 from equibel.graph_manager import GraphManager
 from equibel.EquibelGraph import EquibelGraph
 
@@ -30,7 +27,6 @@ manager = GraphManager()
 G = EquibelGraph()
 manager.add('g', G)
 
-# cardinality_maximal = False
 solving_method = solver.CONTAINMENT
 
 

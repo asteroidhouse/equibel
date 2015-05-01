@@ -1,9 +1,11 @@
+from __future__ import absolute_import
+from __future__ import print_function
+
 import networkx as nx
 
 ATOMS_KEY    = "atoms"
 WEIGHTS_KEY  = "weights"
 FORMULAS_KEY = "formulas"
-
 
 class EquibelGraph:
 
@@ -74,12 +76,10 @@ class EquibelGraph:
 
     # (not quite) ROUTING to G.to_directed()
     def to_directed(self):
-        #self.graph = self.graph.to_directed()
         return self.graph.to_directed()
 
     # (not quite) ROUTING to G.to_undirected()
     def to_undirected(self):
-        #self.graph = self.graph.to_undirected()
         return self.graph.to_undirected()
 
     # ROUTING to G.is_directed()
