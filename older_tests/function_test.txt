@@ -1,6 +1,0 @@
-  func    2  3 4
-
-add_node 32 
-
-     add_nodes     [
-               1,2, 3 ] 

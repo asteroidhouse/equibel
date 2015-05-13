@@ -1,9 +1,0 @@
-(1,2)
-132523
-
-"hello tehre"
-
-
-  "hi 
-
-  how are you"

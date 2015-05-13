@@ -1,4 +1,0 @@
-new_formula(1,p)  new_formula(1,and(p,q))
-new_formula(1,q)
-new_formula(1,r) new_formula(2,r) new_formula(2,neg(r))
-new_formula(2,q)
