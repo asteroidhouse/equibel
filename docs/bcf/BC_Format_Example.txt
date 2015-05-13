@@ -1,0 +1,32 @@
+c This is the encoding of the graph given in the BeliefChangeFormat.pdf
+
+t directed
+
+n 1..5
+
+a p q r
+
+w 1 p 5
+w 3 p 2
+w 3 q 3
+w 3 r 1
+w 4 p 4
+w 4 q 3
+w 4 r 1
+w 5 q 4
+w 5 r 3
+
+f 1 (-p)
+f 3 (*(p q))
+f 3 (+(-p r))
+f 4 (+(*(p q) r))
+f 5 (*(-q r))
+
+e 1 2
+e 1 3
+e 3 1
+e 2 4
+e 4 2
+e 2 5
+e 5 2
+e 4 5
