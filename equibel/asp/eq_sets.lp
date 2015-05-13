@@ -1,5 +1,5 @@
 % Edges are bidirectional <-> The sharing of information goes both ways.
-%edge(X,Y) :- edge(Y,X).
+edge(X,Y) :- edge(Y,X).
 
 % Now we break each formula down into all of its subformulas. These subformulas are used later in the code
 % to check whether an interpretation entails all of the nodes' original beliefs. After truth values are assigned
@@ -52,10 +52,10 @@ satisfied(F,X) :- F = neg(A),        not satisfied(A,X), subformula(F,X), subfor
 % All original formulas must be satisfied in order for the EQ set to be valid.
 :- formula(F,X), not satisfied(F,X).
 
-#maximize { 1,P,X,Y:eq(P,X,Y),atom(P),edge(X,Y) }.
+%#maximize { 1,P,X,Y:eq(P,X,Y),atom(P),edge(X,Y) }.
 
 % This heuristic is used to find maximal sets of equivalences, with respect to set containment.
-% _heuristic(eq(P,X,Y), true, 1) :- atom(P), edge(X,Y), X < Y.
+_heuristic(eq(P,X,Y), true, 1) :- atom(P), edge(X,Y), X < Y.
 
 %_heuristic(eq(P,X,Y), true, 1) :- atom(P), edge(X,Y).
 

@@ -14,6 +14,7 @@ from equibel.simbool.simplify import simplify
 
 CONTAINMENT = 'containment'
 CARDINALITY = 'cardinality'
+ASP_DIR = 'equibel/asp'
 
 
 class EqSolver:
@@ -27,9 +28,9 @@ class EqSolver:
         self.optimal_values = None
 
         ctl = gringo.Control()
-        ctl.load('equibel/eq_sets.lp')
-        ctl.load('equibel/transitive.lp')
-        ctl.load('equibel/translate.lp')
+        ctl.load('{0}/eq_sets.lp'.format(ASP_DIR))
+        ctl.load('{0}/transitive.lp'.format(ASP_DIR))
+        ctl.load('{0}/translate.lp'.format(ASP_DIR))
 
         self._configure_control(ctl, method)
 
@@ -44,8 +45,8 @@ class EqSolver:
         self.optimal_values = None
 
         ctl = gringo.Control()
-        ctl.load('equibel/eq_sets.lp')
-        ctl.load('equibel/translate.lp')
+        ctl.load('{0}/eq_sets.lp'.format(ASP_DIR))
+        ctl.load('{0}/translate.lp'.format(ASP_DIR))
 
         self._configure_control(ctl, method)
 
@@ -62,8 +63,8 @@ class EqSolver:
         # 1. Update formulas for each node based on the formulas 
         #    at nodes 1 hop away.
         ctl = gringo.Control()
-        ctl.load('equibel/eq_expanding.lp')
-        ctl.load('equibel/translate.lp')
+        ctl.load('{0}/eq_expanding.lp'.format(ASP_DIR))
+        ctl.load('{0}/translate.lp'.format(ASP_DIR))
 
         self._configure_control(ctl, method)
 
@@ -198,29 +199,6 @@ def expanding_iteration(G, num_iterations=1, solving_method=CONTAINMENT):
             asp_string += "dist({0},{1},{2}).".format(from_node_id, to_node_id, distance)
 
     print(asp_string)
-
-    """
-    models = solver.expanding_iteration_dicts(asp_string)
-    print(models)
-    node_formulas = FormulaExtractor.combine_formulas(models)
-    for node_id in node_formulas:
-        formula = node_formulas[node_id]
-        asp_string += "formula({formula}, {node}).".format(formula=formula, node=node_id)
-
-    R = copy.deepcopy(G)
-
-    # TODO: Decide whether to always represent "multiple formulas" as a 
-    # single conjunction, or whether to keep them separate.
-    for node_id in R.nodes():
-        if node_id in node_formulas:
-            new_formula = node_formulas[node_id]
-            old_formula = conjunction(R.formulas(node_id))
-            R.set_formulas(node_id, [simplify(old_formula & new_formula)])
-
-    return R
-    """
-    
-
 
 
 if __name__ == '__main__':
