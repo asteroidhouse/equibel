@@ -7,3 +7,6 @@ temp_asp_file
 *.pyc
 .env
 .venv
+
+equibel.egg-info/*
+equibel/equibel.egg-info/*
