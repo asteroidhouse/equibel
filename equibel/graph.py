@@ -1,3 +1,9 @@
+"""The graph class used to represent networks of agents in Equibel.
+"""
+#    Copyright (C) 2014-2015 by
+#    Paul Vicol <pvicol@sfu.ca>
+#    All rights reserved.
+#    MIT license.
 from __future__ import absolute_import
 from __future__ import print_function
 
