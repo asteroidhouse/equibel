@@ -1,13 +1,18 @@
+#    Copyright (C) 2014-2015 by
+#    Paul Vicol <pvicol@sfu.ca>
+#    All rights reserved.
+#    BSD license.
 import sys
+
 import ply.lex
 import ply.yacc
 
 from equibel.simbool.proposition import *
 from equibel.simbool.simplify import *
 
-# ---------------------------------------------------------------------------------------
-#                                LEXER
-# ---------------------------------------------------------------------------------------
+# --------------------------------------------------------------------
+#                             LEXER
+# --------------------------------------------------------------------
 
 keywords = {"neg": "NEG", "and": "AND", "or": "OR", "implies": "IMPLIES", "iff": "IFF"}
 tokens = (["IDENTIFIER", "LPAREN", "RPAREN", "COMMA"] + list(keywords.values()))
@@ -35,9 +40,9 @@ def t_error(t):
     raise ValueError("Syntax error, line {0}: {1}".format(t.lineno + 1, line))
 
 
-# ---------------------------------------------------------------------------------------
-#                                PARSER
-# ---------------------------------------------------------------------------------------
+# --------------------------------------------------------------------
+#                             PARSER
+# --------------------------------------------------------------------
 
 def p_FORMULA(p):
     """FORMULA : ATOM

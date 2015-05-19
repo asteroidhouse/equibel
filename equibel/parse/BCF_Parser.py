@@ -1,6 +1,6 @@
 import sys
 import re
-from equibel.EquibelGraph import EquibelGraph
+from equibel.graph import EquibelGraph
 import equibel.parse.FormulaParserSim as FormulaParserSim
 import equibel.format.BCF_Formatter as BCF_Formatter
 
