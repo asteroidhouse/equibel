@@ -1,3 +1,8 @@
+#    Copyright (C) 2014-2015 by
+#    Paul Vicol <pvicol@sfu.ca>
+#    All rights reserved.
+#    BSD license.
+
 from __future__ import absolute_import
 from __future__ import print_function
 
@@ -7,6 +12,8 @@ from subprocess import Popen, PIPE
 
 from colorama import Fore, Style
 
+import equibel
+
 import equibel.format.ASP_Formatter as ASP_Formatter
 import equibel.format.BCF_Formatter as BCF_Formatter
 
@@ -15,13 +22,14 @@ import equibel.parse.FormulaParserSim as FormulaParserSim
 import equibel.parse.BCF_Parser as BCF_Parser
 
 from equibel.graph_manager import GraphManager
-from equibel.EquibelGraph import EquibelGraph
+from equibel.graph import EquibelGraph
 
 import equibel.solver as solver
 
 
 class ArgumentError(Exception):
     pass
+
 
 manager = GraphManager()
 G = EquibelGraph()
@@ -108,10 +116,36 @@ class EquibelPrompt(Cmd):
 
 
     # TODO: Not finished.
-    def do_create_chain(self, arg_str):
-        """Creates a chain graph."""
+    def do_create_path(self, arg_str):
+        """Creates a path graph."""
         arg_str, verbose = self.check_silencing_terminator(arg_str)
         args = arg_str.split()
+        graph_name = args[0]
+        num_nodes_str = args[1]
+
+        direction = None
+
+        if len(args) > 2:
+            direction = args[2]
+
+        if not num_nodes_str.isdigit():
+            raise ValueError("Error: create_path requires an integer argument!")
+        else:
+            num_nodes = int(num_nodes_str)
+
+            if direction == "<->" or direction == None:
+                R = equibel.path_graph(num_nodes)
+            elif direction == "->":
+                R = equibel.path_graph(num_nodes, directed=True)
+            elif direction == "<-":
+                R = equibel.path_graph(num_nodes, directed=True).reverse()
+            else:
+                raise ValueError('Error: The direction specifier must be one of "<-", "<->", or "->"')
+            
+            manager.add(graph_name, R)
+            manager.set_context(graph_name)
+
+            self.prompt = "equibel ({0}) > ".format(graph_name)
         if verbose:
             self.print_graphs()
 
@@ -829,7 +863,7 @@ class EquibelPrompt(Cmd):
         raise SystemExit
 
 
-if __name__ == '__main__':
+def cli():
     print("Equibel version 0.8.5")
 
     print(Fore.GREEN + Style.BRIGHT)
@@ -858,3 +892,7 @@ if __name__ == '__main__':
             prompt.cmdloop()
         except Exception as err:
             print(err)
+
+
+if __name__ == '__main__':
+    cli()

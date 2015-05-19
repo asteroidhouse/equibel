@@ -13,20 +13,25 @@ from __future__ import print_function
 
 import networkx as nx
 import sys
-print sys.path
-from equibel.EquibelGraph import EquibelGraph
 
-def line_graph(n, directed=False):
-	"""Create a directed or undirected line graph on n nodes, 
-	numbered using the integers 1 to n, inclusive.
+from equibel.graph import EquibelGraph
+
+
+# ======================================================
+# Classic Graph Generators -- Line, Star, Complete, etc.
+# ======================================================
+
+def path_graph(n, directed=False):
+    """Create a directed or undirected line graph on n nodes, 
+    numbered using the integers 1 to n, inclusive.
 
     Parameters
     ----------
     n        : int
                The desired number of nodes for the line graph.
     directed : boolean
-    		   If set to True, then the edges of the line graph 
-    		   will be directed in order of increasing node number.
+               If set to True, then the edges of the line graph 
+               will be directed in order of increasing node number.
 
     Returns
     -------
@@ -42,31 +47,45 @@ def line_graph(n, directed=False):
     >>> D = line_graph(4, directed=True)
     """
     if directed:
-    	return EquibelGraph(nx.line_graph(n, create_using=nx.DiGraph()))
+        return EquibelGraph(nx.path_graph(n, create_using=nx.DiGraph()))
     else:
-		return EquibelGraph(nx.line_graph(n))
+        return EquibelGraph(nx.path_graph(n))
 
 def complete_graph(n):
-	"""Create an undirected complete graph on n nodes.
+    """Create an undirected complete graph on n nodes.
 
-	Parameters
-	----------
-	n : int
-	    The desired number of nodes for the complete graph.
+    Parameters
+    ----------
+    n : int
+        The desired number of nodes for the complete graph.
 
-	Returns
-	-------
-	G : EquibelGraph
-	    An EquibelGraph containing a complete graph on n nodes.
+    Returns
+    -------
+    G : EquibelGraph
+        An EquibelGraph containing a complete graph on n nodes.
 
-	Examples
-	--------
-	>>> G = complete_graph(5)
-	"""
+    Examples
+    --------
+    >>> G = complete_graph(5)
+    """
     return EquibelGraph(nx.complete_graph(n))
 
 def star_graph(n):
-	"""Create an undirected star graph on n nodes.
-	"""
+    """Create an undirected star graph on n nodes.
+    """
     return EquibelGraph(nx.star_graph(n))
 
+
+# ========================================================
+# Random Graph Generators -- Waxman, Barabasi-Albert, etc.
+# ========================================================
+
+def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0,0,1,1)):
+    """
+    """
+    return EquibelGraph(nx.waxman_graph(n, alpha, beta, L, domain))
+
+def erdos_renyi_graph(n, p, seed=None, directed=False):
+    """
+    """
+    return EquibelGraph(nx.erdos_renyi_graph(n, p, seed, directed))

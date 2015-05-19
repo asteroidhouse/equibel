@@ -82,15 +82,18 @@ class EquibelGraph:
 
     # (not quite) ROUTING to G.to_directed()
     def to_directed(self):
-        return self.graph.to_directed()
+        return EquibelGraph(self.graph.to_directed())
 
     # (not quite) ROUTING to G.to_undirected()
     def to_undirected(self):
-        return self.graph.to_undirected()
+        return EquibelGraph(self.graph.to_undirected())
 
     # ROUTING to G.is_directed()
     def is_directed(self):
         return self.graph.is_directed()
+
+    def reverse(self):
+        return EquibelGraph(self.graph.reverse())
 
     # ================================================
     #             ATOM and WEIGHT METHODS

@@ -9,7 +9,7 @@ which is the current interactive context.
 #    Copyright (C) 2014-2015 by
 #    Paul Vicol <pvicol@sfu.ca>
 #    All rights reserved.
-#    BSD license.
+#    MIT license.
 
 class GraphManagerError(Exception):
     pass
