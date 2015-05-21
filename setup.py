@@ -21,14 +21,16 @@ setup(
     url='https://github.com/asteroidhouse/equibel',
     author='Paul Vicol',
     author_email='pvicol@sfu.ca',
-    license='MIT',
-
+    license='BSD',
 
     packages=['equibel'],
 
+    include_package_data = True,
 
     install_requires=[
-        'networkx'
+        'networkx',
+        'ply',
+        'colorama',
     ],
 
     entry_points='''
