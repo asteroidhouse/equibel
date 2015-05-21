@@ -14,12 +14,12 @@ from colorama import Fore, Style
 
 import equibel
 
-import equibel.format.ASP_Formatter as ASP_Formatter
-import equibel.format.BCF_Formatter as BCF_Formatter
+import equibel.formatters.ASP_Formatter as ASP_Formatter
+import equibel.formatters.BCF_Formatter as BCF_Formatter
 
-import equibel.parse.CmdLineParser as CmdLineParser
-import equibel.parse.FormulaParserSim as FormulaParserSim
-import equibel.parse.BCF_Parser as BCF_Parser
+import equibel.parsers.CmdLineParser as CmdLineParser
+import equibel.parsers.FormulaParserSim as FormulaParserSim
+import equibel.parsers.BCF_Parser as BCF_Parser
 
 from equibel.graph_manager import GraphManager
 from equibel.graph import EquibelGraph

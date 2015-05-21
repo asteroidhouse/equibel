@@ -1,8 +1,8 @@
 import sys
 import re
 from equibel.graph import EquibelGraph
-import equibel.parse.FormulaParserSim as FormulaParserSim
-import equibel.format.BCF_Formatter as BCF_Formatter
+import equibel.parsers.FormulaParserSim as FormulaParserSim
+import equibel.formatters.BCF_Formatter as BCF_Formatter
 
 
 class FormatError(Exception):
