@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import sys
-import equibel.parse.FormulaParserASP as FormulaParserASP
+import equibel.parsers.FormulaParserASP as FormulaParserASP
 
 from equibel.simbool.proposition import *
 from equibel.simbool.simplify import *
