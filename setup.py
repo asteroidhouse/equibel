@@ -23,7 +23,13 @@ setup(
     author_email='pvicol@sfu.ca',
     license='BSD',
 
-    packages=['equibel'],
+    packages=[
+        'equibel',
+        'equibel.simbool',
+        'equibel.PredicateTree',
+        'equibel.parsers',
+        'equibel.formatters',
+    ],
 
     include_package_data = True,
 
