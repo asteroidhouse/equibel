@@ -9,8 +9,8 @@ import re
 from subprocess import Popen, PIPE
 
 import equibel.FormulaExtractor as FormulaExtractor
-import equibel.format.ASP_Formatter as ASP_Formatter
-import equibel.parse.ASP_Parser as ASP_Parser
+import equibel.formatters.ASP_Formatter as ASP_Formatter
+import equibel.parsers.ASP_Parser as ASP_Parser
 
 from equibel.simbool.simplify import simplify
 

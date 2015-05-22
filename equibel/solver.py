@@ -136,7 +136,7 @@ class EqSolver:
 def completion(G, solving_method=CONTAINMENT):
     solver = EqSolver()
     models = solver.one_shot_dicts(ASP_Formatter.convert_to_asp(G), solving_method)
-    print(models)
+    #print(models)
     node_formulas = FormulaExtractor.combine_formulas(models)
 
     R = copy.deepcopy(G)
