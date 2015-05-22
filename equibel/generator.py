@@ -71,7 +71,8 @@ def complete_graph(n):
     return EquibelGraph(nx.complete_graph(n))
 
 def star_graph(n):
-    """Create an undirected star graph on n nodes.
+    """Create an undirected star graph on n+1 nodes, with one 
+    central node, and n outer nodes.
     """
     return EquibelGraph(nx.star_graph(n))
 
