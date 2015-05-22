@@ -1,0 +1,142 @@
+Created by PLY version 3.6 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> PREDICATE
+Rule 1     PREDICATE -> IDENTIFIER LPAREN ARGS RPAREN
+Rule 2     ARGS -> ARG
+Rule 3     ARGS -> ARG COMMA ARGS
+Rule 4     ARG -> INTEGER
+Rule 5     ARG -> IDENTIFIER
+Rule 6     ARG -> PREDICATE
+
+Terminals, with rules where they appear
+
+COMMA                : 3
+IDENTIFIER           : 1 5
+INTEGER              : 4
+LPAREN               : 1
+RPAREN               : 1
+error                : 
+
+Nonterminals, with rules where they appear
+
+ARG                  : 2 3
+ARGS                 : 1 3
+PREDICATE            : 6 0
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . PREDICATE
+    (1) PREDICATE -> . IDENTIFIER LPAREN ARGS RPAREN
+
+    IDENTIFIER      shift and go to state 2
+
+    PREDICATE                      shift and go to state 1
+
+state 1
+
+    (0) S' -> PREDICATE .
+
+
+
+state 2
+
+    (1) PREDICATE -> IDENTIFIER . LPAREN ARGS RPAREN
+
+    LPAREN          shift and go to state 3
+
+
+state 3
+
+    (1) PREDICATE -> IDENTIFIER LPAREN . ARGS RPAREN
+    (2) ARGS -> . ARG
+    (3) ARGS -> . ARG COMMA ARGS
+    (4) ARG -> . INTEGER
+    (5) ARG -> . IDENTIFIER
+    (6) ARG -> . PREDICATE
+    (1) PREDICATE -> . IDENTIFIER LPAREN ARGS RPAREN
+
+    INTEGER         shift and go to state 7
+    IDENTIFIER      shift and go to state 8
+
+    PREDICATE                      shift and go to state 4
+    ARGS                           shift and go to state 5
+    ARG                            shift and go to state 6
+
+state 4
+
+    (6) ARG -> PREDICATE .
+
+    COMMA           reduce using rule 6 (ARG -> PREDICATE .)
+    RPAREN          reduce using rule 6 (ARG -> PREDICATE .)
+
+
+state 5
+
+    (1) PREDICATE -> IDENTIFIER LPAREN ARGS . RPAREN
+
+    RPAREN          shift and go to state 9
+
+
+state 6
+
+    (2) ARGS -> ARG .
+    (3) ARGS -> ARG . COMMA ARGS
+
+    RPAREN          reduce using rule 2 (ARGS -> ARG .)
+    COMMA           shift and go to state 10
+
+
+state 7
+
+    (4) ARG -> INTEGER .
+
+    COMMA           reduce using rule 4 (ARG -> INTEGER .)
+    RPAREN          reduce using rule 4 (ARG -> INTEGER .)
+
+
+state 8
+
+    (5) ARG -> IDENTIFIER .
+    (1) PREDICATE -> IDENTIFIER . LPAREN ARGS RPAREN
+
+    COMMA           reduce using rule 5 (ARG -> IDENTIFIER .)
+    RPAREN          reduce using rule 5 (ARG -> IDENTIFIER .)
+    LPAREN          shift and go to state 3
+
+
+state 9
+
+    (1) PREDICATE -> IDENTIFIER LPAREN ARGS RPAREN .
+
+    COMMA           reduce using rule 1 (PREDICATE -> IDENTIFIER LPAREN ARGS RPAREN .)
+    RPAREN          reduce using rule 1 (PREDICATE -> IDENTIFIER LPAREN ARGS RPAREN .)
+    $end            reduce using rule 1 (PREDICATE -> IDENTIFIER LPAREN ARGS RPAREN .)
+
+
+state 10
+
+    (3) ARGS -> ARG COMMA . ARGS
+    (2) ARGS -> . ARG
+    (3) ARGS -> . ARG COMMA ARGS
+    (4) ARG -> . INTEGER
+    (5) ARG -> . IDENTIFIER
+    (6) ARG -> . PREDICATE
+    (1) PREDICATE -> . IDENTIFIER LPAREN ARGS RPAREN
+
+    INTEGER         shift and go to state 7
+    IDENTIFIER      shift and go to state 8
+
+    PREDICATE                      shift and go to state 4
+    ARGS                           shift and go to state 11
+    ARG                            shift and go to state 6
+
+state 11
+
+    (3) ARGS -> ARG COMMA ARGS .
+
+    RPAREN          reduce using rule 3 (ARGS -> ARG COMMA ARGS .)
+

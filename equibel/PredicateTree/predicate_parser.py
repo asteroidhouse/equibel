@@ -1,9 +1,11 @@
+from __future__ import absolute_import
+
 import sys
 
 from ply import lex
 from ply import yacc
 
-from equibel.PredicateTree.Predicate import Predicate
+from equibel.PredicateTree.predicate import Predicate
 
 tokens = ("IDENTIFIER", "INTEGER", "LPAREN", "RPAREN", "COMMA")
 
