@@ -1,14 +1,18 @@
+#    Copyright (C) 2014-2015 by
+#    Paul Vicol <pvicol@sfu.ca>
+#    All rights reserved.
+#    BSD license.
+
 from __future__ import absolute_import
-from __future__ import print_function
 
 import sys
-from equibel.PredicateTree import PredicateParser 
+from equibel.PredicateTree import predicate_parser
 
 #TODO: Handle cases where the input is UNSATISFIABLE - now an error occurs somewhere else.
 
 def parse_model(line):
     predicate_strs = line.split()
-    predicates = [PredicateParser.parse_predicate(pred_str) for pred_str in predicate_strs]
+    predicates = [predicate_parser.parse_predicate(pred_str) for pred_str in predicate_strs]
     #print([str(pred) for pred in predicates])
 
     predicate_groups = dict()
@@ -50,9 +54,9 @@ if __name__ == '__main__':
         for model in models:
             print("Model")
             for pred_name in model:
-                print(pred_name, end=": ")
+                print("{0}: ".format(pred_name))
                 for predicate in model[pred_name]:
-                    print(predicate, end=" ")
+                    print(predicate)
                 print()
     except Exception as err:
         print(err)

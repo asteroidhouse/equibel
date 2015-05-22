@@ -1,5 +1,11 @@
+#    Copyright (C) 2014-2015 by
+#    Paul Vicol <pvicol@sfu.ca>
+#    All rights reserved.
+#    BSD license.
+
 from ply import lex
 from ply import yacc
+
 
 tokens = ["STRING", "INTEGER", "COMMA", "DOT", "LPAREN", "RPAREN", "LSQUARE", "RSQUARE"]
 

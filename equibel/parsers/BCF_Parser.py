@@ -1,8 +1,19 @@
+#    Copyright (C) 2014-2015 by
+#    Paul Vicol <pvicol@sfu.ca>
+#    All rights reserved.
+#    BSD license.
+
+from __future__ import absolute_import
+
 import sys
 import re
+
 from equibel.graph import EquibelGraph
 import equibel.parsers.FormulaParserSim as FormulaParserSim
 import equibel.formatters.BCF_Formatter as BCF_Formatter
+
+
+__all__ = ["parse_bcf"]
 
 
 class FormatError(Exception):

@@ -2,6 +2,9 @@
 #    Paul Vicol <pvicol@sfu.ca>
 #    All rights reserved.
 #    BSD license.
+
+from __future__ import absolute_import
+
 import sys
 
 import ply.lex
@@ -9,6 +12,9 @@ import ply.yacc
 
 from equibel.simbool.proposition import *
 from equibel.simbool.simplify import *
+
+
+__all__ = ["parse_infix_formula"]
 
 
 # --------------------------------------------------------------------
@@ -117,7 +123,7 @@ lexer = ply.lex.lex()
 parser = ply.yacc.yacc()
 
 
-def parse_formula(text):
+def parse_infix_formula(text):
     try:
         return parser.parse(text, lexer=lexer)
     except ValueError as err:
@@ -132,7 +138,7 @@ if __name__ == '__main__':
 
     formula_str = sys.argv[1]
     
-    formula = parse_formula(formula_str)
+    formula = parse_infix_formula(formula_str)
     
     print(repr(formula))
     print("Simplified = \n{0}".format(repr(simplify(formula))))

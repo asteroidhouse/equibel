@@ -2,6 +2,7 @@
 #    Paul Vicol <pvicol@sfu.ca>
 #    All rights reserved.
 #    BSD license.
+
 import sys
 
 import ply.lex
@@ -9,6 +10,8 @@ import ply.yacc
 
 from equibel.simbool.proposition import *
 from equibel.simbool.simplify import *
+
+__all__ = ["parse_asp_formula"]
 
 # --------------------------------------------------------------------
 #                             LEXER
