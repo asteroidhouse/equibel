@@ -8,6 +8,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import networkx as nx
+import equibel
 
 ATOMS_KEY    = "atoms"
 WEIGHTS_KEY  = "weights"
@@ -155,8 +156,13 @@ class EquibelGraph:
         return self.graph.node[node_id][FORMULAS_KEY]
 
     def add_formula(self, node_id, formula):
-        self.graph.node[node_id][FORMULAS_KEY].add(formula)
-        self.__add_formula_atoms(formula)
+        if isinstance(formula, str):
+            parsed_formula = equibel.parse_infix_formula(formula)
+            self.graph.node[node_id][FORMULAS_KEY].add(parsed_formula)
+            self.__add_formula_atoms(parsed_formula)
+        else:
+            self.graph.node[node_id][FORMULAS_KEY].add(formula)
+            self.__add_formula_atoms(formula)
 
     def __add_formula_atoms(self, formula):
         for atom in formula.get_atoms():

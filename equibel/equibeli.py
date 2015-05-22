@@ -580,9 +580,9 @@ class EquibelPrompt(Cmd):
         Usage: add_formula NODE_NUM FORMULA
             
         Adds a formula to the specified node.
-        For now, the formula must be specified in the DIMACS SAT format.
+        The formula must be specified in infix notation.
 
-        Example: add_formula 1 (*(p q))
+        Example: add_formula 1 (p & q) -> ~r
         """
         arg_str, verbose = self.check_silencing_terminator(arg_str)
         #args = arg_str.split(maxsplit=1)
@@ -600,7 +600,8 @@ class EquibelPrompt(Cmd):
             raise ArgumentError("The node identifier must be an integer.")
 
         node_id = int(node_str)
-        formula = FormulaParserSim.parse_formula(formula_str)
+        #formula = FormulaParserSim.parse_formula(formula_str)
+        formula = equibel.parse_infix_formula(formula_str)
         G.add_formula(node_id, formula)
 
         if verbose:
@@ -624,7 +625,8 @@ class EquibelPrompt(Cmd):
             raise ArgumentError("The node identifier must be an integer.")
 
         node_id = int(node_str)
-        formula = FormulaParserSim.parse_formula(formula_str)
+        #formula = FormulaParserSim.parse_formula(formula_str)
+        formula = equibel.parse_infix_formula(formula_str)
 
         G.remove_formula(node_id, formula)
 
@@ -639,7 +641,8 @@ class EquibelPrompt(Cmd):
         If a node is specified, prints the formulas at that node.
         If no node is specified, prints the formulas at each node.
            
-        Example: formulas 1
+        Example: formulas
+                 formulas 1
         """
         arg_str, verbose = self.check_silencing_terminator(arg_str)
         args = arg_str.split()
