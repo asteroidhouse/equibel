@@ -1,0 +1,43 @@
+equibel (g) > add_nodes [1..4]
+
+	nodes: [1, 2, 3, 4]
+
+equibel (g) > add_edges [(1,2), (2,3), (3,4)]
+
+	edges:
+		1 <-> 2
+		2 <-> 3
+		3 <-> 4
+
+equibel (g) > add_formula 1 p
+
+	node 1:
+		p
+
+equibel (g) > add_formula 4 ~p & q
+
+	node 4:
+		~p & q
+
+equibel (g) > formulas
+
+	node 1:
+		p
+	node 2:
+	node 3:
+	node 4:
+		~p & q
+
+equibel (g) > one_shot
+
+	One-shot belief change completed:
+	---------------------------------
+
+	node 1:
+		q & p
+	node 2:
+		q
+	node 3:
+		q
+	node 4:
+		q & ~p

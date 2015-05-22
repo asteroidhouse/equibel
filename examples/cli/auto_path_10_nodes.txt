@@ -1,0 +1,71 @@
+equibel (g) > create_path g 10
+
+	--g--  
+
+equibel (g) > nodes
+
+	nodes: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+equibel (g) > edges
+
+	edges:
+		0 <-> 1
+		1 <-> 2
+		2 <-> 3
+		3 <-> 4
+		4 <-> 5
+		5 <-> 6
+		6 <-> 7
+		7 <-> 8
+		8 <-> 9
+
+equibel (g) > add_formula 0 p
+
+	node 0:
+		p
+
+equibel (g) > add_formula 5 ~p
+
+	node 5:
+		~p
+
+equibel (g) > formulas
+
+	node 0:
+		p
+	node 1:
+	node 2:
+	node 3:
+	node 4:
+	node 5:
+		~p
+	node 6:
+	node 7:
+	node 8:
+	node 9:
+
+equibel (g) > one_shot
+
+	One-shot belief change completed:
+	---------------------------------
+
+	node 0:
+		p
+	node 1:
+		true
+	node 2:
+		true
+	node 3:
+		true
+	node 4:
+		true
+	node 5:
+		~p
+	node 6:
+		~p
+	node 7:
+		~p
+	node 8:
+		~p
+	node 9:
+		~p
