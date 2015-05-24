@@ -6,6 +6,7 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+import pkg_resources
 import copy
 import sys
 
@@ -20,7 +21,11 @@ from equibel.simbool.simplify import simplify
 
 CONTAINMENT = 'containment'
 CARDINALITY = 'cardinality'
-ASP_DIR = 'equibel/asp'
+
+EQ_SETS_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_sets.lp')
+TRANSITIVE_FILE = pkg_resources.resource_filename('equibel', 'asp/transitive.lp')
+TRANSLATE_FILE = pkg_resources.resource_filename('equibel', 'asp/translate.lp')
+EQ_EXPANDING_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_expanding.lp')
 
 
 class EqSolver:
@@ -34,9 +39,10 @@ class EqSolver:
         self.optimal_values = None
 
         ctl = gringo.Control()
-        ctl.load('{0}/eq_sets.lp'.format(ASP_DIR))
-        ctl.load('{0}/transitive.lp'.format(ASP_DIR))
-        ctl.load('{0}/translate.lp'.format(ASP_DIR))
+
+        ctl.load(EQ_SETS_FILE)
+        ctl.load(TRANSITIVE_FILE)
+        ctl.load(TRANSLATE_FILE)
 
         self._configure_control(ctl, method)
 
@@ -51,8 +57,9 @@ class EqSolver:
         self.optimal_values = None
 
         ctl = gringo.Control()
-        ctl.load('{0}/eq_sets.lp'.format(ASP_DIR))
-        ctl.load('{0}/translate.lp'.format(ASP_DIR))
+        
+        ctl.load(EQ_SETS_FILE)
+        ctl.load(TRANSLATE_FILE)
 
         self._configure_control(ctl, method)
 
@@ -69,8 +76,9 @@ class EqSolver:
         # 1. Update formulas for each node based on the formulas 
         #    at nodes 1 hop away.
         ctl = gringo.Control()
-        ctl.load('{0}/eq_expanding.lp'.format(ASP_DIR))
-        ctl.load('{0}/translate.lp'.format(ASP_DIR))
+
+        ctl.load(EQ_EXPANDING_FILE)
+        ctl.load(TRANSLATE_FILE)
 
         self._configure_control(ctl, method)
 
@@ -205,6 +213,31 @@ def expanding_iteration(G, num_iterations=1, solving_method=CONTAINMENT):
             asp_string += "dist({0},{1},{2}).".format(from_node_id, to_node_id, distance)
 
     print(asp_string)
+
+
+# =================================================
+# Functions that involve implicit graph topologies: 
+#   - Revision
+#   - Contraction
+#   - Merging (Projection and Consensus Based)
+#   - Extrapolation
+# ================================================= 
+
+def revision(K, phi):
+    pass
+
+def contraction(K, phi):
+    pass
+
+def merge(belief_bases, entailment_based_constraints=None, consistency_based_constraints=None):
+    pass
+
+def proj_merge(belief_bases, entailment_based_constraints=None, consistency_based_constraints=None):
+    pass
+
+def con_merge(belief_bases, entailment_based_constraints=None, consistency_based_constraints=None):
+    pass
+
 
 
 if __name__ == '__main__':

@@ -21,7 +21,7 @@ setup(
     url='https://github.com/asteroidhouse/equibel',
     author='Paul Vicol',
     author_email='pvicol@sfu.ca',
-    license='BSD',
+    license='MIT',
 
     packages=[
         'equibel',
