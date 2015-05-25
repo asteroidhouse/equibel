@@ -10,6 +10,8 @@ import pkg_resources
 import copy
 import sys
 
+import equibel
+
 import equibel.includes.gringo as gringo
 from equibel.includes.gringo import Control, Model, Fun
 
@@ -223,21 +225,43 @@ def expanding_iteration(G, num_iterations=1, solving_method=CONTAINMENT):
 #   - Extrapolation
 # ================================================= 
 
-def revision(K, phi):
-    pass
+def revise(K, R):
+    G = equibel.path_graph(2)
 
-def contraction(K, phi):
-    pass
+    if isinstance(K, str):
+        G.add_formula(0, equibel.parse_infix_formula(K))
+    elif isinstance(K, list):
+        for belief in K:
+            G.add_formula(0, equibel.parse_infix_formula(belief))
 
-def merge(belief_bases, entailment_based_constraints=None, consistency_based_constraints=None):
-    pass
+    if isinstance(R, str):
+        G.add_formula(1, equibel.parse_infix_formula(R))
+    elif isinstance(R, list):
+        for belief in R:
+            G.add_formula(1, equibel.parse_infix_formula(belief))
 
-def proj_merge(belief_bases, entailment_based_constraints=None, consistency_based_constraints=None):
+    S = completion(G)
+    return S.formulas(1)
+
+
+def contract(K, C):
     pass
+    
+def proj_merge(belief_bases, entailment_constraint=None):
+    G = equibel.star_graph(len(belief_bases))
+    
+    if entailment_constraint:
+        G.add_formula(0, entailment_constraint)
+
+    for (i, belief_base) in enumerate(belief_bases, 1):
+        G.add_formula(i, belief_base)
+
+    S = completion(G)
+    return S.formulas(0)
+    
 
 def con_merge(belief_bases, entailment_based_constraints=None, consistency_based_constraints=None):
     pass
-
 
 
 if __name__ == '__main__':
@@ -249,7 +273,6 @@ if __name__ == '__main__':
     form2 = b | ~c
 
     print(repr(conjunction([form1, form2])))
-
 
     solver = EqSolver()
     final_models2 = solver.find_models(open('TestCases/case8.lp').read(), method=EqSolver.CONTAINMENT)
