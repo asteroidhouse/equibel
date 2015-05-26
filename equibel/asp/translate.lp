@@ -11,22 +11,22 @@
 
 
 translate(R,P,X,Y) :- atom(P), R = P,          eq(P,X,Y).
-translate(R,P,X,Y) :- atom(P), R = neg(P), not eq(P,X,Y), node(X;Y), X != Y.
+translate(R,P,X,Y) :- atom(P), R = neg(P), not eq(P,X,Y), node(X), node(Y), X != Y.
 
 translate(R,F,X,Y) :- F = neg(A), R = neg(C), translate(C,A,X,Y), subformula(F,X), subformula(A,X),
-                      node(X;Y), X != Y.
+                      node(X), node(Y), X != Y.
 translate(R,F,X,Y) :- F = and(A,B), R = and(C,D), translate(C,A,X,Y), translate(D,B,X,Y), subformula(F,X), subformula(A,X), 
-                      subformula(B,X), node(X;Y), X != Y.
+                      subformula(B,X), node(X), node(Y), X != Y.
 translate(R,F,X,Y) :- F = or(A,B), R = or(C,D),  translate(C,A,X,Y), translate(D,B,X,Y), subformula(F,X), subformula(A,X),
-                      subformula(B,X), node(X;Y), X != Y.
+                      subformula(B,X), node(X), node(Y), X != Y.
 translate(R,F,X,Y) :- F = implies(A,B), R = implies(C,D), translate(C,A,X,Y), translate(D,B,X,Y), subformula(F,X), 
-                      subformula(A,X), subformula(B,X), node(X;Y), X != Y.
+                      subformula(A,X), subformula(B,X), node(X), node(Y), X != Y.
 translate(R,F,X,Y) :- F = iff(A,B), R = iff(C,D), translate(C,A,X,Y), translate(D,B,X,Y), subformula(F,X), 
-                      subformula(A,X), subformula(B,X), node(X;Y), X != Y.
+                      subformula(A,X), subformula(B,X), node(X), node(Y), X != Y.
 
 
 %new_formula(R,X,Y) :- formula(F,X), translate(R,F,X,Y), not subformula(R,Y), eq(_,X,Y), node(X,Y), X != Y.
-new_formula(R,X,Y) :- formula(F,X), translate(R,F,X,Y), eq(_,X,Y), node(X;Y), X != Y.
+new_formula(R,X,Y) :- formula(F,X), translate(R,F,X,Y), eq(_,X,Y), node(X), node(Y), X != Y.
 
 new_formula(Y,F)   :- new_formula(F,_,Y).
 
