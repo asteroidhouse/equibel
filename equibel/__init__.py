@@ -9,6 +9,9 @@ from equibel.generator import *
 import equibel.graph_manager
 from equibel.graph_manager import *
 
+import equibel.simbool
+from equibel.simbool import *
+
 import equibel.parsers
 from equibel.parsers import *
 
