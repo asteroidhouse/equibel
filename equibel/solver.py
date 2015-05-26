@@ -157,7 +157,8 @@ def completion(G, solving_method=CONTAINMENT):
         if node_id in node_formulas:
             new_formula = node_formulas[node_id]
             old_formula = conjunction(R.formulas(node_id))
-            R.set_formulas(node_id, [simplify(old_formula & new_formula)])
+            # R.set_formulas(node_id, [simplify(old_formula & new_formula)])
+            R.set_formulas(node_id, [old_formula & new_formula])
 
     return R
 
