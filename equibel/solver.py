@@ -12,8 +12,15 @@ import sys
 
 import equibel
 
-import equibel.includes.gringo as gringo
-from equibel.includes.gringo import Control, Model, Fun
+if sys.platform == 'linux' or sys.platform == 'linux2':
+    import equibel.includes.linux.gringo as gringo
+    from equibel.includes.linux.gringo import Control, Model, Fun
+elif sys.platform == 'darwin':
+    import equibel.includes.mac.gringo as gringo
+    from equibel.includes.mac.gringo import Control, Model, Fun
+
+#import equibel.includes.gringo as gringo
+#from equibel.includes.gringo import Control, Model, Fun
 
 import equibel.FormulaExtractor as FormulaExtractor
 import equibel.formatters.ASP_Formatter as ASP_Formatter
