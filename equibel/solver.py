@@ -8,19 +8,20 @@ from __future__ import print_function
 
 import pkg_resources
 import copy
-import sys
+import platform
 
 import equibel
 
-if sys.platform == 'linux' or sys.platform == 'linux2':
-    import equibel.includes.linux.gringo as gringo
-    from equibel.includes.linux.gringo import Control, Model, Fun
-elif sys.platform == 'darwin':
+if platform.system() == 'Linux':
+    if platform.architecture()[0] == '64bit':
+        import equibel.includes.linux.bit64.gringo as gringo
+        from equibel.includes.linux.bit64.gringo import Control, Model, Fun
+    elif platform.architecture()[0] == '32bit':
+        import equibel.includes.linux.bit32.gringo as gringo
+        from equibel.includes.linux.bit32.gringo import Control, Model, Fun
+elif platform.system() == 'Darwin':
     import equibel.includes.mac.gringo as gringo
     from equibel.includes.mac.gringo import Control, Model, Fun
-
-#import equibel.includes.gringo as gringo
-#from equibel.includes.gringo import Control, Model, Fun
 
 import equibel.FormulaExtractor as FormulaExtractor
 import equibel.formatters.ASP_Formatter as ASP_Formatter
