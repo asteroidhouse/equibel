@@ -115,7 +115,6 @@ class EquibelPrompt(Cmd):
             self.print_graphs()
 
 
-    # TODO: Not finished.
     def do_create_path(self, arg_str):
         """Creates a path graph."""
         arg_str, verbose = self.check_silencing_terminator(arg_str)
@@ -145,6 +144,44 @@ class EquibelPrompt(Cmd):
             manager.add(graph_name, R)
             manager.set_context(graph_name)
 
+            self.prompt = "equibel ({0}) > ".format(graph_name)
+        if verbose:
+            self.print_graphs()
+
+    
+    def do_create_star(self, arg_str):
+        """Creates a star graph."""
+        arg_str, verbose = self.check_silencing_terminator(arg_str)
+        args = arg_str.split()
+        graph_name = args[0]
+        num_nodes_str = args[1]
+
+        if not num_nodes_str.isdigit():
+            raise ValueError("Error: create_star requires an integer argument!")
+        else:
+            num_nodes = int(num_nodes_str)
+            R = equibel.star_graph(num_nodes)
+            manager.add(graph_name, R)
+            manager.set_context(graph_name)
+            self.prompt = "equibel ({0}) > ".format(graph_name)
+        if verbose:
+            self.print_graphs()
+
+
+    def do_create_complete(self, arg_str):
+        """Creates a complete graph."""
+        arg_str, verbose = self.check_silencing_terminator(arg_str)
+        args = arg_str.split()
+        graph_name = args[0]
+        num_nodes_str = args[1]
+
+        if not num_nodes_str.isdigit():
+            raise ValueError("Error: create_complete requires an integer argument!")
+        else:
+            num_nodes = int(num_nodes_str)
+            R = equibel.complete_graph(num_nodes)
+            manager.add(graph_name, R)
+            manager.set_context(graph_name)
             self.prompt = "equibel ({0}) > ".format(graph_name)
         if verbose:
             self.print_graphs()
