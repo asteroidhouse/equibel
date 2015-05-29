@@ -50,51 +50,53 @@ following is an example interactive session that creates a path graph on four
 nodes, adds formulas to the first and last nodes, and performs a one-shot belief 
 sharing operation:
 
-        $ equibeli
-        Equibel version 0.8.5
-        equibel (g) > add_nodes [1,2,3,4]
+```
+$ equibeli
+Equibel version 0.8.5
+equibel (g) > add_nodes [1,2,3,4]
 
-            nodes: [1, 2, 3, 4]
+    nodes: [1, 2, 3, 4]
 
-        equibel (g) > add_edges [(1,2), (2,3), (3,4)]
+equibel (g) > add_edges [(1,2), (2,3), (3,4)]
 
-            edges:
-                1 <-> 2
-                2 <-> 3
-                3 <-> 4
+    edges:
+        1 <-> 2
+        2 <-> 3
+        3 <-> 4
 
-        equibel (g) > add_formula 1 p&q&r
+equibel (g) > add_formula 1 p&q&r
 
-            node 1:
-                (q & p) & r
+    node 1:
+        (q & p) & r
 
-        equibel (g) > add_formula 4 ~p&~q
+equibel (g) > add_formula 4 ~p&~q
 
-            node 4:
-                ~p & ~q
+    node 4:
+        ~p & ~q
 
-        equibel (g) > formulas
+equibel (g) > formulas
 
-            node 1:
-                (q & p) & r
-            node 2:
-            node 3:
-            node 4:
-                ~p & ~q
+    node 1:
+        (q & p) & r
+    node 2:
+    node 3:
+    node 4:
+        ~p & ~q
 
-        equibel (g) > one_shot
+equibel (g) > one_shot
 
-            One-shot belief change completed:
-            ---------------------------------
+    One-shot belief change completed:
+    ---------------------------------
 
-            node 1:
-                q & p & r
-            node 2:
-                r
-            node 3:
-                r
-            node 4:
-                ~p & ~q & r
+    node 1:
+        q & p & r
+    node 2:
+        r
+    node 3:
+        r
+    node 4:
+        ~p & ~q & r
+```
 
 
 ### Using the Python API
