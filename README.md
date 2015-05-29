@@ -104,25 +104,26 @@ module. The following is a script that does the same thing as the interactive
 session -- it creates a path graph, assigns formulas to nodes, find the 
 completion, and prints the resulting formulas at each node:
 
-        import equibel as eb
+```python
+import equibel as eb
 
-        if __name__ == '__main__':
-            G = eb.EquibelGraph()
+if __name__ == '__main__':
+    G = eb.EquibelGraph()
 
-            # Create nodes:
-            G.add_nodes([1, 2, 3, 4])
+    # Create nodes:
+    G.add_nodes([1, 2, 3, 4])
 
-            # Create edges:
-            G.add_edges([(1,2), (1,3), (3,4), (2,4)]) 
+    # Create edges:
+    G.add_edges([(1,2), (1,3), (3,4), (2,4)]) 
 
-            # Add formulas to nodes:
-            G.add_formula(1, "p & q & r")
-            G.add_formula(4, "~p & ~q")
-    
-            # Find the completion of the G-scenario:
-            R = eb.completion(G)
+    # Add formulas to nodes:
+    G.add_formula(1, "p & q & r")
+    G.add_formula(4, "~p & ~q")
 
-            # Print the resulting formulas at each node:
-            for node_id in R.nodes():
-                print("Node {0}: {1}".format(node_id, R.formulas(node_id)))
+    # Find the completion of the G-scenario:
+    R = eb.completion(G)
 
+    # Print the resulting formulas at each node:
+    for node_id in R.nodes():
+        print("Node {0}: {1}".format(node_id, R.formulas(node_id)))
+```
