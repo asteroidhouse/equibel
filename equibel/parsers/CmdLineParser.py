@@ -49,7 +49,7 @@ def p_error(p):
 
 def parse_tuple(text):
     lexer = lex.lex(optimize=1, debug=False)
-    tuple_parser = yacc.yacc(start='TUPLE', debug=False)
+    tuple_parser = yacc.yacc(start='TUPLE', debug=False, write_tables=False)
 
     try:
         return tuple_parser.parse(text, lexer=lexer)
@@ -81,7 +81,7 @@ def parse_list(text):
         p[0] = p[1]
 
     lexer = lex.lex(optimize=1, debug=False)
-    list_parser  = yacc.yacc(start='LIST', debug=False)
+    list_parser  = yacc.yacc(start='LIST', debug=False, write_tables=False)
 
     try:
         return list_parser.parse(text, lexer=lexer)

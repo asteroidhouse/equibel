@@ -18,7 +18,7 @@ from equibel.simbool.simplify import *
 __all__ = ["parse_formula"]
 
 
-tokens = ("NEG", "AND", "OR", "LPAREN", "RPAREN", "IDENTIFIER", "WHITESPACE", "NEWLINE")
+tokens = ("NEG", "AND", "OR", "LPAREN", "RPAREN", "IDENTIFIER", "WHITESPACE")
 
 t_NEG = r'\-'
 t_AND = r'\*'
@@ -119,8 +119,8 @@ def p_error(p):
         raise ValueError("Unknown error")
     raise ValueError("Syntax error, line {0}: {1}".format(p.lineno + 1, p.type))
 
-lexer = ply.lex.lex()
-parser = ply.yacc.yacc()
+lexer = ply.lex.lex(debug=False)
+parser = ply.yacc.yacc(debug=False, write_tables=False)
 
 def parse_formula(text):
     try:

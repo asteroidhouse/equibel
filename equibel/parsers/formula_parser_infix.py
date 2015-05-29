@@ -116,11 +116,8 @@ precedence = (("right", "EQUIV"),
               ("right", "NEG"))
 
 
-#lexer = ply.lex.lex(debug=False)
-#parser = ply.yacc.yacc(debug=False, write_tables=False)
-
-lexer = ply.lex.lex()
-parser = ply.yacc.yacc()
+lexer = ply.lex.lex(debug=False)
+parser = ply.yacc.yacc(debug=False, write_tables=False)
 
 
 def parse_infix_formula(text):
