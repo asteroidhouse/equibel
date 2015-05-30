@@ -12,6 +12,9 @@ from equibel.graph_manager import *
 import equibel.simbool
 from equibel.simbool import *
 
+import equibel.formatters
+from equibel.formatters import *
+
 import equibel.parsers
 from equibel.parsers import *
 
