@@ -1,4 +1,17 @@
+"""Formatter to create the Answer Set Programming (ASP) representation
+of an arbitrary EquibelGraph instance. The ASP format is used when 
+giving a graph to the gringo/clingo ASP tools.
+"""
+#    Copyright (C) 2014-2015 by
+#    Paul Vicol <pvicol@sfu.ca>
+#    All rights reserved.
+#    BSD license.
+
 from equibel.simbool.proposition import Prop
+
+
+__all__ = ['convert_to_asp', 'convert_formula_to_asp']
+
 
 NODE_TEMPLATE    = "node({0}).\n"
 RANGE_TEMPLATE   = "node({0}..{1}).\n"

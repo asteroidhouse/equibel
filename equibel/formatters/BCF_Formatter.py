@@ -1,3 +1,14 @@
+"""Formatter to create the Belief Change Format (BCF) representation
+of an arbitrary EquibelGraph instance.
+"""
+#    Copyright (C) 2014-2015 by
+#    Paul Vicol <pvicol@sfu.ca>
+#    All rights reserved.
+#    BSD license.
+
+__all__ = ['convert_to_bcf', 'convert_formula_to_bcf']
+
+
 TYPE_TEMPLATE    = "t {0}\n"
 NODE_TEMPLATE    = "n {0}\n"
 RANGE_TEMPLATE   = "n {0}..{1}\n"
