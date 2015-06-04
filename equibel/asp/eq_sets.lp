@@ -1,5 +1,5 @@
 % Edges are bidirectional <-> The sharing of information goes both ways.
-% edge(X,Y) :- edge(Y,X).
+edge(X,Y) :- edge(Y,X).
 
 % Now we break each formula down into all of its subformulas. These subformulas are used later in the code
 % to check whether an interpretation entails all of the nodes' original beliefs. After truth values are assigned
@@ -27,7 +27,7 @@ atom(P)   :- atom(P,_).
 
 
 % We generate a set of equivalences linking together atoms in nodes that are directly connected.
-{ eq(P,X,Y) : atom(P) , edge(X,Y) }.
+{ eq(P,X,Y) : atom(P) , edge(X,Y), X < Y }.
 
 % Can we find an assignment of truth values (restricted by our set of equivalences) such that all the original formulas are satisfied?
 % We want to see if truth values can be assigned to the atoms such that all the original formulas hold.
@@ -53,9 +53,9 @@ satisfied(F,X) :- F = neg(A),        not satisfied(A,X), subformula(F,X), subfor
 :- formula(F,X), not satisfied(F,X).
 
 % This heuristic is used to find maximal sets of equivalences, with respect to set containment.
-% _heuristic(eq(P,X,Y), true, 1) :- atom(P), edge(X,Y), X < Y.
+_heuristic(eq(P,X,Y), true, 1) :- atom(P), edge(X,Y), X < Y.
 
-_heuristic(eq(P,X,Y), true, 1) :- atom(P), edge(X,Y).
+% _heuristic(eq(P,X,Y), true, 1) :- atom(P), edge(X,Y).
 
 #show _heuristic/3.
 #show eq/3.
