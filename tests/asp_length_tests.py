@@ -35,7 +35,6 @@ def generate_formula(num_variables):
     for atom in atoms:
         formula = random.choice(functions)(atom)
     
-    #return eb.simplify(formula)
     return formula
 
 
@@ -66,6 +65,14 @@ def write_graph(graph, filename):
 
 
 def time_command(command):
+    statement = "subprocess.call(\"{0} --verbose=0 --quiet=2\", shell=True)".format(command)
+    #print(statement)
+    elapsed_time = timeit(stmt=statement, setup="import subprocess", number=1)
+    #print("ENDENDENDEND")
+    print("Elapsed time = {0}".format(elapsed_time))
+    return elapsed_time
+
+    """
     print("Starting \"{0}\"".format(command))
     start_time = time.clock()
     proc = Popen(command, shell=True, stdout=PIPE, universal_newlines=True)
@@ -76,6 +83,7 @@ def time_command(command):
     print("Ending \"{0}\"".format(command))
     print("It took {0}".format(end_time - start_time))
     return end_time - start_time
+    """
 
 
 def solving_time(filename, prefix, eq=False, transitive=False, translate=False):
@@ -88,7 +96,6 @@ def solving_time(filename, prefix, eq=False, transitive=False, translate=False):
         command += " {pre}/translate.lp ".format(pre=prefix)
 
     command += " 0 --heuristic=domain --enum-mode=domRec "
-
     return time_command(command)
     
 
@@ -126,44 +133,49 @@ def lines_and_solving_time(start_num_nodes, end_num_nodes, step_size, graph_type
         graph_eq_lines = count_lines(filename, prefix, eq=True)
         graph_eq_time = solving_time(filename, prefix, eq=True)
 
-        graph_eq_trans_lines = count_lines(filename, prefix, eq=True, transitive=True)
-        graph_eq_trans_time = solving_time(filename, prefix, eq=True, transitive=True)
+        graph_eq_transitive_lines = count_lines(filename, prefix, eq=True, transitive=True)
+        graph_eq_transitive_time = solving_time(filename, prefix, eq=True, transitive=True)
+
+        graph_eq_translate_lines = count_lines(filename, prefix, eq=True, translate=True)
+        graph_eq_translate_time = solving_time(filename, prefix, eq=True, translate=True)
 
         graph_eq_t2_lines = count_lines(filename, prefix, eq=True, transitive=True, translate=True)
         graph_eq_t2_time = solving_time(filename, prefix, eq=True, transitive=True, translate=True)
 
 
-        counts[num_nodes] = (graph_lines, graph_eq_lines, graph_eq_trans_lines, graph_eq_t2_lines)
+        counts[num_nodes] = (graph_lines, graph_eq_lines, graph_eq_transitive_lines, graph_eq_t2_lines)
         
         print("Num Lines in Ground Representation")
         print("--------------------------------------------------")
         print("# Nodes = {0}".format(num_nodes))
         print("GRAPH = {0}".format(graph_lines))
         print("GRAPH + EQ = {0}".format(graph_eq_lines))
-        print("GRAPH + EQ + TRANSITIVE = {0}".format(graph_eq_trans_lines))
+        print("GRAPH + EQ + TRANSLATE = {0}".format(graph_eq_translate_lines))
+        print("GRAPH + EQ + TRANSITIVE = {0}".format(graph_eq_transitive_lines))
         print("GRAPH + EQ + TRANSITIVE + TRANSLATE = {0}".format(graph_eq_t2_lines))
         print("==================================================")
-        print()
 
         print("Solving Times")
         print("--------------------------------------------------")
         print("# Nodes = {0}".format(num_nodes))
         print("GRAPH = {0}".format(graph_time))
         print("GRAPH + EQ = {0}".format(graph_eq_time))
-        print("GRAPH + EQ + TRANSITIVE = {0}".format(graph_eq_trans_time))
+        print("GRAPH + EQ + TRANSLATE = {0}".format(graph_eq_translate_time))
+        print("GRAPH + EQ + TRANSITIVE = {0}".format(graph_eq_transitive_time))
         print("GRAPH + EQ + TRANSITIVE + TRANSLATE = {0}".format(graph_eq_t2_time))
 
     return counts
 
 if __name__ == '__main__':
     start_num_nodes = 5
-    end_num_nodes = 20
+    end_num_nodes = 30
     step_size = 5
 
     counts = lines_and_solving_time(start_num_nodes, end_num_nodes, step_size, STAR)
+    """
     plt.plot(range(start_num_nodes, end_num_nodes+1, step_size), [counts[val][0] for val in counts], 'go-')
     plt.plot(range(start_num_nodes, end_num_nodes+1, step_size), [counts[val][1] for val in counts], 'bo-')
     plt.plot(range(start_num_nodes, end_num_nodes+1, step_size), [counts[val][2] for val in counts], 'ro-')
     plt.plot(range(start_num_nodes, end_num_nodes+1, step_size), [counts[val][3] for val in counts], 'ro-')
     plt.show()
-
+    """
