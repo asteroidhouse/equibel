@@ -1,6 +1,88 @@
-import formulagen
+from __future__ import absolute_import
+from __future__ import print_function
+
 import time
+import subprocess
+
+from timeit import timeit
+
+import matplotlib.pyplot as plt
+
 import equibel as eb
+import formulagen
+
+
+def completion_test(G):
+    start_time = time.clock()
+    R = eb.completion(G)
+    end_time = time.clock()
+    return end_time - start_time
+
+
+def write_graph_to_file(G, filename):
+    f = open(filename, 'w')
+    asp_str = eb.convert_to_asp(G)
+    f.write(asp_str)
+    f.close()
+
+
+def concat(string_list, delim):
+    return delim.join(string_list)
+
+
+def ground_lines(list_of_filenames):
+    all_filenames = concat(list_of_filenames, " ")
+    command = "gringo {0} | wc -l".format(all_filenames)
+    #proc = Popen(command.format(filename), shell=True, stdout=PIPE, universal_newlines=True)
+    lines = int(subprocess.check_output(command, shell=True))
+    return lines
+
+
+def time_command(command):
+    statement = "subprocess.call(\"{0}\", shell=True)".format(command)
+    print(statement)
+    elapsed_time = timeit(stmt=statement, setup="import subprocess", number=1)
+    print("Elapsed time = {0}".format(elapsed_time))
+    return elapsed_time
+
+
+def lines_test(G):
+    write_graph_to_file(G, "temp_asp_file")
+
+    filenames = ["temp_asp_file"]
+    graph_lines = ground_lines(filenames)
+
+    filenames.append("asp/eq_sets.lp")
+    eq_lines = ground_lines(filenames)
+
+    filenames.append("asp/transitive.lp")
+    eq_transitive_lines = ground_lines(filenames)
+
+    filenames.append("asp/translate.lp")
+    eq_translate_lines = ground_lines(filenames)
+
+    return (graph_lines, eq_lines, eq_transitive_lines, eq_translate_lines)
+
+
+def solving_time_test(G):
+    write_graph_to_file(G, "temp_asp_file")
+    
+    solving_command = "clingo {0} 0 --heuristic=domain --enum-mode=domRec --verbose=0 --quiet=2"
+
+    filenames = ["temp_asp_file", "asp/eq_sets.lp"]
+    command = solving_command.format(concat(filenames, " "))
+    eq_time = time_command(command)
+
+    filenames.append("asp/transitive.lp")
+    command = solving_command.format(concat(filenames, " "))
+    eq_transitive_time = time_command(command)
+
+    filenames.append("asp/translate.lp")
+    command = solving_command.format(concat(filenames, " "))
+    eq_translate_time = time_command(command)
+
+    return (eq_time, eq_transitive_time, eq_translate_time)
+
 
 
 def generate_graph(graph_gen_func, 
@@ -13,13 +95,6 @@ def generate_graph(graph_gen_func,
         G.add_formula(node_id, formula)
     return G
 
-
-def completion_test(G):
-    start_time = time.clock()
-    R = eb.completion(G)
-    end_time = time.clock()
-    return end_time - start_time
-    
 
 def run_test(test_func, graph_gen_func, formula_gen_func, graph_gen_args, formula_gen_args):
     G = generate_graph(graph_gen_func, formula_gen_func, graph_gen_args, formula_gen_args)
@@ -50,13 +125,21 @@ def run_tests(test_func=completion_test,
     return data
 
 
+def graph(data, num_tuple_elems):
+    node_nums = sorted(data.keys())
+
+    
+
+
 if __name__ == '__main__':
-    data = run_tests(test_func=completion_test,
+    data = run_tests(test_func=solving_time_test,
                      start_num_nodes=5,
-                     end_num_nodes=10,
-                     step_size=1,
+                     end_num_nodes=25,
+                     step_size=5,
                      repetitions=2,
                      graph_gen_func=eb.star_graph,
                      formula_gen_func=formulagen.literal_conj,
-                     num_vars=4)
+                     num_vars=5)
     print(data)
+    
+    #graph(data, 3)
