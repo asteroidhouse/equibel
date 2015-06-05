@@ -125,21 +125,36 @@ def run_tests(test_func=completion_test,
     return data
 
 
-def graph(data, num_tuple_elems):
-    node_nums = sorted(data.keys())
+def line_graph(data):
+    averages = {key: (sum(value)/len(value)) for (key,value) in data.items()}
+    plt.plot(averages.keys(), averages.values(), 'ro-')
+    plt.title("Completion Times for Star Graphs with 4-Variable Formulas")
+    plt.ylabel("Completion Time (seconds)")
+    plt.xlabel("Number of Nodes")
+    plt.show()
 
+
+def histogram(data):
+    vals = data.values()
+    flattened_vals = [x for lst in vals for x in lst]
+    plt.hist(flattened_vals, 30, color='g', normed=True)
+    plt.title("Completion Time Histogram: 10-Node Star Graph with 4-Variable Formulas")
+    plt.ylabel("Frequency")
+    plt.xlabel("Completion Time")
+    plt.show()
     
 
 
 if __name__ == '__main__':
-    data = run_tests(test_func=solving_time_test,
-                     start_num_nodes=5,
-                     end_num_nodes=25,
-                     step_size=5,
-                     repetitions=2,
+    data = run_tests(test_func=completion_test,
+                     start_num_nodes=10,
+                     end_num_nodes=10,
+                     step_size=1,
+                     repetitions=100,
                      graph_gen_func=eb.star_graph,
                      formula_gen_func=formulagen.literal_conj,
-                     num_vars=5)
+                     num_vars=4)
     print(data)
     
-    #graph(data, 3)
+    #line_graph(data)
+    histogram(data)
