@@ -84,6 +84,18 @@ def solving_time_test(G):
     return (eq_time, eq_transitive_time, eq_translate_time)
 
 
+def solving_translate_test(G):
+    write_graph_to_file(G, "temp_asp_file")
+    
+    solving_command = "clingo {0} 0 --heuristic=domain --enum-mode=domRec --verbose=0 --quiet=2"
+    filenames = ["temp_asp_file", "asp/eq_sets.lp", "asp/transitive.lp", "asp/translate.lp"]
+    command = solving_command.format(concat(filenames, " "))
+    translate_time = time_command(command)
+
+    return translate_time
+
+
+
 
 def generate_graph(graph_gen_func, 
                    formula_gen_func,
@@ -104,7 +116,7 @@ def run_test(test_func, graph_gen_func, formula_gen_func, graph_gen_args, formul
 
 def run_tests(test_func=completion_test,
               start_num_nodes=5, 
-              end_num_nodes=30, 
+              end_num_nodes=50, 
               step_size=5, 
               repetitions=1,
               graph_gen_func=eb.path_graph,
@@ -128,8 +140,8 @@ def run_tests(test_func=completion_test,
 def line_graph(data):
     averages = {key: (sum(value)/len(value)) for (key,value) in data.items()}
     plt.plot(averages.keys(), averages.values(), 'ro-')
-    plt.title("Completion Times for Star Graphs with 4-Variable Formulas")
-    plt.ylabel("Completion Time (seconds)")
+    plt.title("Clingo Solving Times for Star Graphs with 5-Variable Formulas")
+    plt.ylabel("Solving Time (seconds)")
     plt.xlabel("Number of Nodes")
     plt.show()
 
@@ -146,15 +158,15 @@ def histogram(data):
 
 
 if __name__ == '__main__':
-    data = run_tests(test_func=completion_test,
-                     start_num_nodes=10,
-                     end_num_nodes=10,
+    data = run_tests(test_func=solving_translate_test,
+                     start_num_nodes=5,
+                     end_num_nodes=20,
                      step_size=1,
-                     repetitions=100,
+                     repetitions=4,
                      graph_gen_func=eb.star_graph,
                      formula_gen_func=formulagen.literal_conj,
-                     num_vars=4)
+                     num_vars=5)
     print(data)
     
-    #line_graph(data)
-    histogram(data)
+    line_graph(data)
+    #histogram(data)
