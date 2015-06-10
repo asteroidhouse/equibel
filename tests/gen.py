@@ -160,12 +160,12 @@ def histogram(data):
 if __name__ == '__main__':
     data = run_tests(test_func=solving_translate_test,
                      start_num_nodes=5,
-                     end_num_nodes=20,
+                     end_num_nodes=15,
                      step_size=1,
-                     repetitions=4,
+                     repetitions=2,
                      graph_gen_func=eb.star_graph,
                      formula_gen_func=formulagen.literal_conj,
-                     num_vars=5)
+                     num_vars=4)
     print(data)
     
     line_graph(data)
