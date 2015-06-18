@@ -60,6 +60,8 @@ class EqSolver:
         ctl.ground([('base', [])])
         ctl.solve(on_model=self.capture_optimal_models)
 
+        print("SOLVER MODELS = {0}".format(self.optimal_models))
+
         return self.optimal_models
 
     def iteration(self, asp_string, method=CONTAINMENT):
@@ -125,7 +127,7 @@ class EqSolver:
 
     def _configure_control(self, ctl, method):
         if method == CONTAINMENT:
-            ctl.conf.solve.opt_mode   = 'ignore'
+            #ctl.conf.solve.opt_mode   = 'ignore'
             ctl.conf.solve.enum_mode  = 'domRec'
             ctl.conf.solver.heuristic = 'domain'
             ctl.conf.solve.models = 0
@@ -154,7 +156,7 @@ class EqSolver:
 def completion(G, solving_method=CONTAINMENT):
     solver = EqSolver()
     models = solver.one_shot_dicts(ASP_Formatter.convert_to_asp(G), solving_method)
-    #print(models)
+    #print("MODELS = {0}".format(models))
     node_formulas = FormulaExtractor.combine_formulas(models)
 
     R = copy.deepcopy(G)
@@ -165,8 +167,8 @@ def completion(G, solving_method=CONTAINMENT):
         if node_id in node_formulas:
             new_formula = node_formulas[node_id]
             old_formula = conjunction(R.formulas(node_id))
-            # R.set_formulas(node_id, [simplify(old_formula & new_formula)])
-            R.set_formulas(node_id, [old_formula & new_formula])
+            R.set_formulas(node_id, [simplify(old_formula & new_formula)])
+            #R.set_formulas(node_id, [old_formula & new_formula])
 
     return R
 
