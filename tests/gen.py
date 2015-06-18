@@ -96,7 +96,6 @@ def solving_translate_test(G):
 
 
 
-
 def generate_graph(graph_gen_func, 
                    formula_gen_func,
                    graph_gen_args={"n": 10},
@@ -158,15 +157,16 @@ def histogram(data):
 
 
 if __name__ == '__main__':
-    data = run_tests(test_func=solving_translate_test,
-                     start_num_nodes=5,
-                     end_num_nodes=15,
+    data = run_tests(test_func=completion_test,
+                     start_num_nodes=3,
+                     end_num_nodes=3,
                      step_size=1,
-                     repetitions=2,
+                     repetitions=1,
                      graph_gen_func=eb.star_graph,
                      formula_gen_func=formulagen.literal_conj,
                      num_vars=4)
+
     print(data)
     
-    line_graph(data)
+    #line_graph(data)
     #histogram(data)
