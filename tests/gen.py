@@ -157,7 +157,7 @@ def histogram(data):
 
 
 if __name__ == '__main__':
-    data = run_tests(test_func=completion_test,
+    data = run_tests(test_func=solving_translate_test,
                      start_num_nodes=3,
                      end_num_nodes=3,
                      step_size=1,
