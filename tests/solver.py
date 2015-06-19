@@ -38,22 +38,6 @@ TRANSITIVE_FILE = pkg_resources.resource_filename('equibel', 'asp/transitive.lp'
 TRANSLATE_FILE = pkg_resources.resource_filename('equibel', 'asp/translate.lp')
 EQ_EXPANDING_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_expanding.lp')
 
-class Eq(object):
-    def __init__(self, atom, node1, node2, symmetric=True):
-        self.atom = atom
-        self.node1 = node1
-        self.node2 = node2
-        self.symmetric = symmetric
-
-    def __str__(self):
-        return "{0}_{1} = {0}_{2}".format(self.atom, self.node1, self.node2)
-
-    def __repr__(self):
-        return "Eq({0},{1},{2},{3})".format(self.node1, self.node2, self.atom, self.symmetric)
-
-    def is_symmetric(self):
-        return self.symmetric
-
 
 class EqSolver(object):
 
@@ -75,7 +59,7 @@ class EqSolver(object):
         ctl.ground([('base', [])])
         ctl.solve(on_model=self.capture_optimal_models)
 
-        print("SOLVER MODELS = {0}".format(self.optimal_models))
+        #print("SOLVER MODELS = {0}".format(self.optimal_models))
         return self.optimal_models
 
 
@@ -90,7 +74,7 @@ class EqSolver(object):
             eq_dict = dict()
             for term in model:
                 if term.name() == 'eq':
-                    atom = term.args()[0]
+                    atom = str(term.args()[0])
                     node1 = term.args()[1]
                     node2 = term.args()[2]
                     if node2 not in eq_dict:
@@ -104,26 +88,6 @@ class EqSolver(object):
             eq_dicts.append(eq_dict)
         return eq_dicts
     
-
-    """
-    def extract_eq(self, models):
-        eq_dicts = []
-        for model in models:
-            eq_dict = dict()
-            for term in model:
-                if term.name() == 'eq':
-                    atom = term.args()[0]
-                    node1 = term.args()[1]
-                    node2 = term.args()[2]
-                    eq = Eq(atom, node1, node2)
-                    if not node2 in eq_dict:
-                        eq_dict[node2] = [eq]
-                    else:
-                        eq_dict[node2].append(eq)
-            eq_dicts.append(eq_dict)
-        return eq_dicts
-    """
-
 
     def one_shot_dicts(self, asp_string, method=CONTAINMENT):
         models = self.find_models(asp_string, method)
@@ -160,7 +124,7 @@ class EqSolver(object):
         model_atoms = frozenset(model.atoms(Model.SHOWN))
         opt_values = model.optimization()
 
-        print("Opt val = {0}".format(self.optimal_values))
+        #print("Opt val = {0}".format(self.optimal_values))
 
         if self.optimal_values is None:
             self.optimal_values = opt_values
@@ -173,6 +137,7 @@ class EqSolver(object):
             self.optimal_models.add(model_atoms)
 
 
+"""
 # TEST TEST TEST
 def completion(G, solving_method=CONTAINMENT):
     solver = EqSolver()
@@ -192,6 +157,7 @@ def completion(G, solving_method=CONTAINMENT):
             #R.set_formulas(node_id, [old_formula & new_formula])
 
     return R
+"""
 
 
 def conjunction(formulas):
@@ -202,12 +168,49 @@ def conjunction(formulas):
 
     return simplify(result)
 
+
+def disjunction(formulas):
+    result = Prop(True)
+
+    for formula in formulas:
+        result |= formula
+
+    return simplify(result)
+
+
+def completion(G, solving_method=CONTAINMENT):
+    solver = EqSolver()
+    eq_dicts = solver.one_shot_eq(equibel.convert_to_asp(G), solving_method)
+    return final_formulas(G, eq_dicts)
+
+
+def final_formulas(G, eq_dicts):
+    R = copy.deepcopy(G)
+    for node in R.nodes():
+        R.set_formulas(new_formulas(node, G, eq_dicts))
+    return R
+
+
+def new_formulas(node, G, eq_dicts):
+    formulas = []
+    conjunctions = []
+    for eq_dict in eq_dicts:
+        for other_node in [curr_node for curr_node in G.nodes() if curr_node != node]:
+            eq_atoms = eq_dict[node][other_node]
+            formulas.append(translate_formulas(G.formulas(other_node), eq_atoms))
+        conjunctions.append(conjunction([form for forms in formulas for form in forms]))
+        print(conjunctions)
+
+    return disjunction(conjunctions)
+
+
 def translate_formulas(formulas, eq_atoms):
     translated_formulas = []
     for formula in formulas:
-        translated_form = translate_formulas(formula, eq_atoms)
+        translated_form = translate_formula(formula, eq_atoms)
         translated_formulas.append(translated_form)
-    return translate_formulas
+    return translated_formulas
+
 
 def translate_formula(formula, eq_atoms):
     if formula.is_atomic():
@@ -270,27 +273,28 @@ def con_merge(belief_bases, entailment_based_constraints=None, consistency_based
 
 
 if __name__ == '__main__':
-    """
-    if len(sys.argv) < 2:
-        print("usage: python solver.py filename.lp")
-        sys.exit(1)
-    """
-
     solver = EqSolver()
 
-    G = equibel.path_graph(2)
-    #G.add_edge(1,2)
+    G = equibel.path_graph(3)
     G.add_formula(0, "p & q")
     G.add_formula(1, "~p | ~q")
-
+    G.add_formula(2, "a & b & c & d & e & f & g & h & i & j & k & l")
     eq_dicts = solver.one_shot_eq(equibel.convert_to_asp(G), method=CONTAINMENT)
-
     print(eq_dicts)
 
+    #print(eq_dicts)
+    #print("NEW FORMULA {0}".format(new_formulas(0, G, eq_dicts)))
+
+    """
     formula = equibel.parse_infix_formula("(p & q) | r")
     eq_atoms = ['q']
     translated = translate_formula(formula, eq_atoms)
     print(repr(translated))
+    """
+
+    R = equibel.completion(G)
+    for node_id in R.nodes():
+        print("Node {0}, formulas = {1}".format(node_id, R.formulas(node_id)))
 
 
     #filename = sys.argv[1]
