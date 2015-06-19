@@ -64,6 +64,7 @@ class EqSolver:
 
         return self.optimal_models
 
+    """
     def iteration(self, asp_string, method=CONTAINMENT):
         self.optimal_models = set()
         self.optimal_values = None
@@ -99,12 +100,13 @@ class EqSolver:
         ctl.solve(on_model=self.capture_optimal_models)
 
         return self.optimal_models
-
+    """
 
     def one_shot_dicts(self, asp_string, method=CONTAINMENT):
         models = self.find_models(asp_string, method)
         return self.model_dicts(models)
 
+    """
     def iteration_dicts(self, asp_string, method=CONTAINMENT):
         models = self.iteration(asp_string, method)
         return self.model_dicts(models)
@@ -112,6 +114,7 @@ class EqSolver:
     def expanding_iteration_dicts(self, asp_string, method=CONTAINMENT):
         models = self.expanding_iteration(asp_string, method)
         return self.model_dicts(models)
+    """
 
     def model_dicts(self, models):
         model_list = []
@@ -173,6 +176,7 @@ def completion(G, solving_method=CONTAINMENT):
     return R
 
 # TEST TEST TEST
+"""
 def iterate(G, num_iterations=1, solving_method=CONTAINMENT):
     solver = EqSolver()
     asp_string = ASP_Formatter.convert_to_asp(G)
@@ -198,6 +202,7 @@ def iterate(G, num_iterations=1, solving_method=CONTAINMENT):
             R.set_formulas(node_id, [simplify(old_formula & new_formula)])
 
     return R
+"""
 
 def conjunction(formulas):
     result = Prop(True)
@@ -209,6 +214,7 @@ def conjunction(formulas):
 
 
 # TEST TEMPORARY
+"""
 def expanding_iteration(G, num_iterations=1, solving_method=CONTAINMENT):
     solver = EqSolver()
     asp_string = ASP_Formatter.convert_to_asp(G)
@@ -226,6 +232,7 @@ def expanding_iteration(G, num_iterations=1, solving_method=CONTAINMENT):
             asp_string += "dist({0},{1},{2}).".format(from_node_id, to_node_id, distance)
 
     print(asp_string)
+"""
 
 
 # =================================================
