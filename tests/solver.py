@@ -164,13 +164,14 @@ def conjunction(formulas):
     result = Prop(True)
 
     for formula in formulas:
+        #print("FORMULA : {0}".format(formula))
         result &= formula
 
     return simplify(result)
 
 
 def disjunction(formulas):
-    result = Prop(True)
+    result = Prop(False)
 
     for formula in formulas:
         result |= formula
@@ -179,32 +180,42 @@ def disjunction(formulas):
 
 
 def completion(G, solving_method=CONTAINMENT):
+    print("COMPLETION")
     solver = EqSolver()
     eq_dicts = solver.one_shot_eq(equibel.convert_to_asp(G), solving_method)
     return final_formulas(G, eq_dicts)
 
 
 def final_formulas(G, eq_dicts):
+    #print("In final formulas")
     R = copy.deepcopy(G)
     for node in R.nodes():
-        R.set_formulas(new_formulas(node, G, eq_dicts))
+        # Problem
+        # is new_formulas output a list?
+        res = new_formula(node, G, eq_dicts)
+        #print("RES = {0}".format(res))
+        new_form = conjunction([form for form in G.formulas(node)] + [new_formula(node, G, eq_dicts)])
+        R.set_formulas(node, [new_form])
     return R
 
 
-def new_formulas(node, G, eq_dicts):
+def new_formula(node, G, eq_dicts):
+    #print("In new formulas")
     formulas = []
     conjunctions = []
     for eq_dict in eq_dicts:
         for other_node in [curr_node for curr_node in G.nodes() if curr_node != node]:
             eq_atoms = eq_dict[node][other_node]
             formulas.append(translate_formulas(G.formulas(other_node), eq_atoms))
+            #print("formulas = {0}".format(formulas))
         conjunctions.append(conjunction([form for forms in formulas for form in forms]))
-        print(conjunctions)
+        #print(conjunctions)
 
     return disjunction(conjunctions)
 
 
 def translate_formulas(formulas, eq_atoms):
+    #print("In translate formulas")
     translated_formulas = []
     for formula in formulas:
         translated_form = translate_formula(formula, eq_atoms)
@@ -213,6 +224,7 @@ def translate_formulas(formulas, eq_atoms):
 
 
 def translate_formula(formula, eq_atoms):
+    #print("In translate formula")
     if formula.is_atomic():
         if formula.get_name() in eq_atoms:
             return formula
@@ -275,12 +287,11 @@ def con_merge(belief_bases, entailment_based_constraints=None, consistency_based
 if __name__ == '__main__':
     solver = EqSolver()
 
-    G = equibel.path_graph(3)
+    G = equibel.path_graph(4)
     G.add_formula(0, "p & q")
-    G.add_formula(1, "~p | ~q")
-    G.add_formula(2, "a & b & c & d & e & f & g & h & i & j & k & l")
-    eq_dicts = solver.one_shot_eq(equibel.convert_to_asp(G), method=CONTAINMENT)
-    print(eq_dicts)
+    G.add_formula(1, "a & b & c & d & e & f & g & h & i & j")
+    #eq_dicts = solver.one_shot_eq(equibel.convert_to_asp(G), method=CONTAINMENT)
+    #print(eq_dicts)
 
     #print(eq_dicts)
     #print("NEW FORMULA {0}".format(new_formulas(0, G, eq_dicts)))
@@ -292,7 +303,7 @@ if __name__ == '__main__':
     print(repr(translated))
     """
 
-    R = equibel.completion(G)
+    R = completion(G)
     for node_id in R.nodes():
         print("Node {0}, formulas = {1}".format(node_id, R.formulas(node_id)))
 
