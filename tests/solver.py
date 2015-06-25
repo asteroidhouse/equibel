@@ -167,7 +167,8 @@ def conjunction(formulas):
         #print("FORMULA : {0}".format(formula))
         result &= formula
 
-    return simplify(result)
+    #return simplify(result)
+    return result
 
 
 def disjunction(formulas):
@@ -176,11 +177,12 @@ def disjunction(formulas):
     for formula in formulas:
         result |= formula
 
-    return simplify(result)
+    #return simplify(result)
+    return result
 
 
 def completion(G, solving_method=CONTAINMENT):
-    print("COMPLETION")
+    #print("COMPLETION")
     solver = EqSolver()
     eq_dicts = solver.one_shot_eq(equibel.convert_to_asp(G), solving_method)
     return final_formulas(G, eq_dicts)
@@ -195,7 +197,7 @@ def final_formulas(G, eq_dicts):
         res = new_formula(node, G, eq_dicts)
         #print("RES = {0}".format(res))
         new_form = conjunction([form for form in G.formulas(node)] + [new_formula(node, G, eq_dicts)])
-        R.set_formulas(node, [new_form])
+        R.set_formulas(node, [simplify(new_form)])
     return R
 
 
@@ -287,9 +289,9 @@ def con_merge(belief_bases, entailment_based_constraints=None, consistency_based
 if __name__ == '__main__':
     solver = EqSolver()
 
-    G = equibel.path_graph(4)
+    G = equibel.path_graph(20)
     G.add_formula(0, "p & q")
-    G.add_formula(1, "a & b & c & d & e & f & g & h & i & j")
+    G.add_formula(1, "a & b & c & d & e & f & g & h & i & j & ~p")
     #eq_dicts = solver.one_shot_eq(equibel.convert_to_asp(G), method=CONTAINMENT)
     #print(eq_dicts)
 
