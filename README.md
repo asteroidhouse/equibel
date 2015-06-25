@@ -17,29 +17,29 @@ It can be used in two ways:
 
 ## Installation
 
-It is recommended that you install Equibel into a *virtual environment*.
+The following steps assume that you have the `pip` Python package manager 
+installed. If you don't have `pip`, you can get it [here](https://pip.pypa.io/en/latest/installing.html).
 
+1. It is recommended that you install Equibel into a *virtual environment*.
+   To create a virtual environment, you first need to install `virtualenv`:
 
-1. Create a project directory and a virtual environment:
+        $ pip install virtualenv
 
-        mkdir equibel_projects
-        cd equibel_projects
-        virtualenv venv --python=python2.7
+2. Then, create a project directory and a virtual environment within it:
 
-2. Activate the virtual environment:
+        $ mkdir try_equibel
+        $ cd try_equibel
+        $ virtualenv venv --python=python2.7
 
-        source venv/bin/activate
+3. Activate the virtual environment:
 
-3. Get the source code by cloning this repository:
+        $ source venv/bin/activate
 
-        git clone git://github.com/asteroidhouse/equibel.git
+4. Install Equibel using pip:
 
-4. Enter the equibel directory and run pip:
+        (venv)$ pip install equibel
 
-        cd equibel
-        pip install .
-
-For more detailed installation steps, see the tutorial at docs/EquibelTutorial.pdf.
+For more installation details, see the tutorial at docs/EquibelTutorial.pdf.
 
 ## Quickstart
 
@@ -52,7 +52,7 @@ sharing operation:
 
 ```
 $ equibeli
-Equibel version 0.8.5
+Equibel version 0.8.7 (Alpha)
 equibel (g) > add_nodes [1,2,3,4]
 
     nodes: [1, 2, 3, 4]

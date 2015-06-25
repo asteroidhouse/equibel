@@ -22,36 +22,41 @@ Currently Supported Platforms
 Installation
 ------------
 
-It is recommended that you install Equibel into a *virtual environment*.
+| The following steps assume that you have the ``pip`` Python package
+  manager
+| installed. If you don't have ``pip``, you can get it
+  `here <https://pip.pypa.io/en/latest/installing.html>`__.
 
-#. Create a project directory and a virtual environment:
+#. | It is recommended that you install Equibel into a *virtual
+     environment*.
+   |  To create a virtual environment, you first need to install
+     ``virtualenv``:
 
    ::
 
-       mkdir equibel_projects
-       cd equibel_projects
-       virtualenv venv --python=python2.7
+       $ pip install virtualenv
+
+#. Then, create a project directory and a virtual environment within it:
+
+   ::
+
+       $ mkdir try_equibel
+       $ cd try_equibel
+       $ virtualenv venv --python=python2.7
 
 #. Activate the virtual environment:
 
    ::
 
-       source venv/bin/activate
+       $ source venv/bin/activate
 
-#. Get the source code by cloning this repository:
-
-   ::
-
-       git clone git://github.com/asteroidhouse/equibel.git
-
-#. Enter the equibel directory and run pip:
+#. Install Equibel using pip:
 
    ::
 
-       cd equibel
-       pip install .
+       (venv)$ pip install equibel
 
-For more detailed installation steps, see the tutorial at
+For more installation details, see the tutorial at
 docs/EquibelTutorial.pdf.
 
 Quickstart
@@ -71,7 +76,7 @@ Using the Interactive CLI
 ::
 
     $ equibeli
-    Equibel version 0.8.5
+    Equibel version 0.8.7 (Alpha)
     equibel (g) > add_nodes [1,2,3,4]
 
         nodes: [1, 2, 3, 4]
