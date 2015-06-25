@@ -904,7 +904,7 @@ class EquibelPrompt(Cmd):
 
 
 def cli():
-    print("Equibel version 0.8.5")
+    print("Equibel Version 0.8.6 (Alpha)")
 
     print(Fore.GREEN + Style.BRIGHT)
 
