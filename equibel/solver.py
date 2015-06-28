@@ -46,6 +46,7 @@ class EqSolver(object):
         self.optimal_values = None
 
     def find_models(self, asp_string, method=CONTAINMENT):
+        #print("ASP STRING = {0}".format(asp_string))
         self.optimal_models = set()
         self.optimal_values = None
 
@@ -60,6 +61,7 @@ class EqSolver(object):
         ctl.solve(on_model=self.capture_optimal_models)
 
         #print("SOLVER MODELS = {0}".format(self.optimal_models))
+        #print("NUM SOLVER MODELS = {0}".format(len(self.optimal_models)))
         return self.optimal_models
 
 
@@ -167,7 +169,12 @@ def conjunction(formulas):
         #print("FORMULA : {0}".format(formula))
         result &= formula
 
-    #return simplify(result)
+    """
+    res = simplify(result)
+    if debug:
+        print("SIMPLIFIED CONJUNCTION = {0}".format(res))
+    return res
+    """
     return result
 
 
@@ -180,53 +187,84 @@ def disjunction(formulas):
     #return simplify(result)
     return result
 
+debug = False
 
 def completion(G, solving_method=CONTAINMENT):
     #print("COMPLETION")
     solver = EqSolver()
     eq_dicts = solver.one_shot_eq(equibel.convert_to_asp(G), solving_method)
+    if debug:
+        print("EQ DICTS = {0}".format(eq_dicts))
+        print("NUMBER OF EQ DICTS = {0}".format(len(eq_dicts)))
     return final_formulas(G, eq_dicts)
 
 
 def final_formulas(G, eq_dicts):
-    #print("In final formulas")
+    if debug:
+        print("In final formulas...")
+        print("-------------------------------")
     R = copy.deepcopy(G)
     for node in R.nodes():
-        # Problem
-        # is new_formulas output a list?
         res = new_formula(node, G, eq_dicts)
-        #print("RES = {0}".format(res))
-        new_form = conjunction([form for form in G.formulas(node)] + [new_formula(node, G, eq_dicts)])
+        if debug:
+            print("NODE {0} NEW FORMULAS= {1}".format(node, repr(res)))
+        new_form = conjunction([form for form in G.formulas(node)] + [res])
+        if debug:
+            print("NODE {0} CONJUNCTION OF NEW FORMULAS= {1}".format(node, repr(new_form)))
         R.set_formulas(node, [simplify(new_form)])
+        #R.set_formulas(node, [new_form])
     return R
 
 
 def new_formula(node, G, eq_dicts):
-    #print("In new formulas")
-    formulas = []
-    conjunctions = []
+    if debug:
+        print("In new formulas...")
+        print("-------------------------------")
+    conjunctions = set()
     for eq_dict in eq_dicts:
-        for other_node in [curr_node for curr_node in G.nodes() if curr_node != node]:
-            eq_atoms = eq_dict[node][other_node]
-            formulas.append(translate_formulas(G.formulas(other_node), eq_atoms))
-            #print("formulas = {0}".format(formulas))
-        conjunctions.append(conjunction([form for forms in formulas for form in forms]))
-        #print(conjunctions)
+        formulas = []
+        if node in eq_dict:
+            other_nodes = [curr_node for curr_node in G.nodes() if curr_node != node]
+            if debug:
+                print("\tUsing EQ DICT: {0}".format(eq_dict))
+                print("\t-------------------------------")
+            for other_node in other_nodes:
+                if debug:
+                    print("\t\tTranslating from {0} -> {1}".format(other_node, node))
+                    print("\t\t-------------------------------")
+                #eq_atoms = eq_dict[node][other_node]
+                eq_atoms = eq_dict[node].get(other_node, [])
+                if debug:
+                    print("\t\t\tEQ atoms = {0}".format(eq_atoms))
+                formulas.append(translate_formulas(G.formulas(other_node), eq_atoms))
+                if debug:
+                    print("\t\t\tFormulas = {0}".format(formulas))
+            conjunctions.add(conjunction([form for forms in formulas for form in forms]))
+            if debug:
+                print("\tCONJUNCTIONS = {0}".format(conjunctions))
 
-    return disjunction(conjunctions)
+    return simplify(disjunction(conjunctions))
 
 
 def translate_formulas(formulas, eq_atoms):
-    #print("In translate formulas")
+    if debug:
+        print("\t\t\tIn translate formulas...")
+        print("\t\t\t-------------------------------")
+
     translated_formulas = []
     for formula in formulas:
         translated_form = translate_formula(formula, eq_atoms)
+        if debug:
+            print("\t\t\t\tOriginal = {0}, Translated = {1}".format(repr(formula), repr(translated_form)))
         translated_formulas.append(translated_form)
+
+    #print("translate_formulas({0}, {1}) = {2}".format(formulas, eq_atoms, translated_formulas))
     return translated_formulas
 
 
 def translate_formula(formula, eq_atoms):
-    #print("In translate formula")
+    if debug:
+        print("\t\t\t\t\tTranslating {0} with {1}".format(repr(formula), eq_atoms))
     if formula.is_atomic():
         if formula.get_name() in eq_atoms:
             return formula
