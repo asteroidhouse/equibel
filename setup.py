@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='equibel',
-    version='0.8.7a1', # v0.8.7 alpha build
+    version='0.8.8a1', # v0.8.8 alpha build
     
     description='A toolkit for equivalence-based belief change',
 
