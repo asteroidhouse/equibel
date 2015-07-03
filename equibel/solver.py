@@ -15,8 +15,12 @@ import equibel
 
 if platform.system() == 'Linux':
     if platform.architecture()[0] == '64bit':
-        import equibel.includes.linux.bit64.gringo as gringo
-        from equibel.includes.linux.bit64.gringo import Control, Model, Fun
+        if platform.dist()[0] in ['centos', 'CentOS']:
+            import equibel.includes.linux.bit64.centos.gringo as gringo
+            from equibel.includes.linux.bit64.centos.gringo import Control, Model, Fun
+        else:
+            import equibel.includes.linux.bit64.gringo as gringo
+            from equibel.includes.linux.bit64.gringo import Control, Model, Fun
     elif platform.architecture()[0] == '32bit':
         import equibel.includes.linux.bit32.gringo as gringo
         from equibel.includes.linux.bit32.gringo import Control, Model, Fun
