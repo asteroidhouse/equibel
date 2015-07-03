@@ -61,7 +61,7 @@ class EqSolver(object):
         ctl.solve(on_model=self.capture_optimal_models)
 
         #print("SOLVER MODELS = {0}".format(self.optimal_models))
-        #print("NUM SOLVER MODELS = {0}".format(len(self.optimal_models)))
+        print("NUM SOLVER MODELS = {0}".format(len(self.optimal_models)))
         return self.optimal_models
 
 
