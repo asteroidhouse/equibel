@@ -1,7 +1,7 @@
 #    Copyright (C) 2014-2015 by
 #    Paul Vicol <pvicol@sfu.ca>
 #    All rights reserved.
-#    BSD license.
+#    MIT license.
 
 from __future__ import absolute_import
 from __future__ import print_function
@@ -75,6 +75,7 @@ class EqSolver(object):
 
     
     def extract_eq(self, models):
+        print("STARTED EXTRACTING EQ INFO")
         eq_dicts = []
         for model in models:
             eq_dict = dict()
@@ -92,6 +93,7 @@ class EqSolver(object):
                         else:
                             eq_dict[node2][node1].append(atom)
             eq_dicts.append(eq_dict)
+        print("FINISHED EXTRACTING EQ INFO")
         return eq_dicts
     
 
@@ -248,6 +250,7 @@ def new_formula(node, G, eq_dicts):
                 print("\tCONJUNCTIONS = {0}".format(conjunctions))
 
     return simplify(disjunction(conjunctions))
+    #return disjunction(conjunctions)
 
 
 def translate_formulas(formulas, eq_atoms):
