@@ -87,7 +87,8 @@ def solving_time_test(G):
 def solving_translate_test(G):
     write_graph_to_file(G, "temp_asp_file")
     
-    solving_command = "clingo {0} 0 --heuristic=domain --enum-mode=domRec --verbose=0 --quiet=2"
+    #solving_command = "clingo {0} 0 --heuristic=domain --enum-mode=domRec --verbose=0 --quiet=2"
+    solving_command = "clingo {0} 0 --heuristic=domain --enum-mode=domRec"
     filenames = ["temp_asp_file", "asp/eq_sets.lp", "asp/transitive.lp", "asp/translate.lp"]
     command = solving_command.format(concat(filenames, " "))
     translate_time = time_command(command)
@@ -157,14 +158,14 @@ def histogram(data):
 
 
 if __name__ == '__main__':
-    data = run_tests(test_func=solving_translate_test,
+    data = run_tests(test_func=completion_test,
                      start_num_nodes=3,
-                     end_num_nodes=3,
+                     end_num_nodes=15,
                      step_size=1,
                      repetitions=1,
                      graph_gen_func=eb.star_graph,
                      formula_gen_func=formulagen.literal_conj,
-                     num_vars=4)
+                     num_vars=5)
 
     print(data)
     

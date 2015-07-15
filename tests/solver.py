@@ -44,7 +44,7 @@ class EqSolver(object):
     def __init__(self):
         self.optimal_models = set()
         self.optimal_values = None
-
+    
     def find_models(self, asp_string, method=CONTAINMENT):
         self.optimal_models = set()
         self.optimal_values = None
@@ -62,12 +62,12 @@ class EqSolver(object):
         #print("SOLVER MODELS = {0}".format(self.optimal_models))
         return self.optimal_models
 
-
+    
     def one_shot_eq(self, asp_string, method=CONTAINMENT):
         models = self.find_models(asp_string, method)
         return self.extract_eq(models)
 
-    
+        
     def extract_eq(self, models):
         eq_dicts = []
         for model in models:
@@ -88,12 +88,12 @@ class EqSolver(object):
             eq_dicts.append(eq_dict)
         return eq_dicts
     
-
+    
     def one_shot_dicts(self, asp_string, method=CONTAINMENT):
         models = self.find_models(asp_string, method)
         return self.model_dicts(models)
 
-
+    
     def model_dicts(self, models):
         model_list = []
 
@@ -108,7 +108,7 @@ class EqSolver(object):
             model_list.append(term_dict)
 
         return model_list
-
+    
     def _configure_control(self, ctl, method):
         if method == CONTAINMENT:
             ctl.conf.solve.opt_mode   = 'ignore'
@@ -119,7 +119,7 @@ class EqSolver(object):
             ctl.conf.solve.opt_mode   = 'optN'
             ctl.conf.solve.enum_mode  = 'auto'
             ctl.conf.solver.heuristic = 'none'
-
+    
     def capture_optimal_models(self, model):
         model_atoms = frozenset(model.atoms(Model.SHOWN))
         opt_values = model.optimization()
@@ -159,7 +159,7 @@ def completion(G, solving_method=CONTAINMENT):
     return R
 """
 
-
+    
 def conjunction(formulas):
     result = Prop(True)
 
@@ -197,7 +197,8 @@ def final_formulas(G, eq_dicts):
         res = new_formula(node, G, eq_dicts)
         #print("RES = {0}".format(res))
         new_form = conjunction([form for form in G.formulas(node)] + [new_formula(node, G, eq_dicts)])
-        R.set_formulas(node, [simplify(new_form)])
+        #R.set_formulas(node, [simplify(new_form)])
+        R.set_formulas(node, [new_form])
     return R
 
 
@@ -289,9 +290,9 @@ def con_merge(belief_bases, entailment_based_constraints=None, consistency_based
 if __name__ == '__main__':
     solver = EqSolver()
 
-    G = equibel.path_graph(20)
-    G.add_formula(0, "p & q")
-    G.add_formula(1, "a & b & c & d & e & f & g & h & i & j & ~p")
+    G = equibel.path_graph(4)
+    G.add_formula(0, "p & q & r")
+    G.add_formula(3, "~p & ~q & ~r")
     #eq_dicts = solver.one_shot_eq(equibel.convert_to_asp(G), method=CONTAINMENT)
     #print(eq_dicts)
 
