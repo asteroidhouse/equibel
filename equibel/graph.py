@@ -27,6 +27,7 @@ class EquibelGraph:
             self.graph = nx.Graph()
             self.graph.graph[ATOMS_KEY] = set()
 
+    # TODO: Possibly replace this with iter(self.graph)
     def __iter__(self):
         return iter(self.graph.nodes())
 
