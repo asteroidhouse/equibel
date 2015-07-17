@@ -435,9 +435,9 @@ def con_merge(belief_bases, entailment_based_constraints=None, consistency_based
 if __name__ == '__main__':
     solver = EqSolver()
 
-    G = equibel.path_graph(15)
+    G = equibel.path_graph(10)
     G.add_formula(0, "p & q & r & s")
-    G.add_formula(14, "~p & ~q & ~r & ~s")
+    G.add_formula(9, "~p & ~q & ~r & ~s")
     #eq_dicts = solver.one_shot_eq(equibel.convert_to_asp(G), method=CONTAINMENT)
     #print(eq_dicts)
 

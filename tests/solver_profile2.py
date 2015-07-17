@@ -37,6 +37,8 @@ from equibel.simbool.proposition import Prop
 from equibel.simbool.simplify import simplify
 
 
+
+
 CONTAINMENT = 'containment'
 CARDINALITY = 'cardinality'
 
@@ -224,7 +226,7 @@ def completion(G, solving_method=CONTAINMENT):
     if debug:
         print("EQ DICTS = {0}".format(eq_dicts))
         print("NUMBER OF EQ DICTS = {0}".format(len(eq_dicts)))
-    return completion_graph(G, eq_dicts)
+    return completed_graph(G, eq_dicts)
 
 
 @profile
@@ -254,10 +256,18 @@ def eq_disjunctions(G, eq_dicts):
                 if other in eq:
                     if node in eq[other]:
                         eq_atoms = eq[other][node]
+                        if debug:
+                            print("EQ ATOMS = {0}".format(eq_atoms))
                         other_node_formulas = G.formulas(other)
+                        if debug:
+                            print("OTHER NODE FORMULAS = {0}".format(other_node_formulas))
                         if other_node_formulas:
                             trans = translate_formulas(other_node_formulas, eq_atoms)
-                            formulas.union(trans)
+                            if debug:
+                                print("OTHER NODE TRANSLATED FORMULAS = {0}".format(trans))
+                            formulas.update(trans)
+                            if debug:
+                                print("FORMULAS in SET: {0}".format(formulas))
             if node not in conjunction_dict:
                 conjunction_dict[node] = set([conjunction(formulas)])
             else:
