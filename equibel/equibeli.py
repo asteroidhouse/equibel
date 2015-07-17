@@ -1,7 +1,7 @@
 #    Copyright (C) 2014-2015 by
 #    Paul Vicol <pvicol@sfu.ca>
 #    All rights reserved.
-#    BSD license.
+#    MIT license.
 
 from __future__ import absolute_import
 from __future__ import print_function
@@ -904,7 +904,7 @@ class EquibelPrompt(Cmd):
 
 
 def cli():
-    print("Equibel Version 0.8.8 (Alpha)")
+    print("Equibel Version 0.8.9 (Alpha)")
 
     print(Fore.GREEN + Style.BRIGHT)
 
