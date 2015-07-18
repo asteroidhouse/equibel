@@ -2,8 +2,6 @@
 
 ## Introduction
 
-*Note: This project is still under construction. More documentation will be available soon.*
-
 Equibel is a toolkit for working with equivalence-based belief change.
 It can be used in two ways:
 
