@@ -44,7 +44,7 @@ satisfied(F,X) :- F = and(A,B), satisfied(A,X), satisfied(B,X), subformula(F,X),
 satisfied(F,X) :- F = or(A,B),  satisfied(A,X), subformula(F,X), subformula(A,X), subformula(B,X).
 satisfied(F,X) :- F = or(A,B),  satisfied(B,X), subformula(F,X), subformula(A,X), subformula(B,X).
 satisfied(F,X) :- F = implies(A,B),  not satisfied(A,X), subformula(F,X), subformula(A,X), subformula(B,X).
-satisfied(F,X) :- F = implies(A,B),      satisfied(A,X), satisfied(B,X), subformula(F,X), subformula(A,X), subformula(B,X).
+satisfied(F,X) :- F = implies(A,B),      satisfied(B,X), subformula(F,X), subformula(A,X), subformula(B,X).
 satisfied(F,X) :- F = iff(A,B),          satisfied(A,X), satisfied(B,X), subformula(F,X), subformula(A,X), subformula(B,X).
 satisfied(F,X) :- F = iff(A,B),      not satisfied(A,X), not satisfied(B,X), subformula(F,X), subformula(A,X), subformula(B,X).
 satisfied(F,X) :- F = neg(A),        not satisfied(A,X), subformula(F,X), subformula(A,X).
@@ -54,8 +54,6 @@ satisfied(F,X) :- F = neg(A),        not satisfied(A,X), subformula(F,X), subfor
 
 % This heuristic is used to find maximal sets of equivalences, with respect to set containment.
 _heuristic(eq(P,X,Y), true, 1) :- atom(P), edge(X,Y), X < Y.
-
-% _heuristic(eq(P,X,Y), true, 1) :- atom(P), edge(X,Y).
 
 #show _heuristic/3.
 #show eq/3.
