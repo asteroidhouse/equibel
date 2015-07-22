@@ -44,7 +44,7 @@ EQ_SETS_FILE = 'asp/eq_sets.lp'
 TRANSITIVE_FILE = 'asp/transitive.lp'
 
 
-no_profile = True
+no_profile = False
 
 if no_profile:
     def profile(func):
@@ -100,7 +100,8 @@ class EqSolver(object):
         for node in R:
             new_information = self.disjunctions[node]
             updated_formula = conjunction([form for form in G.formulas(node)] + [new_information])
-            R.set_formulas(node, [simplify(updated_formula)])
+            #R.set_formulas(node, [simplify(updated_formula)])
+            R.set_formulas(node, [updated_formula])
         return R
         #return self.eq_dicts
 
@@ -175,7 +176,7 @@ def conjunction(formulas):
     for formula in formulas:
         result &= formula
     return result
-
+    
 
 @profile
 def disjunction(formulas):
@@ -300,9 +301,9 @@ if __name__ == '__main__':
     num_nodes = int(sys.argv[1])
     
     solver = EqSolver()
-    G = equibel.path_graph(num_nodes)
-    G.add_formula(0, "p & q & r & s")
-    G.add_formula(num_nodes-1, "~p & ~q & ~r & ~s")
+    G = equibel.star_graph(num_nodes)
+    G.add_formula(0, "p & q & r & s & t")
+    G.add_formula(num_nodes-1, "~p & ~q & ~r & ~s & ~t")
     R = completion(G)
     for node_id in R.nodes():
         print("Node {0}, formulas = {1}".format(node_id, R.formulas(node_id)))
