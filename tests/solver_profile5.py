@@ -10,6 +10,8 @@ import sys
 import pkg_resources
 import copy
 import platform
+import resource
+import gc
 
 import functools
 from functools import wraps
@@ -44,7 +46,7 @@ EQ_SETS_FILE = 'asp/eq_sets.lp'
 TRANSITIVE_FILE = 'asp/transitive.lp'
 
 
-no_profile = False
+no_profile = True
 
 if no_profile:
     def profile(func):
@@ -58,9 +60,9 @@ class EqSolver(object):
     def __init__(self):
         self.optimal_models = set()
         self.eq_dicts = []
-        self.graph = None
         self.conjunctions = dict()
         self.disjunctions = dict()
+        self.graph = None
 
     @profile
     def conjunction(formulas):
@@ -81,6 +83,8 @@ class EqSolver(object):
     def find_completion(self, G, method=CONTAINMENT):
         self.optimal_models = set()
         self.eq_dicts = []
+        self.conjunctions = dict()
+        self.disjunctions = dict()
         self.graph = G
 
         ctl = gringo.Control()
@@ -120,6 +124,7 @@ class EqSolver(object):
     @profile
     def on_model(self, model):
         #print(model.atoms(Model.SHOWN))
+        #print('BEFORE EQ DICT memory usage: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
         eq_dict = dict()
         for term in model.atoms(Model.SHOWN):
             if term.name() == 'eq':
@@ -137,6 +142,7 @@ class EqSolver(object):
         for node1 in eq_dict:
             for node2 in eq_dict[node1]:
                 eq_dict[node1][node2] = frozenset(eq_dict[node1][node2])
+        #print('AFTER EQ DICT memory usage: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
         
         self.translate_using_eq(eq_dict)
         
@@ -194,10 +200,10 @@ def print_eq_dicts(eq_dicts):
             print("{0} => {1}".format(key, eq_dict[key]))
         print("\n")
 
+solver = EqSolver()
 
 @profile
 def completion(G, solving_method=CONTAINMENT):
-    solver = EqSolver()
     return solver.find_completion(G)
     #eq_dicts = solver.find_eq_dicts(G, solving_method)
     #print_eq_dicts(eq_dicts)
@@ -301,7 +307,7 @@ if __name__ == '__main__':
     num_nodes = int(sys.argv[1])
     
     solver = EqSolver()
-    G = equibel.star_graph(num_nodes)
+    G = equibel.path_graph(num_nodes)
     G.add_formula(0, "p & q & r & s & t")
     G.add_formula(num_nodes-1, "~p & ~q & ~r & ~s & ~t")
     R = completion(G)

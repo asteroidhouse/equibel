@@ -241,8 +241,8 @@ if __name__ == '__main__':
     
     solver = EqSolver()
     G = equibel.path_graph(num_nodes)
-    G.add_formula(0, "p & q & r & s")
-    G.add_formula(num_nodes-1, "~p & ~q & ~r & ~s")
+    G.add_formula(0, "p & q & r & s & t")
+    G.add_formula(num_nodes-1, "~p & ~q & ~r & ~s & ~t")
     R = completion(G)
     for node_id in R.nodes():
         print("Node {0}, formulas = {1}".format(node_id, R.formulas(node_id)))
