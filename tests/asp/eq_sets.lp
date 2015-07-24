@@ -34,12 +34,17 @@ atom(P)   :- atom(P,_).
 1 { truth_value(P,X,true) ; truth_value(P,X,false) } 1 :- atom(P), node(X).
 
 % Atoms that are "linked" by an equivalence must have the same truth value in both nodes.
-:- eq(P,X,Y), truth_value(P,X,V), truth_value(P,Y,W), V != W.
+% :- eq(P,X,Y), truth_value(P,X,V), truth_value(P,Y,W), V != W.
+% CHANGED HERE:
+:- eq(P,X,Y), edge(X,Y), truth_value(P,X,V), truth_value(P,Y,W), V != W.
 
 
 % Now we build up the original formulas for each node using the truth values assigned to each atom, to see
 % if the original formulas are satisfied under this valuation.
-satisfied(P,X) :- truth_value(P,X,true).
+
+% satisfied(P,X) :- truth_value(P,X,true).
+% ALSO CHANGED HERE:
+satisfied(P,X) :- truth_value(P,X,true), atom(P,X).
 satisfied(F,X) :- F = and(A,B), satisfied(A,X), satisfied(B,X), subformula(F,X), subformula(A,X), subformula(B,X).
 satisfied(F,X) :- F = or(A,B),  satisfied(A,X), subformula(F,X), subformula(A,X), subformula(B,X).
 satisfied(F,X) :- F = or(A,B),  satisfied(B,X), subformula(F,X), subformula(A,X), subformula(B,X).
