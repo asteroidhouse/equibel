@@ -83,15 +83,15 @@ def histogram(data):
 
 if __name__ == '__main__':
     data = run_tests(test_func=completion_test,
-                     start_num_nodes=10,
-                     end_num_nodes=20,
+                     start_num_nodes=15,
+                     end_num_nodes=15,
                      step_size=1,
-                     repetitions=5,
+                     repetitions=10,
                      graph_gen_func=eb.path_graph,
                      formula_gen_func=formulagen.literal_conj,
-                     num_vars=4)
+                     num_vars=5)
 
     print(data)
     
-    line_graph(data)
+    #line_graph(data)
     #histogram(data)

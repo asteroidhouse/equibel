@@ -112,7 +112,8 @@ class EqSolver(object):
     @profile
     def _configure_control(self, ctl, method):
         if method == CONTAINMENT:
-            ctl.conf.solve.opt_mode   = 'ignore'
+            #ctl.conf.solve.opt_mode   = 'ignore'
+            ctl.conf.configuration = 'jumpy'
             ctl.conf.solve.enum_mode  = 'domRec'
             ctl.conf.solver.heuristic = 'domain'
             ctl.conf.solve.models = 0
