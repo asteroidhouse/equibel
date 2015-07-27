@@ -4,6 +4,13 @@ import gringo
 
 models = dict()
 
+terms = set()
+
+def store_models(m):
+    for term in m.atoms(gringo.Model.SHOWN):
+        if term.name() == 'tv':
+            terms.add(term)
+
 def capture_models(m):
     node_tv_dict = dict()
     for term in m.atoms(gringo.Model.SHOWN):
@@ -19,19 +26,75 @@ def capture_models(m):
             models[node] = []
         models[node].append(node_tv_dict[node])
 
-    #print(models)
 
+def capture_models2(m):
+    node_tv_dict = dict()
+    for term in m.atoms(gringo.Model.SHOWN):
+        if term.name() == 'tv':
+            node, atom_fun, truth_value = term.args()
+            atom = str(atom_fun)
+            if node not in node_tv_dict:
+                node_tv_dict[node] = dict()
+            node_tv_dict[node][atom] = truth_value
+            #print(node_tv_dict)
+    for node in node_tv_dict:
+        if node not in models:
+            models[node] = set()
+        models[node].add(frozenset(node_tv_dict[node].items()))
+
+iterator = False
+simple_solve = True
 
 def main(prg):
+    prg.conf.tester.configuration = 'handy'
+    print("Conf = {0}".format(prg.conf.configuration))
+    print("Heuristic = {0}".format(prg.conf.solver.heuristic))
+    print("Enum Mode = {0}".format(prg.conf.solve.enum_mode))
+    print("Tester Conf = {0}".format(prg.conf.tester.configuration))
+    #prg.conf.configuration = 'handy'
     prg.conf.solver.heuristic = 'domain'
     prg.conf.solve.enum_mode = 'domRec'
     prg.conf.solve.models = 0
 
     prg.ground([("base", [])])
-    prg.solve(on_model=capture_models)
     #prg.solve()
 
+    #prg.solve(on_model=capture_models2)
+    #prg.solve(on_model=store_models)
+    #prg.solve()
+    #print(terms)
+    """
+    d = []
+    with prg.solve_iter() as it:
+        for m in it:
+            tv_terms = set()
+            for term in m.atoms(gringo.Model.SHOWN):
+                if term.name() == 'tv':
+                    tv_terms.add(term)
+            d.append(tv_terms)
+        #print(d)
+    """
+
+    with prg.solve_iter() as it:
+        for m in it:
+            node_tv_dict = dict()
+            for term in m.atoms(gringo.Model.SHOWN):
+                if term.name() == 'tv':
+                    node, atom_fun, truth_value = term.args()
+                    atom = str(atom_fun)
+                    if node not in node_tv_dict:
+                        node_tv_dict[node] = dict()
+                    node_tv_dict[node][atom] = truth_value
+                    #print(node_tv_dict)
+            for node in node_tv_dict:
+                if node not in models:
+                    models[node] = set()
+                models[node].add(frozenset(node_tv_dict[node].items()))
+        print(models)
+
 #end.
+
+#program base.
 
 % Edges are bidirectional <-> The sharing of information goes both ways.
 edge(X,Y) :- edge(Y,X).
