@@ -72,6 +72,9 @@ class EqSolver(object):
         self.eq_dicts = []
         self.graph = G
 
+        self.conjunctions = dict()
+        self.disjunctions = dict()
+
         ctl = gringo.Control()
         ctl.load(EQ_SETS_FILE)
         ctl.load(TRANSITIVE_FILE)
@@ -172,8 +175,10 @@ def print_eq_dicts(eq_dicts):
             print("{0} => {1}".format(key, eq_dict[key]))
         print("\n")
 
+solver = EqSolver()
+
 def completion(G, solving_method=CONTAINMENT):
-    solver = EqSolver()
+    #solver = EqSolver()
     return solver.find_completion(G)
 
 
