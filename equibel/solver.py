@@ -70,6 +70,7 @@ def completion(G, method=CONTAINMENT):
     for node in node_models:
         t = tuple(node_models[node])
         formula = formula_from_models(t, sorted_atoms)
+        print(repr(formula))
         simple = simplify(formula)
         R.set_formulas(node, [simple])
     return R
