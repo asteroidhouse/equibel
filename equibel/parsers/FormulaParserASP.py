@@ -18,8 +18,9 @@ __all__ = ["parse_asp_formula"]
 # --------------------------------------------------------------------
 
 keywords = {"neg": "NEG", "and": "AND", "or": "OR", "implies": "IMPLIES", "iff": "IFF"}
-tokens = (["IDENTIFIER", "LPAREN", "RPAREN", "COMMA"] + list(keywords.values()))
+tokens = (["INTEGER", "IDENTIFIER", "LPAREN", "RPAREN", "COMMA"] + list(keywords.values()))
 
+t_INTEGER = r'[0-9]+'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_COMMA  = r','
@@ -53,7 +54,8 @@ def p_FORMULA(p):
     p[0] = p[1]
 
 def p_ATOM(p):
-    """ATOM : IDENTIFIER"""
+    """ATOM : IDENTIFIER
+            | INTEGER"""
     p[0] = Prop(p[1])
 
 def p_COMPOUND(p):

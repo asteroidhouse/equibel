@@ -13,16 +13,17 @@ from equibel.simbool.proposition import Prop
 __all__ = ['convert_to_asp', 'convert_formula_to_asp']
 
 
-NODE_TEMPLATE    = "node({0}).\n"
-RANGE_TEMPLATE   = "node({0}..{1}).\n"
-EDGE_TEMPLATE    = "edge({0},{1}).\n"
-ATOM_TEMPLATE    = "atom({0}).\n"
-WEIGHT_TEMPLATE  = "weight({0},{1},{2}).\n"
+NODE_TEMPLATE = "node({0}).\n"
+RANGE_TEMPLATE = "node({0}..{1}).\n"
+EDGE_TEMPLATE = "edge({0},{1}).\n"
+WEIGHT_TEMPLATE = "weight({0},{1},{2}).\n"
 FORMULA_TEMPLATE = "formula({0},{1}).\n"
 
-AND_TEMPLATE   = "and({0},{1})"
-OR_TEMPLATE    = "or({0},{1})"
-NEG_TEMPLATE   = "neg({0})"
+IMPLIES_TEMPLATE = "implies({0},{1})"
+IFF_TEMPLATE = "iff({0},{1})"
+AND_TEMPLATE = "and({0},{1})"
+OR_TEMPLATE = "or({0},{1})"
+NEG_TEMPLATE = "neg({0})"
 
 
 def convert_to_asp(G):
@@ -30,9 +31,6 @@ def convert_to_asp(G):
 
     for node_id in G.nodes():
         asp_str += NODE_TEMPLATE.format(node_id)
-
-    for atom in G.atoms():
-        asp_str += ATOM_TEMPLATE.format(atom)
 
     # DONE: This is one way to handle undirected edges: when writing the ASP
     #       code, explicitly encode both directions if the G is undirected.
@@ -53,7 +51,7 @@ def convert_to_asp(G):
         formulas = G.formulas(node_id)
         for formula in formulas:
             formatted_formula = convert_formula_to_asp(formula)
-            asp_str += FORMULA_TEMPLATE.format(formatted_formula, node_id)
+            asp_str += FORMULA_TEMPLATE.format(node_id, formatted_formula)
 
     return asp_str
 
