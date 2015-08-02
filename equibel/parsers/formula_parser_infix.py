@@ -22,7 +22,7 @@ __all__ = ["parse_infix_formula"]
 # --------------------------------------------------------------------
 keywords = {"T": "TRUE", "F": "FALSE"}
 
-tokens = (["NEG", "AND", "OR", "IMPLIES", "EQUIV", "LPAREN", "RPAREN", "IDENTIFIER"] + list(keywords.values()))
+tokens = (["NEG", "AND", "OR", "IMPLIES", "EQUIV", "LPAREN", "RPAREN", "INTEGER", "IDENTIFIER"] + list(keywords.values()))
 
 def t_IDENTIFIER(t):
     r"[_a-zA-Z][_a-zA-Z0-9]*"
@@ -36,6 +36,7 @@ t_IMPLIES = r"->"
 t_EQUIV = r"="
 t_LPAREN = r"\("
 t_RPAREN = r"\)"
+t_INTEGER = r"[0-9]+"
 
 t_ignore = " \t\n"
 
@@ -63,7 +64,8 @@ def p_FORMULA(p):
     p[0] = p[1] if len(p) == 2 else p[2]
 
 def p_ATOM(p):
-    """ATOM : IDENTIFIER"""
+    """ATOM : IDENTIFIER
+            | INTEGER"""
     p[0] = Prop(p[1])
 
 def p_BOOLEAN_TRUE(p):
