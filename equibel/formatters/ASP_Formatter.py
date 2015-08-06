@@ -5,7 +5,7 @@ giving a graph to the gringo/clingo ASP tools.
 #    Copyright (C) 2014-2015 by
 #    Paul Vicol <pvicol@sfu.ca>
 #    All rights reserved.
-#    BSD license.
+#    MIT license.
 
 from equibel.simbool.proposition import Prop
 
@@ -26,7 +26,7 @@ OR_TEMPLATE = "or({0},{1})"
 NEG_TEMPLATE = "neg({0})"
 
 
-def convert_to_asp(G):
+def convert_to_asp(G, atom_mapping):
     asp_str = ""
 
     for node_id in G.nodes():
@@ -50,15 +50,17 @@ def convert_to_asp(G):
     for node_id in G.nodes():
         formulas = G.formulas(node_id)
         for formula in formulas:
-            formatted_formula = convert_formula_to_asp(formula)
+            formatted_formula = convert_formula_to_asp(formula, atom_mapping)
             asp_str += FORMULA_TEMPLATE.format(node_id, formatted_formula)
 
     return asp_str
 
 
-def convert_formula_to_asp(formula):
+def convert_formula_to_asp(formula, atom_mapping):
     # Atomic propositions are the base case for the recursion.
     if formula.is_atomic():
+        return atom_mapping[formula]
+        """
         name = formula.get_name()
         if name is True:
             return 'true'
@@ -66,10 +68,11 @@ def convert_formula_to_asp(formula):
             return 'false'
         else:
             return name
+        """
 
     if formula.get_op() == '~':
         term = formula.get_terms()[0]
-        formatted_term = convert_formula_to_asp(term)
+        formatted_term = convert_formula_to_asp(term, atom_mapping)
         return NEG_TEMPLATE.format(formatted_term)
 
     terms = formula.get_terms()
@@ -77,18 +80,18 @@ def convert_formula_to_asp(formula):
         # This handles the case when we have a conjunction/disjunction with
         # only one operand, like *(p) or +(p).
         term = formula.get_terms()[0]
-        return convert_formula_to_asp(term)
+        return convert_formula_to_asp(term, atom_mapping)
     elif len(terms) == 2:
-        first_operand = convert_formula_to_asp(terms[0])
-        second_operand = convert_formula_to_asp(terms[1])
+        first_operand = convert_formula_to_asp(terms[0], atom_mapping)
+        second_operand = convert_formula_to_asp(terms[1], atom_mapping)
     else:
-        first_operand = convert_formula_to_asp(terms[0])
+        first_operand = convert_formula_to_asp(terms[0], atom_mapping)
         # This creates a new formula with the same operator as the one being
         # parsed, creating a smaller disjunction/conjunction (that is, one
         # with fewer operands). This is done so that recursive calls to this
         # function will produce binary formulas.
         rest_of_formula = Prop(formula.get_op(), *terms[1:])
-        second_operand = convert_formula_to_asp(rest_of_formula)
+        second_operand = convert_formula_to_asp(rest_of_formula, atom_mapping)
 
     if formula.get_op() == '&':
         return AND_TEMPLATE.format(first_operand, second_operand)

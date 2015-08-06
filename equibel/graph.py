@@ -38,7 +38,6 @@ class EquibelGraph:
     #                NODE METHODS
     # ================================================
 
-    # ROUTING to G.nodes()
     def nodes(self):
         return self.graph.nodes()
 
@@ -82,15 +81,12 @@ class EquibelGraph:
     def remove_edge(self, from_node_id, to_node_id):
         self.graph.remove_edge(from_node_id, to_node_id)
 
-    # (not quite) ROUTING to G.to_directed()
     def to_directed(self):
         return EquibelGraph(self.graph.to_directed())
 
-    # (not quite) ROUTING to G.to_undirected()
     def to_undirected(self):
         return EquibelGraph(self.graph.to_undirected())
 
-    # ROUTING to G.is_directed()
     def is_directed(self):
         return self.graph.is_directed()
 
@@ -134,7 +130,6 @@ class EquibelGraph:
         if atom not in self.atoms():
             self.add_atom(atom)
 
-    # For convenience:
     def add_weight(self, node_id, atom, weight):
         self.set_atom_weight(node_id, atom, weight)
 

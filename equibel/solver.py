@@ -35,9 +35,19 @@ EQ_SETS_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_sets.lp')
 CONTAINMENT = 'containment'
 CARDINALITY = 'cardinality'
 
+
+def create_atom_mapping(atoms):
+    mapping = dict()
+    for (index, atom) in enumerate(atoms):
+        mapping[atom] = index
+    return mapping
+
+
 def completion(G, method=CONTAINMENT):
     atoms = [eb.Prop(atom) for atom in G.atoms()]
     sorted_atoms = tuple(sorted(atoms))
+
+    atom_mapping = create_atom_mapping(sorted_atoms)
 
     ctl = gringo.Control()
     #ctl.conf.configuration = 'handy'
@@ -47,7 +57,7 @@ def completion(G, method=CONTAINMENT):
     #ctl.conf.solve.parallel_mode = 2
 
     ctl.load(EQ_SETS_FILE)
-    ctl.add('base', [], eb.convert_to_asp(G))
+    ctl.add('base', [], eb.convert_to_asp(G, atom_mapping))
     ctl.ground([('base', [])])
 
     node_models = defaultdict(set)
@@ -71,7 +81,8 @@ def completion(G, method=CONTAINMENT):
         t = tuple(node_models[node])
         formula = formula_from_models(t, sorted_atoms)
         print(repr(formula))
-        simple = simplify(formula)
+        #simple = simplify(formula)
+        simple = formula
         R.set_formulas(node, [simple])
     return R
 
