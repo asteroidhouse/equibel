@@ -32,8 +32,8 @@ import equibel.formatters.ASP_Formatter as ASP_Formatter
 
 EQ_SETS_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_sets.lp')
 
-CONTAINMENT = 0
-CARDINALITY = 1
+CONTAINMENT = 'containment'
+CARDINALITY = 'cardinality'
 
 def completion(G, method=CONTAINMENT):
     atoms = [eb.Prop(atom) for atom in G.atoms()]
