@@ -44,7 +44,7 @@ def create_atom_mapping(atoms):
 
 
 def completion(G, method=CONTAINMENT):
-    atoms = [eb.Prop(atom) for atom in G.atoms()]
+    atoms = [eb.Prop(True), eb.Prop(False)] + [eb.Prop(atom) for atom in G.atoms()]
     sorted_atoms = tuple(sorted(atoms))
 
     atom_mapping = create_atom_mapping(sorted_atoms)
@@ -62,9 +62,12 @@ def completion(G, method=CONTAINMENT):
 
     node_models = defaultdict(set)
     node_tv_dict = defaultdict(int)
+
+    num_models = 0
     
     it = ctl.solve_iter()
     for m in it:
+        num_models += 1
         node_tv_dict.clear()
         terms = m.atoms(gringo.Model.SHOWN)
         for term in terms:
@@ -75,14 +78,16 @@ def completion(G, method=CONTAINMENT):
         for node in node_tv_dict:
             node_models[node].add(node_tv_dict[node])
     print(node_models)
+
+    print("Number of models: {0}".format(num_models))
     
     R = copy.deepcopy(G)
     for node in node_models:
         t = tuple(node_models[node])
         formula = formula_from_models(t, sorted_atoms)
-        print(repr(formula))
-        #simple = simplify(formula)
+        #print(repr(formula))
         simple = formula
+        #simple = simplified(formula)
         R.set_formulas(node, [simple])
     return R
 
@@ -98,7 +103,7 @@ def memo(func):
 
 
 @memo
-def simplify(formula):
+def simplified(formula):
     return eb.simplify(formula)
 
 
