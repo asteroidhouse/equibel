@@ -16,6 +16,10 @@ def completion_test(G):
     start_time = time.clock()
     R = eb.completion(G)
     end_time = time.clock()
+    print("RESULT")
+    print_formulas(R)
+    print("TIME: {0}".format(end_time - start_time))
+    print()
     return end_time - start_time
 
 
@@ -96,6 +100,10 @@ def solving_translate_test(G):
     return translate_time
 
 
+def print_formulas(G):
+    for node_id in G.nodes():
+        print("Node {0}: {1}".format(node_id, repr(G.formulas(node_id))))
+
 
 def generate_graph(graph_gen_func, 
                    formula_gen_func,
@@ -105,6 +113,7 @@ def generate_graph(graph_gen_func,
     for node_id in G.nodes():
         formula = formula_gen_func(**formula_gen_args)
         G.add_formula(node_id, formula)
+    print_formulas(G)
     return G
 
 
@@ -160,12 +169,12 @@ def histogram(data):
 if __name__ == '__main__':
     data = run_tests(test_func=completion_test,
                      start_num_nodes=3,
-                     end_num_nodes=15,
+                     end_num_nodes=20,
                      step_size=1,
-                     repetitions=1,
-                     graph_gen_func=eb.star_graph,
+                     repetitions=10,
+                     graph_gen_func=eb.path_graph,
                      formula_gen_func=formulagen.literal_conj,
-                     num_vars=5)
+                     num_vars=10)
 
     print(data)
     
