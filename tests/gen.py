@@ -1,8 +1,10 @@
 from __future__ import absolute_import
 from __future__ import print_function
+from __future__ import division
 
 import time
 import subprocess
+import signal
 
 from timeit import timeit
 
@@ -16,11 +18,30 @@ def completion_test(G):
     start_time = time.clock()
     R = eb.completion(G)
     end_time = time.clock()
+    elapsed_time = end_time - start_time
     print("RESULT")
     print_formulas(R)
-    print("TIME: {0}".format(end_time - start_time))
+    print("TIME: {0}".format(elapsed_time))
     print()
-    return end_time - start_time
+    return elapsed_time
+
+
+def completion_test_debug(G):
+    start_time = time.clock()
+    R, node_models, num_models, num_terms_list = eb.completion(G, debug=True)
+    end_time = time.clock()
+    elapsed_time = end_time - start_time
+    print()
+    print("RESULT")
+    print_formulas(R)
+    print("TIME: {0}".format(elapsed_time))
+    print()
+
+    print("Models for each node: {0}".format(node_models))
+    print("Number of models: {0}".format(num_models))
+    print("# terms per model: {0}".format(num_terms_list[0]))
+
+    return (elapsed_time, num_models, num_terms_list[0][0], num_terms_list[0][1])
 
 
 def write_graph_to_file(G, filename):
@@ -130,20 +151,52 @@ def run_tests(test_func=completion_test,
               repetitions=1,
               graph_gen_func=eb.path_graph,
               formula_gen_func=formulagen.literal_conj,
-              num_vars=5):
+              num_vars=5,
+              timeout=100):
+    signal.signal(signal.SIGALRM, handler)
     data = dict()
+    num_overtime = 0
     for num_nodes in range(start_num_nodes, end_num_nodes+1, step_size):
         for rep in range(repetitions):
             print("Running tests on {0} nodes, rep {1}...".format(num_nodes, rep+1))
-            current_data = run_test(test_func, graph_gen_func, formula_gen_func, 
-                                    graph_gen_args={"n": num_nodes}, 
-                                    formula_gen_args={"num_vars": num_vars})
-            if num_nodes in data:
-                data[num_nodes].append(current_data)
-            else:
-                data[num_nodes] = [current_data]
 
-    return data
+            """
+            p = multiprocessing.Process(target=run_test, name="Test", kwargs={'test_func':completion_test_debug,
+                                                                              'graph_gen_func':eb.path_graph,
+                                                                              'formula_gen_func':formulagen.literal_conj,
+                                                                              'graph_gen_args':{"n": num_nodes},
+                                                                              'formula_gen_args':{"num_vars": num_vars}})
+            p.start()
+            p.join(timeout)
+
+            # If thread is active
+            if p.is_alive():
+                print("The test is still running... let's kill it...")
+
+                p.terminate()
+                p.join()
+            """
+            
+            signal.alarm(timeout)
+
+            try:
+                current_data = run_test(test_func, graph_gen_func, formula_gen_func, 
+                                        graph_gen_args={"n": num_nodes}, 
+                                        formula_gen_args={"num_vars": num_vars})
+                if num_nodes in data:
+                    data[num_nodes].append(current_data)
+                else:
+                    data[num_nodes] = [current_data]
+            except Exception, ex:
+                num_overtime += 1
+                print(ex)
+
+    return data, num_overtime
+
+
+def handler(signum, frame):
+    print("\nKilling the current run...")
+    raise Exception("Computation Time Exceeded :-(")
 
 
 def line_graph(data):
@@ -164,19 +217,34 @@ def histogram(data):
     plt.xlabel("Completion Time")
     plt.show()
     
-
+def print_model_time_ratios(data):
+    for node in data:
+        print("Time/Models/Terms For {0} Nodes".format(node))
+        print("---------------------------------")
+        results = data[node]
+        for result in results:
+            solving_time, num_models, total_terms, tv_terms = result
+            ratio = solving_time / num_models
+            print("{0}, {1}, {2}".format(solving_time, num_models, total_terms))
+        print()
 
 if __name__ == '__main__':
-    data = run_tests(test_func=completion_test,
-                     start_num_nodes=3,
-                     end_num_nodes=20,
-                     step_size=1,
-                     repetitions=10,
-                     graph_gen_func=eb.path_graph,
-                     formula_gen_func=formulagen.literal_conj,
-                     num_vars=10)
+    reps = 2
+    data, num_overtime = run_tests(test_func=completion_test_debug,
+                         start_num_nodes=3,
+                         end_num_nodes=15,
+                         step_size=1,
+                         repetitions=2,
+                         graph_gen_func=eb.path_graph,
+                         formula_gen_func=formulagen.literal_conj,
+                         num_vars=10,
+                         timeout=10)
 
     print(data)
-    
+    print_model_time_ratios(data)
+
+    print("Num overtime = {0}".format(num_overtime))
+    print("Percent overtime = {0}".format((num_overtime / (len(data) * reps)) * 100))
+
     #line_graph(data)
     #histogram(data)
