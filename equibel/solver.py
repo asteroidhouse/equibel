@@ -43,9 +43,9 @@ def create_atom_mapping(atoms):
     return mapping
 
 
-def completion(G, method=CONTAINMENT):
-    atoms = [eb.Prop(True), eb.Prop(False)] + [eb.Prop(atom) for atom in G.atoms()]
-    sorted_atoms = tuple(sorted(atoms))
+def completion(G, debug=False, method=CONTAINMENT):
+    atoms = [eb.Prop(atom) for atom in G.atoms()]
+    sorted_atoms = tuple([eb.Prop(True), eb.Prop(False)] + sorted(atoms))
 
     atom_mapping = create_atom_mapping(sorted_atoms)
 
@@ -64,22 +64,30 @@ def completion(G, method=CONTAINMENT):
     node_tv_dict = defaultdict(int)
 
     num_models = 0
+    num_terms_list = []
     
     it = ctl.solve_iter()
     for m in it:
         num_models += 1
+        total_num_terms = 0
+        tv_num_terms = 0
         node_tv_dict.clear()
         terms = m.atoms(gringo.Model.SHOWN)
         for term in terms:
+            total_num_terms += 1
             if term.name() == 'tv':
+                tv_num_terms += 1
                 node, atom_index, truth_value = term.args()
                 node_tv_dict[node] |= truth_value << atom_index
+
+        num_terms_list.append((total_num_terms, tv_num_terms))
        
         for node in node_tv_dict:
             node_models[node].add(node_tv_dict[node])
     print(node_models)
 
-    print("Number of models: {0}".format(num_models))
+    #print("Number of models: {0}".format(num_models))
+    #print("Number of terms per model: {0}".format(num_terms_list))
     
     R = copy.deepcopy(G)
     for node in node_models:
@@ -89,6 +97,10 @@ def completion(G, method=CONTAINMENT):
         simple = formula
         #simple = simplified(formula)
         R.set_formulas(node, [simple])
+
+    if debug:
+        return (R, node_models, num_models, num_terms_list)
+
     return R
 
 
