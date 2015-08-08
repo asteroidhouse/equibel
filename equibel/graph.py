@@ -34,6 +34,11 @@ class EquibelGraph:
 
     def __getitem__(self, value):
         return self.graph[value]
+    
+    # TODO: Define a method to test graphs for equality
+    #       Same formulas! Same nodes! Same edges!!
+    def __eq__(self, other):
+        pass
 
     # ================================================
     #                NODE METHODS
