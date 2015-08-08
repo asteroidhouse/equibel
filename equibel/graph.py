@@ -276,7 +276,6 @@ class EquibelGraph:
 
     # Instead of G.node[node_id][WEIGHTS_KEY], use G.atom_weights(node_id)
     def atom_weights(self, node_id):
-        """
         return self.graph.node[node_id][WEIGHTS_KEY]
 
     def weight(self, node_id, atom):

@@ -88,7 +88,7 @@ def iterate_steady(G):
         for node in node_models:
             t = tuple(node_models[node])
             formula = formula_from_models(t, sorted_atoms)
-            simp = simplify(formula)
+            simp = simplified(formula)
             print("Node {0}: {1}".format(node, repr(simp)))
             R.set_formulas(node, [simp])
 
@@ -111,7 +111,7 @@ def iterate(G, num_iterations):
         ctl.conf.solve.models = 0
         #ctl.conf.solve.parallel_mode = 2
 
-        ctl.load('asp/eq_iterate.lp')
+        ctl.load(EQ_ITERATE_FILE)
         print(eb.convert_to_asp(R, atom_mapping))
         ctl.add('base', [], eb.convert_to_asp(R, atom_mapping))
         ctl.ground([('base', [])])
@@ -136,7 +136,7 @@ def iterate(G, num_iterations):
         for node in node_models:
             t = tuple(node_models[node])
             formula = formula_from_models(t, sorted_atoms)
-            simp = simplify(formula)
+            simp = simplified(formula)
             print("Node {0}: {1}".format(node, repr(simp)))
             R.set_formulas(node, [simp])
 
