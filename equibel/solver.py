@@ -1,9 +1,10 @@
 from __future__ import absolute_import
+from __future__ import print_function
 
+import copy
 import sys
 from collections import defaultdict
 from functools import wraps
-import copy
 import platform
 import pkg_resources
 
@@ -42,6 +43,103 @@ def create_atom_mapping(atoms):
         mapping[atom] = index
     return mapping
 
+def iterate_steady(G):
+    atoms = [eb.Prop(atom) for atom in G.atoms()]
+    sorted_atoms = tuple(sorted(atoms))
+
+    atom_mapping = create_atom_mapping(sorted_atoms)
+
+    old_R = None
+    R = copy.deepcopy(G)
+
+    # TODO: Have a method of testing the equality of graphs
+    while old_R != R:
+        old_R = copy.deepcopy(R)
+        ctl = gringo.Control()
+        ctl.conf.configuration = 'handy'
+        ctl.conf.solver.heuristic = 'domain'
+        ctl.conf.solve.enum_mode = 'domRec'
+        ctl.conf.solve.models = 0
+        #ctl.conf.solve.parallel_mode = 2
+
+        ctl.load('asp/eq_iterate.lp')
+        print(eb.convert_to_asp(R, atom_mapping))
+        ctl.add('base', [], eb.convert_to_asp(R, atom_mapping))
+        ctl.ground([('base', [])])
+
+        node_models = defaultdict(set)
+        node_tv_dict = defaultdict(int)
+        
+        it = ctl.solve_iter()
+        for m in it:
+            node_tv_dict.clear()
+            terms = m.atoms(gringo.Model.SHOWN)
+            for term in terms:
+                if term.name() == 'tv':
+                    center_node, node, atom_index, truth_value = term.args()
+                    if center_node == node:
+                        node_tv_dict[node] |= truth_value << atom_index
+           
+            for node in node_tv_dict:
+                node_models[node].add(node_tv_dict[node])
+        print(node_models)
+
+        for node in node_models:
+            t = tuple(node_models[node])
+            formula = formula_from_models(t, sorted_atoms)
+            simp = simplify(formula)
+            print("Node {0}: {1}".format(node, repr(simp)))
+            R.set_formulas(node, [simp])
+
+    return R
+
+
+def iterate(G, num_iterations):
+    atoms = [eb.Prop(atom) for atom in G.atoms()]
+    sorted_atoms = tuple(sorted(atoms))
+
+    atom_mapping = create_atom_mapping(sorted_atoms)
+
+    R = copy.deepcopy(G)
+
+    for i in range(num_iterations):
+        ctl = gringo.Control()
+        ctl.conf.configuration = 'handy'
+        ctl.conf.solver.heuristic = 'domain'
+        ctl.conf.solve.enum_mode = 'domRec'
+        ctl.conf.solve.models = 0
+        #ctl.conf.solve.parallel_mode = 2
+
+        ctl.load('asp/eq_iterate.lp')
+        print(eb.convert_to_asp(R, atom_mapping))
+        ctl.add('base', [], eb.convert_to_asp(R, atom_mapping))
+        ctl.ground([('base', [])])
+
+        node_models = defaultdict(set)
+        node_tv_dict = defaultdict(int)
+        
+        it = ctl.solve_iter()
+        for m in it:
+            node_tv_dict.clear()
+            terms = m.atoms(gringo.Model.SHOWN)
+            for term in terms:
+                if term.name() == 'tv':
+                    center_node, node, atom_index, truth_value = term.args()
+                    if center_node == node:
+                        node_tv_dict[node] |= truth_value << atom_index
+           
+            for node in node_tv_dict:
+                node_models[node].add(node_tv_dict[node])
+        print(node_models)
+
+        for node in node_models:
+            t = tuple(node_models[node])
+            formula = formula_from_models(t, sorted_atoms)
+            simp = simplify(formula)
+            print("Node {0}: {1}".format(node, repr(simp)))
+            R.set_formulas(node, [simp])
+
+    return R
 
 def completion(G, debug=False, method=CONTAINMENT):
     atoms = [eb.Prop(atom) for atom in G.atoms()]
