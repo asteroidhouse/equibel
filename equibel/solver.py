@@ -32,6 +32,7 @@ import equibel.formatters.ASP_Formatter as ASP_Formatter
 #from equibel.simbool.simplify import simplify
 
 EQ_SETS_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_sets.lp')
+EQ_ITERATE_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_iterate.lp')
 
 CONTAINMENT = 'containment'
 CARDINALITY = 'cardinality'
@@ -62,7 +63,7 @@ def iterate_steady(G):
         ctl.conf.solve.models = 0
         #ctl.conf.solve.parallel_mode = 2
 
-        ctl.load('asp/eq_iterate.lp')
+        ctl.load(EQ_ITERATE_FILE)
         print(eb.convert_to_asp(R, atom_mapping))
         ctl.add('base', [], eb.convert_to_asp(R, atom_mapping))
         ctl.ground([('base', [])])
