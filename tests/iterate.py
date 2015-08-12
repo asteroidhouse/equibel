@@ -56,12 +56,15 @@ def iterate_steady(G):
                 node_models[node].add(node_tv_dict[node])
         print(node_models)
 
+        true_prop = eb.Prop(True)
+
         for node in node_models:
             t = tuple(node_models[node])
             formula = formula_from_models(t, sorted_atoms)
             simp = simplify(formula)
             print("Node {0}: {1}".format(node, repr(simp)))
-            R.set_formulas(node, [simp])
+            if simp != true_prop:
+                R.set_formulas(node, [simp])
 
     return R
 
@@ -104,12 +107,15 @@ def iterate(G, num_iterations):
                 node_models[node].add(node_tv_dict[node])
         print(node_models)
 
+        true_prop = eb.Prop(True)
+
         for node in node_models:
             t = tuple(node_models[node])
             formula = formula_from_models(t, sorted_atoms)
             simp = simplify(formula)
             print("Node {0}: {1}".format(node, repr(simp)))
-            R.set_formulas(node, [simp])
+            if simp != true_prop:
+                R.set_formulas(node, [simp])
 
     return R
 

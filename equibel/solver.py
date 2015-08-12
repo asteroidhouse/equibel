@@ -85,12 +85,15 @@ def iterate_steady(G):
                 node_models[node].add(node_tv_dict[node])
         print(node_models)
 
+        true_prop = eb.Prop(True)
+
         for node in node_models:
             t = tuple(node_models[node])
             formula = formula_from_models(t, sorted_atoms)
             simp = simplified(formula)
             print("Node {0}: {1}".format(node, repr(simp)))
-            R.set_formulas(node, [simp])
+            if simp != true_prop:
+                R.set_formulas(node, [simp])
 
     return R
 
@@ -133,18 +136,21 @@ def iterate(G, num_iterations):
                 node_models[node].add(node_tv_dict[node])
         print(node_models)
 
+        true_prop = eb.Prop(True)
+
         for node in node_models:
             t = tuple(node_models[node])
             formula = formula_from_models(t, sorted_atoms)
             simp = simplified(formula)
             print("Node {0}: {1}".format(node, repr(simp)))
-            R.set_formulas(node, [simp])
+            if simp != true_prop:
+                R.set_formulas(node, [simp])
 
     return R
 
 def completion(G, debug=False, method=CONTAINMENT):
     atoms = [eb.Prop(atom) for atom in G.atoms()]
-    sorted_atoms = tuple([eb.Prop(True), eb.Prop(False)] + sorted(atoms))
+    sorted_atoms = tuple(sorted(atoms))
 
     atom_mapping = create_atom_mapping(sorted_atoms)
 
@@ -187,15 +193,18 @@ def completion(G, debug=False, method=CONTAINMENT):
 
     #print("Number of models: {0}".format(num_models))
     #print("Number of terms per model: {0}".format(num_terms_list))
+
+    true_prop = eb.Prop(True)
     
     R = copy.deepcopy(G)
     for node in node_models:
         t = tuple(node_models[node])
         formula = formula_from_models(t, sorted_atoms)
         #print(repr(formula))
-        simple = formula
+        simple = eb.simplify(formula)
         #simple = simplified(formula)
-        R.set_formulas(node, [simple])
+        if simple != true_prop:
+            R.set_formulas(node, [simple])
 
     if debug:
         return (R, node_models, num_models, num_terms_list)
