@@ -20,7 +20,7 @@ def literal_conj(num_vars):
     for variable in variables:
         formula = random.choice(conj_functions)(formula, variable)
     
-    return formula
+    return eb.simplify(formula)
 
 
 negate = lambda x: ~x
