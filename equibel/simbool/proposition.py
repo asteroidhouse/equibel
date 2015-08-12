@@ -33,10 +33,12 @@ class Prop:
     # lowercase strings 'true' and 'false'
     def get_name(self):
         if self.atomic:
+            """
             if self.name == True:
                 return 'true'
             elif self.name == False:
                 return 'false'
+            """
             return self.name
         else:
             return None
