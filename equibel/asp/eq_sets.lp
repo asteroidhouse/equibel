@@ -32,6 +32,8 @@ atom(P)   :- atom(_,P).
 % We want to see if truth values can be assigned to the atoms such that all the original formulas hold.
 1 { tv(N,P,1) ; tv(N,P,0) } 1 :- atom(P), node(N).
 
+%:- tv(N,true,0), node(N).
+
 % Atoms that are "linked" by an equivalence must have the same truth value in both nodes.
 
 %:- eq(P,X,Y), truth_value(P,X,V), truth_value(P,Y,W), V != W.
