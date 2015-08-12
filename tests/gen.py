@@ -16,6 +16,7 @@ import formulagen
 
 def completion_test(G):
     start_time = time.clock()
+    print("STARTING COMPLETION!")
     R = eb.completion(G)
     end_time = time.clock()
     elapsed_time = end_time - start_time
@@ -237,8 +238,8 @@ if __name__ == '__main__':
                          repetitions=2,
                          graph_gen_func=eb.path_graph,
                          formula_gen_func=formulagen.literal_conj,
-                         num_vars=10,
-                         timeout=10)
+                         num_vars=5,
+                         timeout=100)
 
     print(data)
     print_model_time_ratios(data)
