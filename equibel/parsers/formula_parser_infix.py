@@ -1,7 +1,41 @@
+"""Parser for propositional formulas represented using infix notation.
+
+The symbols used for the logical connectives are as follows:
+
+        ----------------------
+       | Connective | Symbol |
+       |----------------------
+       |    conj.   |    &   |
+       |    disj.   |    |   |
+       |   implies  |   ->   |
+       |    equiv   |    =   |
+       |     neg    |    ~   |
+        ----------------------
+
+Precedence of conectives is taken into accout in the following way:
+
+1. Negation (~) has the highest precendence, and is right-associative.
+2. Conjunction (&) is next, and is left-associative.
+3. Disjunction (|) is next, is left-associative.
+4. Implication (->) comes next, and is right-associative.
+5. Finally, equivalence (=) is last, and is right-associative.
+
+Using these precedence rules, the following formulas are equivalent:
+
+     p & q | r   ===   (p & q) | r
+    p & q -> r   ===   (p & q) -> r
+    p | ~r = q   ===   (p | (~r)) = q
+   ~p | ~q & r   ===   ((~p) | (~q)) & r
+        ...                  ...
+
+The only importable function from this file is parse_infix_formula, 
+which takes a string such as "p & q | ~r" and creates a Prop object 
+representing that formula.
+"""
 #    Copyright (C) 2014-2015 by
 #    Paul Vicol <pvicol@sfu.ca>
 #    All rights reserved.
-#    BSD license.
+#    MIT license.
 
 from __future__ import absolute_import
 
@@ -22,7 +56,8 @@ __all__ = ["parse_infix_formula"]
 # --------------------------------------------------------------------
 keywords = {"T": "TRUE", "F": "FALSE"}
 
-tokens = (["NEG", "AND", "OR", "IMPLIES", "EQUIV", "LPAREN", "RPAREN", "INTEGER", "IDENTIFIER"] + list(keywords.values()))
+tokens = (["NEG", "AND", "OR", "IMPLIES", "EQUIV", "LPAREN", "RPAREN", 
+           "INTEGER", "IDENTIFIER"] + list(keywords.values()))
 
 def t_IDENTIFIER(t):
     r"[_a-zA-Z][_a-zA-Z0-9]*"
@@ -132,7 +167,7 @@ def parse_infix_formula(text):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print('usage: python3 formula_parser_infix.py file')
+        print('usage: python formula_parser_infix.py string')
         sys.exit(1)
 
     formula_str = sys.argv[1]
