@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='equibel',
-    version='0.8.9a1', # v0.8.9 alpha build
+    version='0.9.0a1', # v0.9.0 alpha build
     
     description='A toolkit for equivalence-based belief change',
 
@@ -26,7 +26,6 @@ setup(
     packages=[
         'equibel',
         'equibel.simbool',
-        'equibel.PredicateTree',
         'equibel.parsers',
         'equibel.formatters',
     ],
