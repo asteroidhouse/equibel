@@ -54,6 +54,7 @@ __all__ = ["parse_infix_formula"]
 # --------------------------------------------------------------------
 #                             LEXER
 # --------------------------------------------------------------------
+
 keywords = {"T": "TRUE", "F": "FALSE"}
 
 tokens = (["NEG", "AND", "OR", "IMPLIES", "EQUIV", "LPAREN", "RPAREN", 
@@ -75,10 +76,12 @@ t_INTEGER = r"[0-9]+"
 
 t_ignore = " \t\n"
 
+
 def t_NEWLINE(t):
     r"\n+"
     t.lexer.lineno += len(t.value)
     return t
+
 
 def t_error(t):
     line = t.value.lstrip()
@@ -98,18 +101,22 @@ def p_FORMULA(p):
                | LPAREN FORMULA RPAREN"""
     p[0] = p[1] if len(p) == 2 else p[2]
 
+
 def p_ATOM(p):
     """ATOM : IDENTIFIER
             | INTEGER"""
     p[0] = Prop(p[1])
 
+
 def p_BOOLEAN_TRUE(p):
     """BOOLEAN : TRUE"""
     p[0] = Prop(True)
 
+
 def p_BOOLEAN_FALSE(p):
     """BOOLEAN : FALSE"""
     p[0] = Prop(False)
+
 
 def p_COMPOUND(p):
     """COMPOUND : NEGATION
@@ -119,26 +126,32 @@ def p_COMPOUND(p):
                 | EQUIVALENCE"""
     p[0] = p[1]
 
+
 def p_NEGATION(p):
     """NEGATION : NEG FORMULA"""
     p[0] = ~ p[2]
+
 
 def p_CONJUNCTION(p):
     """CONJUNCTION : FORMULA AND FORMULA"""
     p[0] = p[1] & p[3]
 
+
 def p_DISJUNCTION(p):
     """DISJUNCTION : FORMULA OR FORMULA"""
     p[0] = p[1] | p[3]
+
 
 def p_IMPLICATION(p):
     """IMPLICATION : FORMULA IMPLIES FORMULA"""
     # Material implication using operator ">"
     p[0] = p[1] > p[3]
 
+
 def p_EQUIVALENCE(p):
     """EQUIVALENCE : FORMULA EQUIV FORMULA"""
     p[0] = (p[1] > p[3]) & (p[3] > p[1])
+
 
 def p_error(p):
     if p is None:
@@ -152,9 +165,8 @@ precedence = (("right", "EQUIV"),
               ("left", "AND"),
               ("right", "NEG"))
 
-
-lexer = ply.lex.lex(debug=False)
-parser = ply.yacc.yacc(debug=False, write_tables=False)
+lexer = ply.lex.lex(optimize=1, debug=0)
+parser = ply.yacc.yacc(debug=0, write_tables=0)
 
 
 def parse_infix_formula(text):
