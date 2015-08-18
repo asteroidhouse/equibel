@@ -28,17 +28,70 @@ class EquibelGraph:
             self.graph = nx.Graph()
             self.graph.graph[ATOMS_KEY] = set()
 
-    # TODO: Possibly replace this with iter(self.graph)
     def __iter__(self):
-        return iter(self.graph.nodes())
+        return iter(self.graph)
 
     def __getitem__(self, value):
         return self.graph[value]
     
-    # TODO: Define a method to test graphs for equality
+    # DONE: Define a method to test graphs for equality
     #       Same formulas! Same nodes! Same edges!!
     def __eq__(self, other):
-        pass
+        """Tests this graph for equality with other. Two graphs are equal
+        if they have the same nodes, edges, and formulas at each node. An 
+        important note is that formulas are only tested for syntactic 
+        equivalence, so if formulas do not look exactly the same, they will 
+        not be recognized as equivalent. This is due to efficiency concerns; 
+        one way to check whether formulas are equivalent at a deeper level is 
+        to first simplify all the formulas, and test the simplified forms for 
+        equivalence.
+
+        Parameters
+        ----------
+        other : an object to test for equality with the current EquibelGraph
+
+        Example
+        -------
+        Create the first graph:
+
+        >>> G1 = eb.path_graph(4)
+        >>> G1.add_formula(0, 'p & q')
+        >>> G1.add_formula(1, 'q | r')
+
+        Create the second graph:
+
+        >>> G2 = eb.path_graph(4)
+        >>> G2.add_formula(0, 'p & q')
+
+        Now the graphs are not equal:
+
+        >>> G1 == G2
+        False
+
+        We add a formula to G2 to make it equal to G1:
+        >>> G2.add_formula(1, 'q | r')
+        >>> G1 == G2
+        True
+        """
+        if not isinstance(other, self.__class__):
+            return False
+        if set(self.nodes()) != set(other.nodes()):
+            return False
+        if set(self.edges()) != set(other.edges()):
+            return False
+        if self.formulas() != other.formulas():
+            return False
+        return True
+
+    def __ne__(self, other):
+        """Tests for non-equality. Negates the result of equality testing."""
+        return not self.__eq__(other)
+
+    # TODO: Write this function properly
+    #def copy(self):
+    #    """Returns a copy of this graph.
+    #    """
+    #    return EquibelGraph(self.graph)
 
     # ================================================
     #                NODE METHODS
@@ -46,6 +99,13 @@ class EquibelGraph:
 
     def nodes(self):
         """Return the list of nodes.
+
+        Example
+        -------
+        >>> G = EquibelGraph()
+        >>> G.add_nodes([1,2,3])
+        >>> G.nodes()
+        [1,2,3]
         """
         return self.graph.nodes()
 
@@ -59,7 +119,7 @@ class EquibelGraph:
         Examples
         --------
         Create a graph:
-        >>> G = Graph()
+        >>> G = EquibelGraph()
 
         Add a node:
         >>> G.add_node(1)
@@ -78,7 +138,22 @@ class EquibelGraph:
 
         Example
         -------
-        
+        Create an empty graph:
+        >>> G = EquibelGraph()
+
+        Add all nodes from the given list:
+        >>> G.add_nodes([1,2,3])
+        >>> G.nodes()
+        [1,2,3]
+
+        You can also add nodes from other iterables, 
+        like sets:
+        >>> s = {4,5,6}
+        >>> s
+        set([4, 5, 6])
+        >>> G.add_nodes(s)
+        >>> G.nodes()
+        [1,2,3,4,5,6]
         """
         for node in nodes:
             self.add_node(node)
@@ -92,7 +167,7 @@ class EquibelGraph:
 
         Example
         -------
-        >>> G = Graph()
+        >>> G = EquibelGraph()
         >>> G.add_nodes([1,2,3])
         >>> G.remove_node(1)
         >>> G.nodes()
@@ -100,7 +175,7 @@ class EquibelGraph:
         """
         self.graph.remove_node(node_id)
 
-    # Perhaps this could be called "remove_nodes"
+    # TODO: Perhaps this could be called "remove_nodes"
     def remove_nodes_from(self, nodes):
         """Remove nodes specified in an iterable container.
 
@@ -110,7 +185,7 @@ class EquibelGraph:
 
         Example
         -------
-        >>> G = Graph()
+        >>> G = EquibelGraph()
         >>> G.add_nodes([1,2,3,4])
         >>> G.nodes()
         [1,2,3,4]
@@ -134,9 +209,8 @@ class EquibelGraph:
     #                 EDGE METHODS
     # ================================================
 
-    # ROUTING to G.edges()
     def edges(self):
-        """Returns a list of edges of the graph.
+        """Returns a list of the edges in the graph.
 
         Example
         -------
@@ -160,12 +234,15 @@ class EquibelGraph:
         to_node_id   : any type, usually an int
 
         Examples
-        -------
-        >>> G = Graph()
+        --------
+        >>> G = EquibelGraph()
         >>> G.add_edge(1,2)
         >>> G.add_edge(1,3)
         >>> G.edges()
         [(1,2), (2,3)]
+
+        Note that the endpoints of the edges were 
+        automatically added as nodes:
         >>> G.nodes()
         [1,2,3]
         """
@@ -173,13 +250,12 @@ class EquibelGraph:
             self.add_node(from_node_id)
         if to_node_id not in self.graph:
             self.add_node(to_node_id)
-
         self.graph.add_edge(from_node_id, to_node_id)
 
     def add_edges(self, edges):
         """Adds edges to the graph from an iterable container.
-        Any endpoint of an edge that is not already in the list 
-        of nodes will be automatically added as a node.
+        Any endpoint of an edge that is not already a node will 
+        be automatically added as a new node.
 
         Parameters
         ----------
@@ -187,7 +263,7 @@ class EquibelGraph:
 
         Examples
         --------
-        >>> G = Graph()
+        >>> G = EquibelGraph()
         >>> G.add_edges([(1,2), (2,3), (3,4)])
         >>> G.edges()
         [(1,2), (2,3), (3,4)]
@@ -210,7 +286,7 @@ class EquibelGraph:
 
         Examples
         --------
-        >>> G = Graph()
+        >>> G = EquibelGraph()
         >>> G.add_edges([(1,2), (1,3), (1,4)])
         >>> G.edges()
         [(1,2), (1,3), (1,4)]
@@ -219,28 +295,65 @@ class EquibelGraph:
         >>> G.remove_edge(1,4)
         >>> G.edges()
         [(1,2), (1,3)]
+
+        No nodes are removed by remove_edge, even though 
+        node 4 is no longer an endpoint of any edge:
+
         >>> G.nodes()
         [1,2,3,4]
         """
         self.graph.remove_edge(from_node_id, to_node_id)
 
     def to_directed(self):
-        """Creates a directed copy of this graph.
+        """Creates a directed copy of this graph. Converting 
+        an undirected graph to a directed graph involves 
+        creating two edges--in each direction--for every 
+        undirected edge.
 
+        Examples
+        --------
+        >>> G = eb.EquibelGraph()
+        >>> G.add_edges([(1,2), (2,3)])
+        >>> G.edges()
+        [(1, 2), (2, 3)]
+
+        Create a directed copy:
+
+        >>> D = G.to_directed()
+        >>> D.edges()
+        [(1, 2), (2, 1), (2, 3), (3, 2)]
         """
         return EquibelGraph(self.graph.to_directed())
 
     def to_undirected(self):
         """Creates an undirected copy of this graph.
+
+        Example
+        -------
+        >>> G = eb.EquibelGraph()
+        >>> G.add_edges([(1,2), (2,3)])
+        >>> G.edges()
+        [(1, 2), (2, 3)]
+
+        Create a directed copy:
+        >>> D = G.to_directed()
+        >>> D.edges()
+        [(1, 2), (2, 1), (2, 3), (3, 2)]
+
+        Create an undirected copy:
+        >>> R = D.to_undirected()
+        >>> R.edges()
+        [(1, 2), (2, 3)]
         """
         return EquibelGraph(self.graph.to_undirected())
 
     def is_directed(self):
-        """Checks whether this graph is directed.
+        """Checks whether this graph is directed. By 
+        default, graphs in Equibel are undirected.
 
         Example
         -------
-        >>> G = Graph()
+        >>> G = EquibelGraph()
         >>> 
         """
         return self.graph.is_directed()
@@ -251,17 +364,21 @@ class EquibelGraph:
         of all edges reversed.
 
         """
-        return EquibelGraph(self.graph.reverse())
+        if self.is_directed():
+            return EquibelGraph(self.graph.reverse())
+        else:
+            return self.copy()
 
     # ================================================
     #             ATOM and WEIGHT METHODS
     # ================================================
 
-    # Instead of G.graph[ATOMS_KEY], use G.atoms()
+    # Returns a list of atoms that appear _somewhere_
+    # in the graph. That is, this returns a list of atoms 
+    # used by at least one formula of one node in the graph.
     def atoms(self):
-        """Returns a list of atoms that appear somewhere 
-        in the graph. That is, this returns a list of atoms 
-        used by at least one formula of one node in the graph.
+        """Returns a list of atoms in the global alphabet of 
+        the graph.
 
         Example
         -------
@@ -271,21 +388,79 @@ class EquibelGraph:
         >>> G.atoms()
         ['p', 'q']
         """
-        # TODO: Is this how atoms are returned? Strings?
         return self.graph.graph[ATOMS_KEY]
 
-    # Instead of G.node[node_id][WEIGHTS_KEY], use G.atom_weights(node_id)
     def atom_weights(self, node_id):
+        """Returns a dictionary of (atom, weight) mappings at
+        a specific node.
+
+        Parameters
+        ----------
+        node_id : the ID of the desired node; any type, usually an int
+
+        Example
+        -------
+        >>> G = eb.EquibelGraph()
+        >>> G.add_nodes([1,2])
+        >>> G.add_formula(1, "p & q")
+        >>> G.atom_weights(1)
+        {'q': 1, 'p': 1}
+        """
         return self.graph.node[node_id][WEIGHTS_KEY]
 
     def weight(self, node_id, atom):
+        """Returns the weight of a specific atom at a specific node.
+
+        Parameters
+        ----------
+        node_id : the ID of the desired node; any type, usually an int
+        atom    : the name of the desired atom, as a string
+
+        Example
+        -------
+        >>> G = eb.EquibelGraph()
+        >>> G.add_nodes([1,2])
+        >>> G.add_formula(1, "p & q")
+        >>> G.atoms()
+        set(['q', 'p'])
+        >>> G.weight(1, 'p')
+        1
+        """
         return self.graph.node[node_id][WEIGHTS_KEY][atom]
 
     def add_atom(self, atom):
+        """Adds an atom to the global alphabet of the graph.
+
+        Parameters
+        ----------
+        atom : a string representing an atom
+
+        Example
+        -------
+        >>> G = eb.EquibelGraph()
+        >>> G.add_atom('p')
+        >>> G.atoms()
+        set(['p'])
+        """
         self.graph.graph[ATOMS_KEY].add(atom)
         self.__add_new_atom_to_nodes(atom)
 
     def add_atoms(self, atoms):
+        """Adds multiple atoms to the global alphabet of the graph, 
+        from an iterable container.
+
+        Parameters
+        ----------
+        atoms : an iterable containing objects that can be used to 
+                represent atoms; usually strings
+
+        Example
+        -------
+        >>> G = eb.EquibelGraph()
+        >>> G.add_atoms(['p', 'q', 'r', 's'])
+        >>> G.atoms()
+        set(['q', 'p', 's', 'r'])
+        """
         for atom in atoms:
             self.add_atom(atom)
 
@@ -307,6 +482,7 @@ class EquibelGraph:
         self.set_atom_weight(node_id, atom, weight)
 
     def remove_atom(self, atom):
+        """Removes an atom from the global alphabet of the graph."""
         self.graph.graph[ATOMS_KEY].discard(atom)
         self.__remove_atom_from_nodes(atom)
 
@@ -320,11 +496,61 @@ class EquibelGraph:
     #               FORMULA METHODS
     # ================================================
 
-    # Instead of G.node[node_id][FORMULAS_KEY], use G.formulas(node_id)
-    def formulas(self, node_id):
-        return self.graph.node[node_id][FORMULAS_KEY]
+    def formulas(self, node_id=None):
+        """Returns all the formulas of a specific node, or, if no node_id
+        is provided, returns a dictionary of (node_id, formula_set) mappings.
+
+        Parameters
+        ----------
+        node_id : the ID of the desired node; usually an int
+
+        Example
+        -------
+        >>> G = eb.path_graph(4)
+        >>> G.add_formula(0, "p & q")
+        >>> G.add_formula(1, 'p | ~r')
+
+        Get the formulas at a specific node:
+
+        >>> G.formulas(0)
+        set([q & p])
+
+        Get a dictionary showing the formulas at every node:
+
+        >>> G.formulas()
+        {0: set([q & p]), 1: set([p | ~r]), 2: set([]), 3: set([])}
+        """
+        if node_id is not None:
+            return self.graph.node[node_id][FORMULAS_KEY]
+        else:
+            return nx.get_node_attributes(self.graph, FORMULAS_KEY)
 
     def add_formula(self, node_id, formula):
+        """Adds a formula to the set of formulas belonging to a node.
+
+        Parameters
+        ----------
+        node_id : the ID of the desired node; usually an int
+        formula : this can be either a eb.Prop object, or a string 
+                  representing a formua in infix notation
+
+        Examples
+        --------
+        >>> G = eb.EquibelGraph()
+        >>> G.add_node(1)
+
+        Create an eb.Prop object and add it as a formula:
+
+        >>> form = eb.Prop('p') & eb.Prop('q')
+        >>> G.add_formula(1, form)
+        >>> G.formulas(1)
+
+        Add a formula using a string with infix notation:
+
+        >>> G.add_formula(1, "q | ~r")
+        >>> G.formulas(1)
+        set([q & p, q | ~r])
+        """
         if isinstance(formula, str):
             parsed_formula = equibel.parse_infix_formula(formula)
             self.graph.node[node_id][FORMULAS_KEY].add(parsed_formula)
@@ -338,17 +564,57 @@ class EquibelGraph:
             if atom not in self.atoms():
                 self.add_atom(atom)
 
-    def set_formulas(self, node_id, formula_list):
+    def set_formulas(self, node_id, formulas):
         self.clear_formulas_from(node_id)
-        for formula in formula_list:
+        for formula in formulas:
             self.graph.node[node_id][FORMULAS_KEY].add(formula)
 
     def clear_formulas_from(self, node_id):
+        """Removes all formulas from a node. Thus, resets a node to a 
+        blank slate.
+
+        Parameters
+        ----------
+        node_id : the ID of the desired node; usually an int
+
+        Example
+        -------
+        >>> G = eb.EquibelGraph()
+        >>> G.add_node(1)
+        >>> G.add_formula(1, 'p & q | r')
+        >>> G.formulas(1)
+        set([(q & p) | r])
+
+        Clear the formulas from node 1:
+
+        >>> G.clear_formulas_from(1)
+        >>> G.formulas(1)
+        set([])
+        """
         self.graph.node[node_id][FORMULAS_KEY].clear()
 
     def clear_formulas(self):
+        """Removes all formulas from all nodes in the graph.
+
+        Example
+        -------
+        >>> G = eb.path_graph(4)
+        >>> G.add_formula(1, 'p | (q & r)')
+        >>> G.add_formula(2, '~p')
+        >>> G.add_formula(3, 'q | r')
+        >>> G.formulas()
+        {0: set([]), 1: set([p | (q & r)]), 2: set([~p]), 3: set([q | r])}
+
+        Now clear all formulas:
+
+        >>> G.clear_formulas()
+        >>> G.formulas()
+        {0: set([]), 1: set([]), 2: set([]), 3: set([])}
+        """
         for node_id in self.nodes():
             self.graph.node[node_id][FORMULAS_KEY].clear()
 
     def remove_formula(self, node_id, formula):
+        """
+        """
         self.graph.node[node_id][FORMULAS_KEY].discard(formula)
