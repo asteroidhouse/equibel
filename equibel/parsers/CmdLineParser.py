@@ -1,7 +1,9 @@
+"""Parser for tuples and lists used to read input in equibeli.
+"""
 #    Copyright (C) 2014-2015 by
 #    Paul Vicol <pvicol@sfu.ca>
 #    All rights reserved.
-#    BSD license.
+#    MIT license.
 
 from ply import lex
 from ply import yacc
@@ -80,8 +82,8 @@ def parse_list(text):
                 | TUPLE"""
         p[0] = p[1]
 
-    lexer = lex.lex(optimize=1, debug=False)
-    list_parser  = yacc.yacc(start='LIST', debug=False, write_tables=False)
+    lexer = ply.lex.lex(optimize=1, debug=0)
+    list_parser = yacc.yacc(start="LIST", debug=0, write_tables=0)
 
     try:
         return list_parser.parse(text, lexer=lexer)
