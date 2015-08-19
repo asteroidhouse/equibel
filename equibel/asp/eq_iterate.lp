@@ -18,7 +18,7 @@ compound_prop(N,F) :- F = iff(A,B),	subformula(N,F), subformula(N,A), subformula
 compound_prop(N,F) :- F = neg(A), subformula(N,F), subformula(N,A).
 
 atom(N,P) :- subformula(N,P), not compound_prop(N,P).
-atom(P)   :- atom(_,P).
+%atom(P)   :- atom(_,P).
 
 % The first argument is the center node of the star graph under consideration.
 %{ eq(N,P,M,N) : edge(M,N), atom(N,P), M < N }.

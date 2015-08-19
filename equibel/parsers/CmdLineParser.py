@@ -5,9 +5,14 @@
 #    All rights reserved.
 #    MIT license.
 
+import logging
+
+import ply
 from ply import lex
 from ply import yacc
 
+
+log = logging.getLogger('ply')
 
 tokens = ["STRING", "INTEGER", "COMMA", "DOT", "LPAREN", "RPAREN", "LSQUARE", "RSQUARE"]
 
@@ -28,10 +33,12 @@ def t_INTEGER(t):
     t.value = int(t.value)
     return t
 
+
 def t_NEWLINE(t):
     r"\n+"
     t.lexer.lineno += len(t.value)
     return t
+
 
 def t_error(t):
     line = t.value.lstrip()
@@ -39,9 +46,11 @@ def t_error(t):
     line = line if i == -1 else line[:i]
     raise ValueError("Syntax error, line {0}: {1}".format(t.lineno + 1, line))
 
+
 def p_TUPLE(p):
     """TUPLE : LPAREN INTEGER COMMA INTEGER RPAREN"""
     p[0] = (int(p[2]), int(p[4]))
+
 
 def p_error(p):
     if p is None:
@@ -50,8 +59,10 @@ def p_error(p):
 
 
 def parse_tuple(text):
-    lexer = lex.lex(optimize=1, debug=False)
-    tuple_parser = yacc.yacc(start='TUPLE', debug=False, write_tables=False)
+    #lexer = lex.lex(optimize=1, debug=0)
+    lexer = lex.lex(debug=0)
+    #tuple_parser = yacc.yacc(start="TUPLE", debug=0, write_tables=0)
+    tuple_parser = yacc.yacc(start="TUPLE", errorlog=log)
 
     try:
         return tuple_parser.parse(text, lexer=lexer)
@@ -82,8 +93,10 @@ def parse_list(text):
                 | TUPLE"""
         p[0] = p[1]
 
-    lexer = ply.lex.lex(optimize=1, debug=0)
-    list_parser = yacc.yacc(start="LIST", debug=0, write_tables=0)
+    #lexer = ply.lex.lex(optimize=1, debug=0)
+    lexer = lex.lex()
+    #list_parser = yacc.yacc(start="LIST", debug=0, write_tables=0)
+    list_parser = yacc.yacc(start="LIST", errorlog=log)
 
     try:
         return list_parser.parse(text, lexer=lexer)

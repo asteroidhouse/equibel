@@ -40,15 +40,20 @@ representing that formula.
 from __future__ import absolute_import
 
 import sys
+import logging
 
-import ply.lex
-import ply.yacc
+import ply
+from ply import lex
+from ply import yacc
 
 from equibel.simbool.proposition import *
 from equibel.simbool.simplify import *
 
 
 __all__ = ["parse_infix_formula"]
+
+
+log = logging.getLogger('ply')
 
 
 # --------------------------------------------------------------------
@@ -165,8 +170,10 @@ precedence = (("right", "EQUIV"),
               ("left", "AND"),
               ("right", "NEG"))
 
-lexer = ply.lex.lex(optimize=1, debug=0)
-parser = ply.yacc.yacc(debug=0, write_tables=0)
+#lexer = ply.lex.lex(optimize=1, debug=0)
+#parser = ply.yacc.yacc(debug=0, write_tables=0)
+lexer = lex.lex()
+parser = yacc.yacc(errorlog=log)
 
 
 def parse_infix_formula(text):
