@@ -1,3 +1,6 @@
+"""This file defines the equibeli interactive command-line interface (CLI).
+
+"""
 #    Copyright (C) 2014-2015 by
 #    Paul Vicol <pvicol@sfu.ca>
 #    All rights reserved.
@@ -5,25 +8,23 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-import os
 from cmd import Cmd
+from colorama import Fore, Style
+import os
+
 from subprocess import Popen, PIPE
 
-from colorama import Fore, Style
-
-import equibel
+import equibel as eb
 
 import equibel.formatters.ASP_Formatter as ASP_Formatter
 import equibel.formatters.BCF_Formatter as BCF_Formatter
 
-import equibel.parsers.CmdLineParser as CmdLineParser
-import equibel.parsers.FormulaParserSim as FormulaParserSim
-import equibel.parsers.BCF_Parser as BCF_Parser
-
 from equibel.graph_manager import GraphManager
 from equibel.graph import EquibelGraph
 
-import equibel.solver as solver
+import equibel.parsers.CmdLineParser as CmdLineParser
+import equibel.parsers.FormulaParserSim as FormulaParserSim
+import equibel.parsers.BCF_Parser as BCF_Parser
 
 
 class ArgumentError(Exception):
@@ -34,7 +35,11 @@ manager = GraphManager()
 G = EquibelGraph()
 manager.add('g', G)
 
-solving_method = solver.CONTAINMENT
+# TODO: Add support for debugging output; for example, when the completion 
+# is performed, the debug output should show how many EQ sets were generated, 
+# and the size of the sets, etc.
+debug = False
+solving_method = eb.CONTAINMENT
 
 
 class EquibelPrompt(Cmd):
@@ -109,7 +114,7 @@ class EquibelPrompt(Cmd):
         manager.add(graph_name, R)
         manager.set_context(graph_name)
 
-        self.prompt = "equibel ({0}) > ".format(graph_name)
+        self.prompt = "equibeli ({0}) > ".format(graph_name)
         if verbose:
             self.print_graphs()
 
@@ -132,18 +137,18 @@ class EquibelPrompt(Cmd):
             num_nodes = int(num_nodes_str)
 
             if direction == "<->" or direction == None:
-                R = equibel.path_graph(num_nodes)
+                R = eb.path_graph(num_nodes)
             elif direction == "->":
-                R = equibel.path_graph(num_nodes, directed=True)
+                R = eb.path_graph(num_nodes, directed=True)
             elif direction == "<-":
-                R = equibel.path_graph(num_nodes, directed=True).reverse()
+                R = eb.path_graph(num_nodes, directed=True).reverse()
             else:
                 raise ValueError('Error: The direction specifier must be one of "<-", "<->", or "->"')
             
             manager.add(graph_name, R)
             manager.set_context(graph_name)
 
-            self.prompt = "equibel ({0}) > ".format(graph_name)
+            self.prompt = "equibeli ({0}) > ".format(graph_name)
         if verbose:
             self.print_graphs()
 
@@ -159,10 +164,10 @@ class EquibelPrompt(Cmd):
             raise ValueError("Error: create_star requires an integer argument!")
         else:
             num_nodes = int(num_nodes_str)
-            R = equibel.star_graph(num_nodes)
+            R = eb.star_graph(num_nodes)
             manager.add(graph_name, R)
             manager.set_context(graph_name)
-            self.prompt = "equibel ({0}) > ".format(graph_name)
+            self.prompt = "equibeli ({0}) > ".format(graph_name)
         if verbose:
             self.print_graphs()
 
@@ -178,12 +183,20 @@ class EquibelPrompt(Cmd):
             raise ValueError("Error: create_complete requires an integer argument!")
         else:
             num_nodes = int(num_nodes_str)
-            R = equibel.complete_graph(num_nodes)
+            R = eb.complete_graph(num_nodes)
             manager.add(graph_name, R)
             manager.set_context(graph_name)
-            self.prompt = "equibel ({0}) > ".format(graph_name)
+            self.prompt = "equibeli ({0}) > ".format(graph_name)
         if verbose:
             self.print_graphs()
+
+
+    def do_delete(self, arg_str):
+        """Deletes a graph."""
+        arg_str, verbose = self.check_silencing_terminator(arg_str)
+        args = arg_str.split()
+        graph_name = args[0]
+        manager.remove(graph_name)
 
 
     def do_use(self, arg_str):
@@ -199,7 +212,7 @@ class EquibelPrompt(Cmd):
         graph_name = args[0]
         try:
             manager.set_context(graph_name)
-            self.prompt = "equibel ({0}) > ".format(graph_name)
+            self.prompt = "equibeli ({0}) > ".format(graph_name)
         except Exception as err:
             print(err)
         
@@ -421,7 +434,7 @@ class EquibelPrompt(Cmd):
 
 
     # Directed/Undirected Functions
-    #--------------------------------------------------------------------------------
+    #------------------------------------------------------------------------
     
     def do_directed(self, arg_str):
         """
@@ -453,7 +466,7 @@ class EquibelPrompt(Cmd):
 
 
     # Atom Functions
-    #--------------------------------------------------------------------------------
+    #------------------------------------------------------------------------
 
     def do_add_atom(self, arg_str):
         """
@@ -541,7 +554,7 @@ class EquibelPrompt(Cmd):
         
 
     # Weight Functions
-    #--------------------------------------------------------------------------------
+    #------------------------------------------------------------------------
 
     # TODO: These are sort of temporary in their current form.
     def do_add_weight(self, arg_str):
@@ -609,7 +622,7 @@ class EquibelPrompt(Cmd):
 
 
     # Formula Functions
-    #--------------------------------------------------------------------------------
+    #------------------------------------------------------------------------
 
     def do_add_formula(self, arg_str):
         """
@@ -636,8 +649,7 @@ class EquibelPrompt(Cmd):
             raise ArgumentError("The node identifier must be an integer.")
 
         node_id = int(node_str)
-        #formula = FormulaParserSim.parse_formula(formula_str)
-        formula = equibel.parse_infix_formula(formula_str)
+        formula = eb.parse_infix_formula(formula_str)
         G.add_formula(node_id, formula)
 
         if verbose:
@@ -646,7 +658,6 @@ class EquibelPrompt(Cmd):
 
     def do_remove_formula(self, arg_str):
         arg_str, verbose = self.check_silencing_terminator(arg_str)
-        #args = arg_str.split(maxsplit=1)
         # Python2 version of split does not accept keywork args, so we use:
         args = arg_str.split(None, 1)
 
@@ -661,8 +672,7 @@ class EquibelPrompt(Cmd):
             raise ArgumentError("The node identifier must be an integer.")
 
         node_id = int(node_str)
-        #formula = FormulaParserSim.parse_formula(formula_str)
-        formula = equibel.parse_infix_formula(formula_str)
+        formula = eb.parse_infix_formula(formula_str)
 
         G.remove_formula(node_id, formula)
 
@@ -719,7 +729,7 @@ class EquibelPrompt(Cmd):
             
 
     # ASP Functions
-    # -------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------
 
     def do_asp(self, arg_str):
         """
@@ -738,7 +748,7 @@ class EquibelPrompt(Cmd):
 
 
     # Load/Store Functions
-    # -------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------
 
     def do_load(self, arg_str):
         """Loads a graph from a BCF file into the current context (overwriting it)."""
@@ -799,14 +809,13 @@ class EquibelPrompt(Cmd):
 
 
     # Belief Change Operations
-    # -------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------
     # TODO: Needs checking for EquibelGraph
-    def do_one_shot(self, arg_str):
+    def do_completion(self, arg_str):
         arg_str, verbose = self.check_silencing_terminator(arg_str)
         graph = manager.current_context
 
-        # new_graph = SolverInterface.one_shot(graph, cardinality_maximal)
-        new_graph = solver.completion(graph, solving_method)
+        new_graph = eb.completion(graph, method=solving_method)
         manager.update_context(new_graph)
 
         if verbose:
@@ -815,20 +824,16 @@ class EquibelPrompt(Cmd):
             self.print_all_formulas()
 
 
-    # TODO: Needs checking for EquibelGraph
     def do_cardinality(self, arg_str):
         arg_str, verbose = self.check_silencing_terminator(arg_str)
-        # cardinality_maximal = True
-        solving_method = solver.CARDINALITY
+        solving_method = eb.CARDINALITY
         if verbose:
             print("\n\tNow using cardinality-maximal EQ sets.\n")
 
 
-    # TODO: Needs checking for EquibelGraph
     def do_containment(self, arg_str):
         arg_str, verbose = self.check_silencing_terminator(arg_str)
-        # cardinality_maximal = False
-        solving_method = solver.CONTAINMENT
+        solving_method = eb.CONTAINMENT
         if verbose:
             print("\n\tNow using containment-maximal EQ sets.\n")
 
@@ -838,25 +843,40 @@ class EquibelPrompt(Cmd):
         arg_str, verbose = self.check_silencing_terminator(arg_str)
         args = arg_str.split()
 
+        steady_state = False
+
         if len(args) == 0:
             num_iterations = 1
         elif len(args) == 1:
             num_str = args[0]
-            if not num_str.isdigit():
-                raise ArgumentError("The number of iterations must be an integer: \"{0}\"".format(num_str))
-            num_iterations = int(num_str)
+            if num_str.isdigit():
+                num_iterations = int(num_str)
+            else:
+                if num_str == 'steady':
+                    steady_state = True
+                else:
+                    raise ArgumentError("The number of iterations must be an integer: \"{0}\"".format(num_str))
         else:
             raise ArgumentError("Expected 0 or 1 argument to iterate()!\ Usage: iterate [NUM_ITERATIONS]")
 
         graph = manager.current_context
-        new_graph = solver.iterate(graph, num_iterations, solver.CONTAINMENT)
+
+        if steady_state:
+            new_graph, num_iterations = eb.iterate_steady(graph)
+        else:
+            new_graph = eb.iterate(graph, num_iterations)
+
         manager.update_context(new_graph)
 
         if verbose:
             if num_iterations == 1:
-                print("\n\t1 iteration completed.\n")
+                print("\n\t1 iteration completed:")
+                print("\t----------------------")
+                self.print_all_formulas()
             else:
-                print("\n\t{0} iterations completed.\n".format(num_iterations))
+                print("\n\t{0} iterations completed:".format(num_iterations))
+                print("\t-----------------------")
+                self.print_all_formulas()
 
 
     # TODO: Needs checking for EquibelGraph
@@ -887,7 +907,7 @@ class EquibelPrompt(Cmd):
 
 
     # Shell Functions -- (To help locate files to load.)
-    # -------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------
 
     def do_shell(self, arg_str):
         proc = Popen(arg_str, shell=True, stdout=PIPE, universal_newlines=True)
@@ -903,7 +923,7 @@ class EquibelPrompt(Cmd):
 
 
 def cli():
-    print("Equibel Version 0.8.9 (Alpha)")
+    print("Equibel Version 0.9.0 (Alpha)")
 
     print(Fore.GREEN + Style.BRIGHT)
 
@@ -924,7 +944,7 @@ def cli():
     print(Fore.RESET + Style.RESET_ALL)
 
     prompt = EquibelPrompt(completekey='tab')
-    prompt.prompt = "equibel (g) > "
+    prompt.prompt = "equibeli (g) > "
 
     while True:
         try:
