@@ -35,6 +35,7 @@ elif platform.system() == 'Darwin':
 
 import equibel.formatters.ASP_Formatter as ASP_Formatter
 
+
 EQ_SETS_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_sets.lp')
 EQ_ITERATE_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_iterate.lp')
 
@@ -69,6 +70,8 @@ def iterate_steady(G):
         ctl.conf.solve.enum_mode = 'domRec'
         ctl.conf.solve.models = 0
         #ctl.conf.solve.parallel_mode = 2
+
+        #print(eb.convert_to_asp(R, atom_mapping))
 
         ctl.load(EQ_ITERATE_FILE)
         ctl.add('base', [], eb.convert_to_asp(R, atom_mapping))
@@ -121,6 +124,8 @@ def iterate(G, num_iterations):
         ctl.conf.solve.models = 0
         #ctl.conf.solve.parallel_mode = 2
 
+        #print(eb.convert_to_asp(R, atom_mapping))
+
         ctl.load(EQ_ITERATE_FILE)
         ctl.add('base', [], eb.convert_to_asp(R, atom_mapping))
         ctl.ground([('base', [])])
@@ -168,6 +173,8 @@ def completion(G, debug=False, method=CONTAINMENT):
     ctl.conf.solve.models = 0
     #ctl.conf.solve.parallel_mode = 2
 
+    #print(eb.convert_to_asp(G, atom_mapping))
+
     ctl.load(EQ_SETS_FILE)
     ctl.add('base', [], eb.convert_to_asp(G, atom_mapping))
     ctl.ground([('base', [])])
@@ -204,7 +211,7 @@ def completion(G, debug=False, method=CONTAINMENT):
     for node in node_models:
         t = tuple(node_models[node])
         formula = formula_from_models(t, sorted_atoms)
-        simple = eb.simplify(formula)
+        simple = simplified(formula)
         if simple != true_prop:
             R.set_formulas(node, [simple])
 
