@@ -39,19 +39,22 @@ def convert_to_asp(G, atom_mapping):
         if not G.is_directed():
             asp_str += EDGE_TEMPLATE.format(to_node_id, from_node_id)
 
+    """
     for node_id in G.nodes():
         weights = G.atom_weights(node_id)
         for atom in weights:
             weight = weights[atom]
             asp_str += WEIGHT_TEMPLATE.format(node_id, atom, weight)
+    """
 
     # This is separated from the above for loop for prettiness, to group
     # all the formulas together.
     for node_id in G.nodes():
         formulas = G.formulas(node_id)
         for formula in formulas:
-            formatted_formula = convert_formula_to_asp(formula, atom_mapping)
-            asp_str += FORMULA_TEMPLATE.format(node_id, formatted_formula)
+            if formula.get_name() != True:
+                formatted_formula = convert_formula_to_asp(formula, atom_mapping)
+                asp_str += FORMULA_TEMPLATE.format(node_id, formatted_formula)
 
     return asp_str
 
