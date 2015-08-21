@@ -14,6 +14,13 @@ import equibel as eb
 import formulagen
 
 
+def create_atom_mapping(atoms):
+    mapping = dict()
+    for (index, atom) in enumerate(atoms):
+        mapping[atom] = index
+    return mapping
+    
+
 def completion_test(G):
     start_time = time.clock()
     print("STARTING COMPLETION!")
@@ -46,8 +53,11 @@ def completion_test_debug(G):
 
 
 def write_graph_to_file(G, filename):
+    atoms = [eb.Prop(atom) for atom in G.atoms()]
+    sorted_atoms = tuple(sorted(atoms))
+    atom_mapping = create_atom_mapping(sorted_atoms)
     f = open(filename, 'w')
-    asp_str = eb.convert_to_asp(G)
+    asp_str = eb.convert_to_asp(G, atom_mapping)
     f.write(asp_str)
     f.close()
 
@@ -98,7 +108,8 @@ def solving_time_test(G):
     filenames = ["temp_asp_file", "asp/eq_sets.lp"]
     command = solving_command.format(concat(filenames, " "))
     eq_time = time_command(command)
-
+    
+    """
     filenames.append("asp/transitive.lp")
     command = solving_command.format(concat(filenames, " "))
     eq_transitive_time = time_command(command)
@@ -106,9 +117,10 @@ def solving_time_test(G):
     filenames.append("asp/translate.lp")
     command = solving_command.format(concat(filenames, " "))
     eq_translate_time = time_command(command)
+    """
 
-    return (eq_time, eq_transitive_time, eq_translate_time)
-
+    #return (eq_time, eq_transitive_time, eq_translate_time)
+    return eq_time
 
 def solving_translate_test(G):
     write_graph_to_file(G, "temp_asp_file")
@@ -231,7 +243,7 @@ def print_model_time_ratios(data):
 
 if __name__ == '__main__':
     reps = 2
-    data, num_overtime = run_tests(test_func=completion_test_debug,
+    data, num_overtime = run_tests(test_func=solving_time_test,
                          start_num_nodes=3,
                          end_num_nodes=15,
                          step_size=1,
