@@ -3,6 +3,7 @@ __pycache__
 parser.out
 parsetab.py
 lextab.py
+temp_asp_file
 *.pyc
 .env
 .venv
