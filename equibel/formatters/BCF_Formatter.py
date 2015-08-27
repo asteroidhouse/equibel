@@ -4,7 +4,7 @@ of an arbitrary EquibelGraph instance.
 #    Copyright (C) 2014-2015 by
 #    Paul Vicol <pvicol@sfu.ca>
 #    All rights reserved.
-#    BSD license.
+#    MIT license.
 
 __all__ = ['convert_to_bcf', 'convert_formula_to_bcf']
 
