@@ -34,8 +34,6 @@ class EquibelGraph:
     def __getitem__(self, value):
         return self.graph[value]
     
-    # DONE: Define a method to test graphs for equality
-    #       Same formulas! Same nodes! Same edges!!
     def __eq__(self, other):
         """Tests this graph for equality with other. Two graphs are equal
         if they have the same nodes, edges, and formulas at each node. An 
@@ -191,12 +189,12 @@ class EquibelGraph:
         [1,2,3,4]
         >>> G.remove_nodes_from([1,2])
         >>> G.nodes()
-        [2,4]
+        [3,4]
 
         Nodes in the iterable that are not in the graph 
         are ignored:
 
-        >>> G.add_nodes([3,4])
+        >>> G.add_nodes([1,2])
         >>> G.nodes()
         [1,2,3,4]
         >>> G.remove_nodes_from([4,5,6])
@@ -214,9 +212,9 @@ class EquibelGraph:
 
         Example
         -------
-        >>> G = equibel.path_graph(4)
+        >>> G = eb.path_graph(4)
         >>> G.edges()
-        [(1,2), (2,3), (3,4)]
+        [(0,1), (1,2), (2,3)]
         """
         return self.graph.edges()
 
@@ -358,7 +356,6 @@ class EquibelGraph:
         """
         return self.graph.is_directed()
 
-    # TODO: What if the graph is undirected? 
     def reverse(self):
         """Creates a copy of this graph with the directions 
         of all edges reversed.
