@@ -65,7 +65,7 @@ def iterate_steady(G):
         iterations += 1
         old_R = copy.deepcopy(R)
         ctl = gringo.Control()
-        ctl.conf.configuration = 'handy'
+        ctl.conf.configuration = 'crafty'
         ctl.conf.solver.heuristic = 'domain'
         ctl.conf.solve.enum_mode = 'domRec'
         ctl.conf.solve.models = 0
@@ -118,7 +118,7 @@ def iterate(G, num_iterations):
 
     for i in range(num_iterations):
         ctl = gringo.Control()
-        ctl.conf.configuration = 'handy'
+        ctl.conf.configuration = 'crafty'
         ctl.conf.solver.heuristic = 'domain'
         ctl.conf.solve.enum_mode = 'domRec'
         ctl.conf.solve.models = 0
@@ -167,7 +167,7 @@ def completion(G, debug=False, method=CONTAINMENT):
     atom_mapping = create_atom_mapping(sorted_atoms)
 
     ctl = gringo.Control()
-    ctl.conf.configuration = 'handy'
+    ctl.conf.configuration = 'crafty'
     ctl.conf.solver.heuristic = 'domain'
     ctl.conf.solve.enum_mode = 'domRec'
     ctl.conf.solve.models = 0
