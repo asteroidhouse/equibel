@@ -14,6 +14,8 @@ import platform
 import pkg_resources
 import sys
 
+import networkx as nx
+
 import gringo
 
 import equibel as eb
@@ -37,7 +39,7 @@ import equibel.formatters.ASP_Formatter as ASP_Formatter
 
 
 EQ_SETS_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_sets.lp')
-EQ_ITERATE_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_iterate.lp')
+EQ_ITERATE_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_iterate2.lp')
 
 CONTAINMENT = 'containment'
 CARDINALITY = 'cardinality'
@@ -108,7 +110,7 @@ def iterate_steady(G):
     return R, iterations
 
 
-def iterate(G, num_iterations):
+def iterate(G, num_iterations=1):
     atoms = [eb.Prop(atom) for atom in G.atoms()]
     sorted_atoms = tuple(sorted(atoms))
 
@@ -145,7 +147,7 @@ def iterate(G, num_iterations):
            
             for node in node_tv_dict:
                 node_models[node].add(node_tv_dict[node])
-        #print(node_models)
+        print(node_models)
 
         true_prop = eb.Prop(True)
 
@@ -158,6 +160,71 @@ def iterate(G, num_iterations):
                 R.set_formulas(node, [simp])
 
     return R
+
+
+# TODO: MAKE SURE THIS IS CORRECT
+def find_distances_asp(G):
+    lengths = nx.all_pairs_shortest_path_length(G)
+    for node1 in lengths:
+        for node2 in lengths[node1]:
+            yield "distance({0},{1},{2}).".format(node1, node2, lengths[node1][node2])
+
+
+# TODO: FINISH THIS (ALSO HAVE TO UPDATE ASP PART)
+def iterate_expanding(G):
+    atoms = [eb.Prop(atom) for atom in G.atoms()]
+    sorted_atoms = tuple(sorted(atoms))
+
+    atom_mapping = create_atom_mapping(sorted_atoms)
+
+    R = copy.deepcopy(G)
+
+    ctl = gringo.Control()
+    ctl.conf.configuration = 'crafty'
+    ctl.conf.solver.heuristic = 'domain'
+    ctl.conf.solve.enum_mode = 'domRec'
+    ctl.conf.solve.models = 0
+    #ctl.conf.solve.parallel_mode = 2
+
+    #print(eb.convert_to_asp(R, atom_mapping))
+
+    ctl.load(EQ_ITERATE_FILE)
+    ctl.add('base', [], eb.convert_to_asp(G, atom_mapping))
+
+    for dist in find_distances_asp(G):
+        ctl.add('base', [], dist)
+
+    ctl.ground([('base', [])])
+
+    node_models = defaultdict(set)
+    node_tv_dict = defaultdict(int)
+    
+    it = ctl.solve_iter()
+    for m in it:
+        node_tv_dict.clear()
+        terms = m.atoms(gringo.Model.SHOWN)
+        for term in terms:
+            if term.name() == 'tv':
+                center_node, node, atom_index, truth_value = term.args()
+                if center_node == node:
+                    node_tv_dict[node] |= truth_value << atom_index
+       
+        for node in node_tv_dict:
+            node_models[node].add(node_tv_dict[node])
+    print(node_models)
+
+    true_prop = eb.Prop(True)
+
+    for node in node_models:
+        t = tuple(node_models[node])
+        formula = formula_from_models(t, sorted_atoms)
+        # TODO: Again, formulas are simplified, yielding slowdowns.
+        simp = simplified(formula)
+        if simp != true_prop:
+            R.set_formulas(node, [simp])
+
+    return R
+
 
 
 def completion(G, debug=False, method=CONTAINMENT):
