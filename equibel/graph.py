@@ -7,6 +7,8 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+import copy
+
 import networkx as nx
 
 import equibel
@@ -85,11 +87,28 @@ class EquibelGraph:
         """Tests for non-equality. Negates the result of equality testing."""
         return not self.__eq__(other)
 
-    # TODO: Write this function properly
-    #def copy(self):
-    #    """Returns a copy of this graph.
-    #    """
-    #    return EquibelGraph(self.graph)
+    def copy(self):
+        """Creates a copy of this graph.
+
+        Example
+        -------
+        Create a graph:
+
+        >>> G = eb.path_graph(3)
+
+        Create a copy of the graph:
+
+        >>> C = G.copy()
+
+        The copy is independently modifiable:
+
+        >>> C.add_edge(2,3)
+        >>> C.edges()
+        [(0, 1), (1, 2), (2, 3)]
+        >>> G.edges()
+        [(0, 1), (1, 2)]
+        """
+        return copy.deepcopy(self)
 
     # ================================================
     #                NODE METHODS
@@ -173,7 +192,6 @@ class EquibelGraph:
         """
         self.graph.remove_node(node_id)
 
-    # TODO: Perhaps this could be called "remove_nodes"
     def remove_nodes_from(self, nodes):
         """Remove nodes specified in an iterable container.
 
@@ -351,8 +369,21 @@ class EquibelGraph:
 
         Example
         -------
-        >>> G = EquibelGraph()
-        >>> 
+        Create an undirected path graph:
+
+        >>> G = eb.path_graph(4)
+        >>> G.edges()
+        [(0, 1), (1, 2), (2, 3)]
+        >>> G.is_directed()
+        False
+
+        Create a directed version of the graph:
+
+        >>> D = G.to_directed()
+        >>> D.edges()
+        [(0, 1), (1, 0), (1, 2), (2, 1), (2, 3), (3, 2)]
+        >>> D.is_directed()
+        True
         """
         return self.graph.is_directed()
 
@@ -360,6 +391,9 @@ class EquibelGraph:
         """Creates a copy of this graph with the directions 
         of all edges reversed.
 
+        Example
+        -------
+        
         """
         if self.is_directed():
             return EquibelGraph(self.graph.reverse())
