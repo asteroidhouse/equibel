@@ -1,14 +1,13 @@
 import equibel as eb
 
+
 def test_graph_eq():
     G1 = eb.path_graph(3)
     G1.add_formula(0, 'p & q')
     G1.add_formula(1, 'q | r')
-
     G2 = eb.path_graph(3)
     G2.add_formula(0, 'p & q')
     G2.add_formula(1, 'r | q')
-
     assert(G1 == G2)
 
 
@@ -16,11 +15,43 @@ def test_graph_ne():
     G1 = eb.path_graph(3)
     G1.add_formula(0, 'p & q')
     G1.add_formula(1, 'q | r')
-
     G2 = eb.path_graph(3)
     G2.add_formula(0, 'p & q')
-
     assert(G1 != G2)
+
+
+def test_graph_copy_nodes():
+    G = eb.path_graph(3)
+    C = G.copy()
+    assert(G.nodes() == [0, 1, 2])
+    assert(C.nodes() == [0, 1, 2])
+    C.add_node(3)
+    assert(G.nodes() == [0, 1, 2])
+    assert(C.nodes() == [0, 1, 2, 3])
+
+
+def test_graph_copy_edges():
+    G = eb.path_graph(3)
+    C = G.copy()
+    assert(G.edges() == [(0, 1), (1, 2)])
+    assert(C.edges() == [(0, 1), (1, 2)])
+    C.add_edge(2,3)
+    assert(G.edges() == [(0, 1), (1, 2)])
+    assert(C.edges() == [(0, 1), (1, 2), (2, 3)])
+
+
+def test_graph_copy_formulas():
+    p,q,r,s = [eb.Prop(atom) for atom in 'pqrs']
+    G = eb.path_graph(3)
+    G.add_formula(0, p & q | ~r)
+    G.add_formula(0, s)
+    G.add_formula(1, p | q)
+    C = G.copy()
+    assert(G.formulas() == {0: set([(q & p) | ~r, s]), 1: set([q | p]), 2: set([])})
+    assert(C.formulas() == {0: set([(q & p) | ~r, s]), 1: set([q | p]), 2: set([])})
+    C.add_formula(1, ~s | q)
+    assert(G.formulas() == {0: set([(q & p) | ~r, s]), 1: set([q | p]), 2: set([])})
+    assert(C.formulas() == {0: set([(q & p) | ~r, s]), 1: set([q | ~s, q | p]), 2: set([])})
 
 
 def test_graph_nodes():
@@ -121,16 +152,25 @@ def test_graph_to_undirected():
 
 
 def test_graph_is_directed():
-    pass
+    G = eb.path_graph(4)
+    assert(G.edges() == [(0, 1), (1, 2), (2, 3)])
+    assert(G.is_directed() == False)
+    D = G.to_directed()
+    assert(D.edges() == [(0, 1), (1, 0), (1, 2), (2, 1), (2, 3), (3, 2)])
+    assert(D.is_directed() == True)
 
 
-def test_graph_reverse():
-    pass
+def test_graph_reverse_directed():
+    D = eb.path_graph(4, directed=True)
+    assert(D.edges() == [(0, 1), (1, 2), (2, 3)])
+    R = D.reverse()
+    assert(R.edges() == [(1, 0), (2, 1), (3, 2)])
 
 
-
-
-
+def test_graph_reverse_undirected():
+    G = eb.path_graph(4)
+    R = G.reverse()
+    assert(G == R)
 
 
 
