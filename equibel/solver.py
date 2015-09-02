@@ -333,26 +333,26 @@ def formula_from_model(model, atoms):
 
 
 def revise(K, R):
-    G = equibel.path_graph(2)
+    G = eb.path_graph(2)
 
     if isinstance(K, str):
-        G.add_formula(0, equibel.parse_infix_formula(K))
+        G.add_formula(0, eb.parse_infix_formula(K))
     elif isinstance(K, list):
         for belief in K:
-            G.add_formula(0, equibel.parse_infix_formula(belief))
+            G.add_formula(0, eb.parse_infix_formula(belief))
 
     if isinstance(R, str):
-        G.add_formula(1, equibel.parse_infix_formula(R))
+        G.add_formula(1, eb.parse_infix_formula(R))
     elif isinstance(R, list):
         for belief in R:
-            G.add_formula(1, equibel.parse_infix_formula(belief))
+            G.add_formula(1, eb.parse_infix_formula(belief))
 
     S = completion(G)
     return S.formulas(1)
 
 
 def merge(belief_bases, entailment_constraint=None):
-    G = equibel.star_graph(len(belief_bases))
+    G = eb.star_graph(len(belief_bases))
 
     if entailment_constraint:
         G.add_formula(0, entailment_constraint)
@@ -376,7 +376,7 @@ if __name__ == '__main__':
     num_nodes = int(sys.argv[1])
     
     solver = EqSolver()
-    G = equibel.path_graph(num_nodes)
+    G = eb.path_graph(num_nodes)
     G.add_formula(0, "p & q & r & s")
     G.add_formula(num_nodes-1, "~p & ~q & ~r & ~s")
     R = completion(G)
