@@ -15,4 +15,5 @@ equibel/equibel.egg-info/*
 
 tests/Graphs/*
 tests/htmlcov
+tests/cover
 .coverage
