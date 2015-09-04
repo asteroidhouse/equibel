@@ -180,8 +180,7 @@ def parse_infix_formula(text):
     try:
         return parser.parse(text, lexer=lexer)
     except ValueError as err:
-        print(err)
-        return []
+        raise ValueError(err)
 
 
 if __name__ == '__main__':
