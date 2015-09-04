@@ -44,9 +44,11 @@ def path_graph(n, directed=False):
     Examples
     --------
     Create an undirected line graph 0 <-> 1 <-> 2 <-> 3:
+
     >>> G = line_graph(4)
 
     Create a directed line graph 0 -> 1 -> 2 -> 3:
+    
     >>> D = line_graph(4, directed=True)
     """
     if directed:

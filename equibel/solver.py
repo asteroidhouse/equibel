@@ -46,6 +46,8 @@ CARDINALITY = 'cardinality'
 
 
 def create_atom_mapping(atoms):
+    """
+    """
     mapping = dict()
     for (index, atom) in enumerate(atoms):
         mapping[atom] = index
@@ -315,12 +317,12 @@ def formula_from_models(models, atoms):
 def formula_from_model(model, atoms):
     """Creates a propositional formula from a single model.
        
-       The input model must be an integer whose bits represent
-       the truth values of atoms in a given sorted order.
+    The input model must be an integer whose bits represent
+    the truth values of atoms in a given sorted order.
 
-       For example, given an alphabet A = {p, q, r}, and a 
-       model 6 = 110 (base 2), the formula returned by this 
-       function is p & q & ~r.
+    For example, given an alphabet A = {p, q, r}, and a 
+    model 6 = 110 (base 2), the formula returned by this 
+    function is p & q & ~r.
     """
     conjunction = eb.Prop(True) 
     for (index, atom) in enumerate(atoms):

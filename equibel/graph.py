@@ -50,8 +50,8 @@ class EquibelGraph:
         ----------
         other : an object to test for equality with the current EquibelGraph
 
-        Example
-        -------
+        Examples
+        --------
         Create the first graph:
 
         >>> G1 = eb.path_graph(4)
@@ -68,7 +68,8 @@ class EquibelGraph:
         >>> G1 == G2
         False
 
-        We add a formula to G2 to make it equal to G1:
+        We can add a formula to G2 to make it equal to G1:
+
         >>> G2.add_formula(1, 'q | r')
         >>> G1 == G2
         True
@@ -90,8 +91,8 @@ class EquibelGraph:
     def copy(self):
         """Creates a copy of this graph.
 
-        Example
-        -------
+        Examples
+        --------
         Create a graph:
 
         >>> G = eb.path_graph(3)
@@ -117,8 +118,8 @@ class EquibelGraph:
     def nodes(self):
         """Return the list of nodes.
 
-        Example
-        -------
+        Examples
+        --------
         >>> G = EquibelGraph()
         >>> G.add_nodes([1,2,3])
         >>> G.nodes()
@@ -136,9 +137,11 @@ class EquibelGraph:
         Examples
         --------
         Create a graph:
+
         >>> G = EquibelGraph()
 
         Add a node:
+
         >>> G.add_node(1)
         """
         self.graph.add_node(node_id)
@@ -153,18 +156,21 @@ class EquibelGraph:
         ----------
         nodes : any iterable container
 
-        Example
-        -------
+        Examples
+        --------
         Create an empty graph:
+
         >>> G = EquibelGraph()
 
         Add all nodes from the given list:
+
         >>> G.add_nodes([1,2,3])
         >>> G.nodes()
         [1,2,3]
 
         You can also add nodes from other iterables, 
         like sets:
+
         >>> s = {4,5,6}
         >>> s
         set([4, 5, 6])
@@ -182,8 +188,8 @@ class EquibelGraph:
         ----------
         node_id : any type, usually an int
 
-        Example
-        -------
+        Examples
+        --------
         >>> G = EquibelGraph()
         >>> G.add_nodes([1,2,3])
         >>> G.remove_node(1)
@@ -199,8 +205,8 @@ class EquibelGraph:
         ----------
         nodes : any iterable container
 
-        Example
-        -------
+        Examples
+        --------
         >>> G = EquibelGraph()
         >>> G.add_nodes([1,2,3,4])
         >>> G.nodes()
@@ -228,8 +234,8 @@ class EquibelGraph:
     def edges(self):
         """Returns a list of the edges in the graph.
 
-        Example
-        -------
+        Examples
+        --------
         >>> G = eb.path_graph(4)
         >>> G.edges()
         [(0,1), (1,2), (2,3)]
@@ -259,6 +265,7 @@ class EquibelGraph:
 
         Note that the endpoints of the edges were 
         automatically added as nodes:
+
         >>> G.nodes()
         [1,2,3]
         """
@@ -344,19 +351,21 @@ class EquibelGraph:
     def to_undirected(self):
         """Creates an undirected copy of this graph.
 
-        Example
-        -------
+        Examples
+        --------
         >>> G = eb.EquibelGraph()
         >>> G.add_edges([(1,2), (2,3)])
         >>> G.edges()
         [(1, 2), (2, 3)]
 
         Create a directed copy:
+
         >>> D = G.to_directed()
         >>> D.edges()
         [(1, 2), (2, 1), (2, 3), (3, 2)]
 
         Create an undirected copy:
+
         >>> R = D.to_undirected()
         >>> R.edges()
         [(1, 2), (2, 3)]
@@ -367,8 +376,8 @@ class EquibelGraph:
         """Checks whether this graph is directed. By 
         default, graphs in Equibel are undirected.
 
-        Example
-        -------
+        Examples
+        --------
         Create an undirected path graph:
 
         >>> G = eb.path_graph(4)
@@ -393,7 +402,7 @@ class EquibelGraph:
 
         Example
         -------
-        
+
         """
         if self.is_directed():
             return EquibelGraph(self.graph.reverse())
@@ -411,8 +420,8 @@ class EquibelGraph:
         """Returns a list of atoms in the global alphabet of 
         the graph.
 
-        Example
-        -------
+        Examples
+        --------
         >>> G = Graph()
         >>> G.add_node(1)
         >>> G.add_formula(1, "p & q")
@@ -429,8 +438,8 @@ class EquibelGraph:
         ----------
         node_id : the ID of the desired node; any type, usually an int
 
-        Example
-        -------
+        Examples
+        --------
         >>> G = eb.EquibelGraph()
         >>> G.add_nodes([1,2])
         >>> G.add_formula(1, "p & q")
@@ -447,8 +456,8 @@ class EquibelGraph:
         node_id : the ID of the desired node; any type, usually an int
         atom    : the name of the desired atom, as a string
 
-        Example
-        -------
+        Examples
+        --------
         >>> G = eb.EquibelGraph()
         >>> G.add_nodes([1,2])
         >>> G.add_formula(1, "p & q")
@@ -466,8 +475,8 @@ class EquibelGraph:
         ----------
         atom : a string representing an atom
 
-        Example
-        -------
+        Examples
+        --------
         >>> G = eb.EquibelGraph()
         >>> G.add_atom('p')
         >>> G.atoms()
@@ -485,8 +494,8 @@ class EquibelGraph:
         atoms : an iterable containing objects that can be used to 
                 represent atoms; usually strings
 
-        Example
-        -------
+        Examples
+        --------
         >>> G = eb.EquibelGraph()
         >>> G.add_atoms(['p', 'q', 'r', 's'])
         >>> G.atoms()
@@ -535,8 +544,8 @@ class EquibelGraph:
         ----------
         node_id : the ID of the desired node; usually an int
 
-        Example
-        -------
+        Examples
+        --------
         >>> G = eb.path_graph(4)
         >>> G.add_formula(0, "p & q")
         >>> G.add_formula(1, 'p | ~r')
@@ -608,8 +617,8 @@ class EquibelGraph:
         ----------
         node_id : the ID of the desired node; usually an int
 
-        Example
-        -------
+        Examples
+        --------
         >>> G = eb.EquibelGraph()
         >>> G.add_node(1)
         >>> G.add_formula(1, 'p & q | r')
@@ -627,8 +636,8 @@ class EquibelGraph:
     def clear_formulas(self):
         """Removes all formulas from all nodes in the graph.
 
-        Example
-        -------
+        Examples
+        --------
         >>> G = eb.path_graph(4)
         >>> G.add_formula(1, 'p | (q & r)')
         >>> G.add_formula(2, '~p')
