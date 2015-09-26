@@ -106,6 +106,7 @@ def iterate_steady(G):
             
             for node in node_tv_dict:
                 node_models[node].add(node_tv_dict[node])
+        
         #print(node_models)
 
         true_prop = eb.Prop(True)
@@ -159,7 +160,8 @@ def iterate(G, num_iterations=1, method=CARDINALITY):
            
             for node in node_tv_dict:
                 node_models[node].add(node_tv_dict[node])
-        print(node_models)
+        
+        #print(node_models)
 
         true_prop = eb.Prop(True)
 
@@ -326,7 +328,7 @@ def solve_containment(ctl, G, sorted_atoms):
         for node in node_tv_dict:
             node_models[node].add(node_tv_dict[node])
 
-    print(node_models)
+    #print(node_models)
     R = update_formulas(G, node_models, sorted_atoms)
     return R
 
@@ -344,7 +346,7 @@ def solve_cardinality(ctl, G, sorted_atoms):
             old_opt_value = current_opt_value
             continue
 
-        print(m)
+        #print(m)
         node_tv_dict.clear()
         terms = m.atoms(gringo.Model.SHOWN)
         for term in terms:
@@ -355,7 +357,7 @@ def solve_cardinality(ctl, G, sorted_atoms):
         for node in node_tv_dict:
             node_models[node].add(node_tv_dict[node])
 
-    print(node_models)
+    #print(node_models)
     R = update_formulas(G, node_models, sorted_atoms)
     return R
 
