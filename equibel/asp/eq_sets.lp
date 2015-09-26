@@ -61,6 +61,10 @@ satisfied(N,F) :- F = neg(A),        not satisfied(N,A), subformula(N,F), subfor
 % All original formulas must be satisfied in order for the EQ set to be valid.
 :- formula(N,F), not satisfied(N,F).
 
+has_eq :- eq(_,_,_).
+
+:- not has_eq.
+
 % This heuristic is used to find maximal sets of equivalences, with respect to set containment.
 _heuristic(eq(P,X,Y), true, 1) :- atom(P), edge(X,Y), X < Y.
 

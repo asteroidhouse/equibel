@@ -59,10 +59,3 @@ satisfied(N,X,F) :- F = neg(A),        not satisfied(N,X,A), node(N), subformula
 % OR BOTH OF THESE:
 :- formula(N,F), node(N), not satisfied(N,N,F).
 :- formula(X,F), edge(X,N), not satisfied(N,X,F).
-
-_heuristic(eq(N,P,N,M), true, 1) :- atom(N,P), edge(M,N).
-_heuristic(eq(N,P,N,M), true, 1) :- atom(M,P), edge(M,N).
-
-#show _heuristic/3.
-#show eq/4.
-#show tv/4.
