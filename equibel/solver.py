@@ -39,7 +39,17 @@ import equibel.formatters.ASP_Formatter as ASP_Formatter
 
 
 EQ_SETS_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_sets.lp')
-EQ_ITERATE_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_iterate2.lp')
+EQ_ITERATE_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_iterate.lp')
+EQ_IT_CONTAINMENT_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_it_containment.lp')
+EQ_IT_CARDINALITY_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_it_cardinality.lp')
+
+EQ_BASE_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_base.lp')
+EQ_CARDINALITY_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_cardinality.lp')
+EQ_CONTAINMENT_FILE = pkg_resources.resource_filename('equibel', 'asp/eq_containment.lp')
+
+EXPANDING_FILE = pkg_resources.resource_filename('equibel', 'asp/expanding.lp')
+EXPANDING_CONTAINMENT_FILE = pkg_resources.resource_filename('equibel', 'asp/expanding_containment.lp')
+EXPANDING_CARDINALITY_FILE = pkg_resources.resource_filename('equibel', 'asp/expanding_cardinality.lp')
 
 CONTAINMENT = 'containment'
 CARDINALITY = 'cardinality'
@@ -93,7 +103,7 @@ def iterate_steady(G):
                     center_node, node, atom_index, truth_value = term.args()
                     if center_node == node:
                         node_tv_dict[node] |= truth_value << atom_index
-           
+            
             for node in node_tv_dict:
                 node_models[node].add(node_tv_dict[node])
         #print(node_models)
@@ -103,8 +113,6 @@ def iterate_steady(G):
         for node in node_models:
             t = tuple(node_models[node])
             formula = formula_from_models(t, sorted_atoms)
-            # TODO: Do something about this simplification part... it works 
-            #       but it surely decreases efficiency.
             simp = simplified(formula)
             if simp != true_prop:
                 R.set_formulas(node, [simp])
@@ -112,7 +120,15 @@ def iterate_steady(G):
     return R, iterations
 
 
-def iterate(G, num_iterations=1):
+def load_iteration_files(ctl, method):
+    ctl.load(EQ_ITERATE_FILE)
+    if method == CONTAINMENT:
+        ctl.load(EQ_IT_CONTAINMENT_FILE)
+    elif method == CARDINALITY:
+        ctl.load(EQ_IT_CARDINALITY_FILE)
+
+
+def iterate(G, num_iterations=1, method=CARDINALITY):
     atoms = [eb.Prop(atom) for atom in G.atoms()]
     sorted_atoms = tuple(sorted(atoms))
 
@@ -122,15 +138,9 @@ def iterate(G, num_iterations=1):
 
     for i in range(num_iterations):
         ctl = gringo.Control()
-        ctl.conf.configuration = 'crafty'
-        ctl.conf.solver.heuristic = 'domain'
-        ctl.conf.solve.enum_mode = 'domRec'
-        ctl.conf.solve.models = 0
-        #ctl.conf.solve.parallel_mode = 2
+        configure_solver(ctl, method)
+        load_iteration_files(ctl, method)
 
-        #print(eb.convert_to_asp(R, atom_mapping))
-
-        ctl.load(EQ_ITERATE_FILE)
         ctl.add('base', [], eb.convert_to_asp(R, atom_mapping))
         ctl.ground([('base', [])])
 
@@ -156,7 +166,6 @@ def iterate(G, num_iterations=1):
         for node in node_models:
             t = tuple(node_models[node])
             formula = formula_from_models(t, sorted_atoms)
-            # TODO: Again, formulas are simplified, yielding slowdowns.
             simp = simplified(formula)
             if simp != true_prop:
                 R.set_formulas(node, [simp])
@@ -164,57 +173,90 @@ def iterate(G, num_iterations=1):
     return R
 
 
-# TODO: MAKE SURE THIS IS CORRECT
-def find_distances_asp(G):
-    lengths = nx.all_pairs_shortest_path_length(G)
-    for node1 in lengths:
-        for node2 in lengths[node1]:
-            yield "distance({0},{1},{2}).".format(node1, node2, lengths[node1][node2])
+def load_expanding_iteration_files(ctl, method):
+    ctl.load(EXPANDING_FILE)
+    if method == CONTAINMENT:
+        ctl.load(EXPANDING_CONTAINMENT_FILE)
+    elif method == CARDINALITY:
+        ctl.load(EXPANDING_CARDINALITY_FILE)
+
+
+def expanding_model_intersection(iteration_model_sets):
+    resultant_models = iteration_model_sets[0]
+    for model_set in iteration_model_sets[1:]:
+        common_elements = resultant_models.intersection(model_set)
+        if common_elements:
+            resultant_models = common_elements
+    return resultant_models
 
 
 # TODO: FINISH THIS (ALSO HAVE TO UPDATE ASP PART)
-def iterate_expanding(G):
+def iterate_expanding(G, method=CARDINALITY):
     atoms = [eb.Prop(atom) for atom in G.atoms()]
     sorted_atoms = tuple(sorted(atoms))
 
     atom_mapping = create_atom_mapping(sorted_atoms)
 
-    R = copy.deepcopy(G)
+    #R = copy.deepcopy(G)
 
-    ctl = gringo.Control()
-    ctl.conf.configuration = 'crafty'
-    ctl.conf.solver.heuristic = 'domain'
-    ctl.conf.solve.enum_mode = 'domRec'
-    ctl.conf.solve.models = 0
-    #ctl.conf.solve.parallel_mode = 2
+    asp_str = eb.convert_to_asp(G, atom_mapping)
 
-    #print(eb.convert_to_asp(R, atom_mapping))
+    diameter = 0
+    lengths = nx.all_pairs_shortest_path_length(G)
+    for node1 in lengths:
+        for node2 in lengths[node1]:
+            dist = lengths[node1][node2]
+            if dist > diameter:
+                diameter = dist
+            asp_dist_str = "dist({0},{1},{2}).\n".format(node1, node2, dist)
+            asp_str += asp_dist_str
 
-    ctl.load(EQ_ITERATE_FILE)
-    ctl.add('base', [], eb.convert_to_asp(G, atom_mapping))
-
-    for dist in find_distances_asp(G):
-        ctl.add('base', [], dist)
-
-    ctl.ground([('base', [])])
+    print("Diameter = {0}".format(diameter))
 
     node_models = defaultdict(set)
     node_tv_dict = defaultdict(int)
-    
-    it = ctl.solve_iter()
-    for m in it:
-        node_tv_dict.clear()
-        terms = m.atoms(gringo.Model.SHOWN)
-        for term in terms:
-            if term.name() == 'tv':
-                center_node, node, atom_index, truth_value = term.args()
-                if center_node == node:
-                    node_tv_dict[node] |= truth_value << atom_index
-       
-        for node in node_tv_dict:
-            node_models[node].add(node_tv_dict[node])
-    print(node_models)
 
+    iteration_model_sets = defaultdict(list)
+
+    for radius in range(1, diameter+1):
+        print("RADIUS = {0}".format(radius))
+        ctl = gringo.Control()
+        configure_solver(ctl, method)
+        load_expanding_iteration_files(ctl, method)
+        print(asp_str)
+        ctl.add('base', [], asp_str)
+        ctl.ground([('base', [])])
+        ctl.ground([('expand', [radius])])
+
+        it = ctl.solve_iter()
+        for m in it:
+            print(m)
+            node_tv_dict.clear()
+            terms = m.atoms(gringo.Model.SHOWN)
+            for term in terms:
+                if term.name() == 'tv':
+                    center_node, node, atom_index, truth_value = term.args()
+                    if center_node == node:
+                        node_tv_dict[node] |= truth_value << atom_index
+           
+            for node in node_tv_dict:
+                node_models[node].add(node_tv_dict[node])
+        print(node_models)
+
+        for node in node_models:
+            iteration_model_sets[node].append(frozenset(node_models[node]))
+
+        print(iteration_model_sets)
+
+    for node in iteration_model_sets:
+        print("Node {0}: {1}".format(node, iteration_model_sets[node]))
+
+    for node in iteration_model_sets:
+        resultant_models = expanding_model_intersection(iteration_model_sets[node])
+        print("Resultant Models Node {0}: {1}".format(node, resultant_models))
+
+
+    """
     true_prop = eb.Prop(True)
 
     for node in node_models:
@@ -224,68 +266,111 @@ def iterate_expanding(G):
         simp = simplified(formula)
         if simp != true_prop:
             R.set_formulas(node, [simp])
+    """
 
     return R
 
 
+def configure_solver(ctl, method):
+    ctl.conf.configuration = 'crafty'
+    if method == CONTAINMENT:
+        ctl.conf.solver.heuristic = 'domain'
+        ctl.conf.solve.enum_mode = 'domRec'
+        ctl.conf.solve.models = 0
+    elif method == CARDINALITY:
+        ctl.conf.solve.opt_mode = 'optN'
+
+
+def load_files(ctl, method):
+    ctl.load(EQ_BASE_FILE)
+    if method == CONTAINMENT:
+        ctl.load(EQ_CONTAINMENT_FILE)
+    elif method == CARDINALITY:
+        ctl.load(EQ_CARDINALITY_FILE)
+
 
 def completion(G, debug=False, method=CONTAINMENT):
+    ctl = gringo.Control()
+    configure_solver(ctl, method)
+    load_files(ctl, method)
+    return solve(ctl, G, method)
+
+
+def solve(ctl, G, method):
     atoms = [eb.Prop(atom) for atom in G.atoms()]
     sorted_atoms = tuple(sorted(atoms))
-
     atom_mapping = create_atom_mapping(sorted_atoms)
 
-    ctl = gringo.Control()
-    ctl.conf.configuration = 'crafty'
-    ctl.conf.solver.heuristic = 'domain'
-    ctl.conf.solve.enum_mode = 'domRec'
-    ctl.conf.solve.models = 0
-    #ctl.conf.solve.parallel_mode = 2
-
-    #print(eb.convert_to_asp(G, atom_mapping))
-
-    ctl.load(EQ_SETS_FILE)
     ctl.add('base', [], eb.convert_to_asp(G, atom_mapping))
     ctl.ground([('base', [])])
 
+    if method == CONTAINMENT:
+        return solve_containment(ctl, G, sorted_atoms)
+    elif method == CARDINALITY:
+        return solve_cardinality(ctl, G, sorted_atoms)
+
+
+def solve_containment(ctl, G, sorted_atoms):
     node_models = defaultdict(set)
     node_tv_dict = defaultdict(int)
 
-    num_models = 0
-    num_terms_list = []
-    
     it = ctl.solve_iter()
     for m in it:
-        num_models += 1
-        total_num_terms = 0
-        tv_num_terms = 0
         node_tv_dict.clear()
         terms = m.atoms(gringo.Model.SHOWN)
         for term in terms:
-            total_num_terms += 1
             if term.name() == 'tv':
-                tv_num_terms += 1
                 node, atom_index, truth_value = term.args()
                 node_tv_dict[node] |= truth_value << atom_index
 
-        num_terms_list.append((total_num_terms, tv_num_terms))
-       
         for node in node_tv_dict:
             node_models[node].add(node_tv_dict[node])
-    #print(node_models)
 
+    print(node_models)
+    R = update_formulas(G, node_models, sorted_atoms)
+    return R
+
+
+def solve_cardinality(ctl, G, sorted_atoms):
+    node_models = defaultdict(set)
+    node_tv_dict = defaultdict(int)
+
+    old_opt_value = None
+
+    it = ctl.solve_iter()
+    for m in it:
+        current_opt_value = m.optimization()
+        if current_opt_value != old_opt_value:
+            old_opt_value = current_opt_value
+            continue
+
+        print(m)
+        node_tv_dict.clear()
+        terms = m.atoms(gringo.Model.SHOWN)
+        for term in terms:
+            if term.name() == 'tv':
+                node, atom_index, truth_value = term.args()
+                node_tv_dict[node] |= truth_value << atom_index
+
+        for node in node_tv_dict:
+            node_models[node].add(node_tv_dict[node])
+
+    print(node_models)
+    R = update_formulas(G, node_models, sorted_atoms)
+    return R
+
+
+def update_formulas(G, node_models, sorted_atoms):
     true_prop = eb.Prop(True)
     
     R = copy.deepcopy(G)
+    R.clear_formulas()
     for node in node_models:
         t = tuple(node_models[node])
         formula = formula_from_models(t, sorted_atoms)
         simple = simplified(formula)
         if simple != true_prop:
             R.set_formulas(node, [simple])
-
-    if debug:
-        return (R, node_models, num_models, num_terms_list)
 
     return R
 
@@ -334,7 +419,7 @@ def formula_from_model(model, atoms):
     return conjunction
 
 
-def revise(K, R):
+def revise(K, R, method=CARDINALITY):
     G = eb.path_graph(2)
 
     if isinstance(K, str):
@@ -349,7 +434,7 @@ def revise(K, R):
         for belief in R:
             G.add_formula(1, eb.parse_infix_formula(belief))
 
-    S = completion(G)
+    S = completion(G, method=method)
     return S.formulas(1)
 
 
