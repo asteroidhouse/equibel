@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='equibel',
-    version='0.9.1a1', # v0.9.1 alpha build
+    version='0.9.3a1', # v0.9.3 alpha build
     
     description='A toolkit for equivalence-based belief change',
 
@@ -25,9 +25,6 @@ setup(
 
     packages=[
         'equibel',
-        'equibel.simbool',
-        'equibel.parsers',
-        'equibel.formatters',
     ],
 
     include_package_data = True,
@@ -35,11 +32,6 @@ setup(
     install_requires=[
         'networkx',
         'ply',
-        'colorama',
+        'sympy',
     ],
-
-    entry_points='''
-        [console_scripts]
-        equibeli=equibel.equibeli:cli
-    ''',
 )

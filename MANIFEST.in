@@ -2,4 +2,3 @@ recursive-include equibel/includes *
 recursive-include equibel/asp *
 recursive-include equibel/parsers *
 recursive-include equibel/formatters *
-recursive-include equibel/simbool *
