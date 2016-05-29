@@ -1,1 +1,0 @@
-gringo eq_sets.lp case2.lp | clasp --opt-mode=optN --quiet=1,2 --verbose=0
