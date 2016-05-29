@@ -25,13 +25,11 @@ def path_graph(n):
 
     Parameters
     ----------
-    n : int
-        The desired number of nodes for the line graph.
+    n : The desired number of nodes for the line graph.
 
     Returns
     -------
-    G : EquibelGraph
-        An EquibelGraph representing a path graph on ``n`` nodes.
+    G : An ``EquibelGraph`` representing a path graph on ``n`` nodes.
 
     Examples
     --------
@@ -47,13 +45,11 @@ def complete_graph(n):
 
     Parameters
     ----------
-    n : int
-        The desired number of nodes for the complete graph.
+    n : The desired number of nodes for the complete graph.
 
     Returns
     -------
-    G : EquibelGraph
-        An EquibelGraph containing a complete graph on ``n`` nodes.
+    G : An ``EquibelGraph`` containing a complete graph on ``n`` nodes.
 
     Examples
     --------
@@ -68,15 +64,13 @@ def star_graph(n):
 
     Parameters
     ----------
-    n : int
-        The desired number of outer nodes for the star graph.
+    n : The desired number of outer nodes for the star graph.
         The generated graph will have a central node numbered 
         ``0``, and ``n`` outer nodes numbered from ``1`` to ``n``.
 
     Returns
     -------
-    G : EquibelGraph
-        An EquibelGraph containing a star graph on ``n+1`` nodes.
+    G : An ``EquibelGraph`` containing a star graph on ``n+1`` nodes.
 
     Examples
     --------
