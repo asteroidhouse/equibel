@@ -16,7 +16,7 @@ setup(
         'Programming Language :: Python :: 2.7',
     ],
 
-    keywords=['AI', 'belief change', 'belief merging', 'agent network'],
+    keywords=['AI', 'belief change', 'belief revision', 'belief merging', 'multi-agent network'],
 
     url='https://github.com/asteroidhouse/equibel',
     author='Paul Vicol',
