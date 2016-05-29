@@ -1,0 +1,1246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>equibel.solver &mdash; Equibel a1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'a1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Equibel a1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for equibel.solver</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This file contains functions that implement the following approaches </span>
+<span class="sd">to consistency-based belief change in a graph-oriented setting:</span>
+
+<span class="sd">1. Global completion: ``eb.global_completion(G)``</span>
+<span class="sd">2. Simple iteration: ``eb.iterate_simple(G)``</span>
+<span class="sd">3. Expanding iteration: ``eb.iterate_expanding(G)``</span>
+<span class="sd">4. Augmenting iteration: ``eb.iterate_augmenting(G)``</span>
+<span class="sd">5. The ring method: ``eb.iterate_ring(G)``</span>
+
+<span class="sd">Each of the approaches has two separate implementations, corresponding to </span>
+<span class="sd">the *semantic* and *syntactic* characterizations. In addition, there are </span>
+<span class="sd">two ways of maximizing equivalences used by any approach: *inclusion-based* </span>
+<span class="sd">or *cardinality-based* maximization. </span>
+
+<span class="sd">Each function listed above takes three optional arguments: </span>
+<span class="sd">    1. ``method``, which is a string that is either &quot;semantic&quot; or &quot;syntactic&quot;, </span>
+<span class="sd">       representing the method by which to perform the completion; e.g. based </span>
+<span class="sd">       on either the syntactic or semantic characterizations</span>
+<span class="sd">    2. ``opt_type``, which is a string that is either &quot;inclusion&quot; or &quot;cardinality&quot;, </span>
+<span class="sd">       representing the type of maximization to be  performed over equivalences </span>
+<span class="sd">    3. ``simplify``, which is a Boolean flag specifying whether to simplify the </span>
+<span class="sd">       final formulas at each node.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1">#    Copyright (C) 2016</span>
+<span class="c1">#    Paul Vicol &lt;pvicol@sfu.ca&gt;</span>
+<span class="c1">#    All rights reserved.</span>
+<span class="c1">#    MIT license.</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="kn">as</span> <span class="nn">mp</span>
+
+<span class="kn">import</span> <span class="nn">platform</span>
+<span class="kn">import</span> <span class="nn">pkg_resources</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="kn">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">import</span> <span class="nn">equibel</span> <span class="kn">as</span> <span class="nn">eb</span>
+<span class="kn">from</span> <span class="nn">equibel</span> <span class="kn">import</span> <span class="n">asprin</span>
+
+
+<span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Linux&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">architecture</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;64bit&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">equibel.includes.linux_64</span> <span class="kn">import</span> <span class="n">gringo</span>
+    <span class="c1">#elif platform.architecture()[0] == &#39;32bit&#39;:</span>
+    <span class="c1">#    from equibel.includes.linux_32 import gringo</span>
+<span class="k">elif</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Darwin&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">equibel.includes.mac</span> <span class="kn">import</span> <span class="n">gringo</span>
+
+
+<span class="n">SEMANTIC</span> <span class="o">=</span> <span class="s1">&#39;semantic&#39;</span>
+<span class="n">SYNTACTIC</span> <span class="o">=</span> <span class="s1">&#39;syntactic&#39;</span>
+
+<span class="n">CARDINALITY</span> <span class="o">=</span> <span class="s1">&#39;cardinality&#39;</span>
+<span class="n">INCLUSION</span> <span class="o">=</span> <span class="s1">&#39;inclusion&#39;</span>
+
+<span class="n">PROJECTION</span> <span class="o">=</span> <span class="s1">&#39;projection&#39;</span>
+<span class="n">CONSENSUS</span> <span class="o">=</span> <span class="s1">&#39;consensus&#39;</span>
+
+
+<span class="c1">###################################################################</span>
+<span class="c1">###  ENCODING AND ASPRIN PREFERENCE FILE FOR GLOBAL COMPLETION  ###</span>
+<span class="c1">###################################################################</span>
+<span class="n">EQ_GLOBAL</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;asp/problem_encodings/global.lp&#39;</span><span class="p">)</span>
+<span class="n">PREFERENCE_GLOBAL</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;asp/preferences/global_pref.lp&#39;</span><span class="p">)</span>
+
+
+<span class="c1">##############################################</span>
+<span class="c1">####  FILES FOR CARDINALITY MAXIMIZATION  ####</span>
+<span class="c1">##############################################</span>
+<span class="n">GLOBAL_CARDINALITY_MAX</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;asp/auxilliary/global_card_max.lp&#39;</span><span class="p">)</span>
+<span class="n">EXPANDING_CARDINALITY_MAX</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;asp/auxilliary/expanding_card_max.lp&#39;</span><span class="p">)</span>
+
+
+<span class="c1">#####################################################################</span>
+<span class="c1">###  ENCODING AND ASPRIN PREFERENCE FILE FOR EXPANDING ITERATION  ###</span>
+<span class="c1">###  (ALSO USED FOR SIMPLE ITERATION AND THE RING METHOD)         ###</span>
+<span class="c1">#####################################################################</span>
+<span class="n">EXPANDING_ENCODING</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;asp/problem_encodings/expanding.lp&#39;</span><span class="p">)</span>
+<span class="n">EXPANDING_PREFERENCE</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;asp/preferences/expanding_pref.lp&#39;</span><span class="p">)</span>
+
+
+<span class="c1">######################################################################</span>
+<span class="c1">###  ENCODING AND ASPRIN PREFERENCE FILE FOR AUGMENTING ITERATION  ###</span>
+<span class="c1">######################################################################</span>
+<span class="n">AUGMENTING_ENCODING</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;asp/problem_encodings/augmenting.lp&#39;</span><span class="p">)</span>
+<span class="n">AUGMENTING_PREFERENCE</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;asp/preferences/augmenting_pref.lp&#39;</span><span class="p">)</span>
+
+
+<span class="c1">##################################</span>
+<span class="c1">###  AUXILLIARY ASP ENCODINGS  ###</span>
+<span class="c1">##################################</span>
+<span class="n">DECONSTRUCT</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;asp/auxilliary/deconstruct.lp&#39;</span><span class="p">)</span>
+<span class="n">TRANSITIVE</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;asp/auxilliary/transitive.lp&#39;</span><span class="p">)</span>
+<span class="n">SYMMETRIC</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;asp/auxilliary/symmetric.lp&#39;</span><span class="p">)</span>
+
+
+<span class="c1">################################</span>
+<span class="c1">###  NEIGHBORHOOD ENCODINGS  ###</span>
+<span class="c1">################################</span>
+<span class="n">WEB</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;asp/neighborhoods/web.lp&#39;</span><span class="p">)</span>
+<span class="n">USPT</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;asp/neighborhoods/uspt.lp&#39;</span><span class="p">)</span>
+<span class="n">RING</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;asp/neighborhoods/ring.lp&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="expanding_maximal_answer_sets"><a class="viewcode-back" href="../../equibel.html#equibel.solver.expanding_maximal_answer_sets">[docs]</a><span class="k">def</span> <span class="nf">expanding_maximal_answer_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">distances</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">neighborhood_type</span><span class="o">=</span><span class="n">USPT</span><span class="p">,</span>
+                                  <span class="n">method</span><span class="o">=</span><span class="n">SEMANTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">opt_type</span> <span class="o">==</span> <span class="n">INCLUSION</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SEMANTIC</span><span class="p">:</span>
+            <span class="n">models</span> <span class="o">=</span> <span class="n">asprin</span><span class="o">.</span><span class="n">compute_optimal_models</span><span class="p">([</span><span class="n">EXPANDING_ENCODING</span><span class="p">,</span> <span class="n">EXPANDING_PREFERENCE</span><span class="p">,</span> <span class="n">DECONSTRUCT</span><span class="p">,</span> <span class="n">neighborhood_type</span><span class="p">],</span>
+                                                    <span class="p">[(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="n">G</span><span class="o">.</span><span class="n">to_asp</span><span class="p">(</span><span class="n">atoms</span><span class="p">)),</span>
+                                                     <span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="n">distances</span><span class="p">),</span>
+                                                     <span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;#const center={}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">center</span><span class="p">)),</span>
+                                                     <span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;#const radius={}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">radius</span><span class="p">))])</span>
+            <span class="k">return</span> <span class="n">models</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SYNTACTIC</span><span class="p">:</span>
+            <span class="n">ctl</span> <span class="o">=</span> <span class="n">gringo</span><span class="o">.</span><span class="n">Control</span><span class="p">()</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="s1">&#39;crafty&#39;</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">heuristic</span> <span class="o">=</span> <span class="s1">&#39;domain&#39;</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solve</span><span class="o">.</span><span class="n">enum_mode</span> <span class="o">=</span> <span class="s1">&#39;domRec&#39;</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solve</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">EXPANDING_ENCODING</span><span class="p">)</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">TRANSITIVE</span><span class="p">)</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">SYMMETRIC</span><span class="p">)</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">DECONSTRUCT</span><span class="p">)</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">neighborhood_type</span><span class="p">)</span>
+
+            <span class="n">ctl</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="n">G</span><span class="o">.</span><span class="n">to_asp</span><span class="p">(</span><span class="n">atoms</span><span class="p">))</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="n">distances</span><span class="p">)</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;#const center={}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">center</span><span class="p">))</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;#const radius={}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">radius</span><span class="p">))</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">ground</span><span class="p">([(</span><span class="s1">&#39;base&#39;</span><span class="p">,</span> <span class="p">[])])</span>
+            <span class="n">answer_sets</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">ans</span> <span class="ow">in</span> <span class="n">ctl</span><span class="o">.</span><span class="n">solve_iter</span><span class="p">():</span>
+                <span class="n">answer_sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ans</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="n">gringo</span><span class="o">.</span><span class="n">Model</span><span class="o">.</span><span class="n">SHOWN</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">answer_sets</span>
+    <span class="k">elif</span> <span class="n">opt_type</span> <span class="o">==</span> <span class="n">CARDINALITY</span><span class="p">:</span>
+        <span class="n">ctl</span> <span class="o">=</span> <span class="n">gringo</span><span class="o">.</span><span class="n">Control</span><span class="p">()</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="s1">&#39;crafty&#39;</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">heuristic</span> <span class="o">=</span> <span class="s1">&#39;domain&#39;</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solve</span><span class="o">.</span><span class="n">opt_mode</span> <span class="o">=</span> <span class="s1">&#39;optN&#39;</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solve</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">EXPANDING_ENCODING</span><span class="p">)</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">SYMMETRIC</span><span class="p">)</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">DECONSTRUCT</span><span class="p">)</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">neighborhood_type</span><span class="p">)</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">EXPANDING_CARDINALITY_MAX</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SYNTACTIC</span><span class="p">:</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">TRANSITIVE</span><span class="p">)</span>
+
+        <span class="n">ctl</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="n">G</span><span class="o">.</span><span class="n">to_asp</span><span class="p">(</span><span class="n">atoms</span><span class="p">))</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="n">distances</span><span class="p">)</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;#const center={}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">center</span><span class="p">))</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;#const radius={}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">radius</span><span class="p">))</span>
+
+        <span class="c1">#if method == SEMANTIC:</span>
+        <span class="c1">#    ctl.add(&quot;base&quot;, [], &quot;#show tv/4.&quot;)</span>
+
+        <span class="n">ctl</span><span class="o">.</span><span class="n">ground</span><span class="p">([(</span><span class="s1">&#39;base&#39;</span><span class="p">,</span> <span class="p">[])])</span>
+
+        <span class="n">old_opt_value</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">answer_sets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ans</span> <span class="ow">in</span> <span class="n">ctl</span><span class="o">.</span><span class="n">solve_iter</span><span class="p">():</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">ans</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="n">gringo</span><span class="o">.</span><span class="n">Model</span><span class="o">.</span><span class="n">SHOWN</span><span class="p">))</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;OPTIMIZATION = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ans</span><span class="o">.</span><span class="n">optimization</span><span class="p">()))</span>
+            <span class="n">current_opt_value</span> <span class="o">=</span> <span class="n">ans</span><span class="o">.</span><span class="n">optimization</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">current_opt_value</span> <span class="o">!=</span> <span class="n">old_opt_value</span><span class="p">:</span>
+                <span class="n">old_opt_value</span> <span class="o">=</span> <span class="n">current_opt_value</span>
+                <span class="k">continue</span>
+            <span class="n">answer_sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ans</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="n">gringo</span><span class="o">.</span><span class="n">Model</span><span class="o">.</span><span class="n">SHOWN</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">answer_sets</span></div>
+
+
+<div class="viewcode-block" id="augmenting_iteration_maximal_answer_sets"><a class="viewcode-back" href="../../equibel.html#equibel.solver.augmenting_iteration_maximal_answer_sets">[docs]</a><span class="k">def</span> <span class="nf">augmenting_iteration_maximal_answer_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">distances</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">eccentricity</span><span class="p">):</span>
+    <span class="n">models</span> <span class="o">=</span> <span class="n">asprin</span><span class="o">.</span><span class="n">compute_optimal_models</span><span class="p">([</span><span class="n">AUGMENTING_ENCODING</span><span class="p">,</span> <span class="n">AUGMENTING_PREFERENCE</span><span class="p">,</span> <span class="n">DECONSTRUCT</span><span class="p">],</span>
+                                            <span class="p">[(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="n">G</span><span class="o">.</span><span class="n">to_asp</span><span class="p">()),</span>
+                                             <span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="n">distances</span><span class="p">),</span>
+                                             <span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;#const center={}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">center</span><span class="p">)),</span>
+                                             <span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;#const eccentricity={}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">eccentricity</span><span class="p">))])</span>
+    <span class="k">return</span> <span class="n">models</span></div>
+
+
+<div class="viewcode-block" id="maximal_answer_sets"><a class="viewcode-back" href="../../equibel.html#equibel.solver.maximal_answer_sets">[docs]</a><span class="k">def</span> <span class="nf">maximal_answer_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">SEMANTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">opt_type</span> <span class="o">==</span> <span class="n">INCLUSION</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SEMANTIC</span><span class="p">:</span>
+            <span class="n">answer_sets</span> <span class="o">=</span> <span class="n">asprin</span><span class="o">.</span><span class="n">compute_optimal_models</span><span class="p">([</span><span class="n">EQ_GLOBAL</span><span class="p">,</span> <span class="n">PREFERENCE_GLOBAL</span><span class="p">,</span> <span class="n">DECONSTRUCT</span><span class="p">],</span>
+                                                        <span class="p">[(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="n">G</span><span class="o">.</span><span class="n">to_asp</span><span class="p">()),</span>
+                                                         <span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;#show tv/3.&quot;</span><span class="p">)])</span>
+            <span class="k">return</span> <span class="n">answer_sets</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SYNTACTIC</span><span class="p">:</span>
+            <span class="n">ctl</span> <span class="o">=</span> <span class="n">gringo</span><span class="o">.</span><span class="n">Control</span><span class="p">()</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="s1">&#39;crafty&#39;</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">heuristic</span> <span class="o">=</span> <span class="s1">&#39;domain&#39;</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solve</span><span class="o">.</span><span class="n">enum_mode</span> <span class="o">=</span> <span class="s1">&#39;domRec&#39;</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solve</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">EQ_GLOBAL</span><span class="p">)</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">TRANSITIVE</span><span class="p">)</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">SYMMETRIC</span><span class="p">)</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">DECONSTRUCT</span><span class="p">)</span>
+
+            <span class="n">ctl</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="n">G</span><span class="o">.</span><span class="n">to_asp</span><span class="p">())</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">ground</span><span class="p">([(</span><span class="s1">&#39;base&#39;</span><span class="p">,</span> <span class="p">[])])</span>
+            <span class="n">answer_sets</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">ans</span> <span class="ow">in</span> <span class="n">ctl</span><span class="o">.</span><span class="n">solve_iter</span><span class="p">():</span>
+                <span class="n">answer_sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ans</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="n">gringo</span><span class="o">.</span><span class="n">Model</span><span class="o">.</span><span class="n">SHOWN</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">answer_sets</span>
+    <span class="k">elif</span> <span class="n">opt_type</span> <span class="o">==</span> <span class="n">CARDINALITY</span><span class="p">:</span>
+        <span class="n">ctl</span> <span class="o">=</span> <span class="n">gringo</span><span class="o">.</span><span class="n">Control</span><span class="p">()</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="s1">&#39;crafty&#39;</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">heuristic</span> <span class="o">=</span> <span class="s1">&#39;domain&#39;</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solve</span><span class="o">.</span><span class="n">opt_mode</span> <span class="o">=</span> <span class="s1">&#39;optN&#39;</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solve</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">EQ_GLOBAL</span><span class="p">)</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">SYMMETRIC</span><span class="p">)</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">DECONSTRUCT</span><span class="p">)</span>
+        <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">GLOBAL_CARDINALITY_MAX</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SYNTACTIC</span><span class="p">:</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">TRANSITIVE</span><span class="p">)</span>
+
+        <span class="n">ctl</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="n">G</span><span class="o">.</span><span class="n">to_asp</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SEMANTIC</span><span class="p">:</span>
+            <span class="n">ctl</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;#show tv/3.&quot;</span><span class="p">)</span>
+
+        <span class="n">ctl</span><span class="o">.</span><span class="n">ground</span><span class="p">([(</span><span class="s1">&#39;base&#39;</span><span class="p">,</span> <span class="p">[])])</span>
+
+        <span class="n">old_opt_value</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">answer_sets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ans</span> <span class="ow">in</span> <span class="n">ctl</span><span class="o">.</span><span class="n">solve_iter</span><span class="p">():</span>
+            <span class="n">current_opt_value</span> <span class="o">=</span> <span class="n">ans</span><span class="o">.</span><span class="n">optimization</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">current_opt_value</span> <span class="o">!=</span> <span class="n">old_opt_value</span><span class="p">:</span>
+                <span class="n">old_opt_value</span> <span class="o">=</span> <span class="n">current_opt_value</span>
+                <span class="k">continue</span>
+            <span class="n">answer_sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ans</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="n">gringo</span><span class="o">.</span><span class="n">Model</span><span class="o">.</span><span class="n">SHOWN</span><span class="p">))</span>
+    
+        <span class="k">return</span> <span class="n">answer_sets</span></div>
+
+
+
+<div class="viewcode-block" id="revise"><a class="viewcode-back" href="../../equibel.html#equibel.solver.revise">[docs]</a><span class="k">def</span> <span class="nf">revise</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Revises a knowledge base $K$ by a formula $\alpha$.</span>
+
+<span class="sd">    This function implements the consistency-based revision operator introduced in [?], by:</span>
+<span class="sd">        1. Constructing a two-node path graph 0 &lt;--&gt; 1; </span>
+<span class="sd">        2. Associating the formulas in $K$ with node 0, and the formula $\alpha$ with node 1;</span>
+<span class="sd">        3. Computing the new belief at node 1 by determining what parts of $K$ can be incorporated </span>
+<span class="sd">           while maintaining consistency with $\alpha$.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    K     : A formula string or a list of formula strings (taken conjunctively as a knowledge base)</span>
+<span class="sd">    alpha : A formula string or a list of formula strings (taken conjunctively)</span>
+<span class="sd">    simplify : A Boolean flag specifying whether to simplify the result of revision.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    R : A single formula representing the resultant knowledge base $K \dot{+} \alpha$, taken </span>
+<span class="sd">        conjunctively.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The simplest way to call this function is to provide a single formula for each of ``K`` </span>
+<span class="sd">    and ``alpha``:</span>
+
+<span class="sd">    &gt;&gt;&gt; eb.revise(&#39;p &amp; q&#39;, &#39;~p | ~q&#39;)</span>
+<span class="sd">    And(Or(And(Not(p), q), And(Not(q), p)), Or(Not(p), Not(q)))</span>
+
+<span class="sd">    To pretty-print formulas in infix notation with Unicode symbols, we can use:</span>
+
+<span class="sd">    &gt;&gt;&gt; eb.pprint(eb.revise(&#39;p &amp; q&#39;, &#39;~p | ~q&#39;))</span>
+
+<span class="sd">    Note that, by default, the formula representing the result of revision is not simplified.</span>
+<span class="sd">    Setting the optional argument ``simplify=True`` enables this final simplification step:</span>
+
+<span class="sd">    &gt;&gt;&gt; eb.revise(&#39;p &amp; q&#39;, &#39;~p | ~q&#39;, simplify=True)</span>
+<span class="sd">    Or(And(Not(p), q), And(Not(q), p))</span>
+
+<span class="sd">    The above revision is equivalent to the following form, using a list of formula strings </span>
+<span class="sd">    [&#39;p&#39;, &#39;q&#39;] (taken conjunctively) instead of the single formula string &#39;p &amp; q&#39;:</span>
+
+<span class="sd">    &gt;&gt;&gt; eb.revise([&#39;p&#39;, &#39;q&#39;], &#39;~p | ~q&#39;, simplify=True)</span>
+<span class="sd">    Or(And(Not(p), q), And(Not(q), p))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">K</span><span class="p">:</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">K</span><span class="p">)</span>
+
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">alpha</span><span class="p">:</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">to_asp</span><span class="p">())</span>
+    
+    <span class="n">atoms</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">atoms</span><span class="p">()</span>
+
+    <span class="n">eq_sets</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">ctl</span> <span class="o">=</span> <span class="n">gringo</span><span class="o">.</span><span class="n">Control</span><span class="p">()</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="s1">&#39;crafty&#39;</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">heuristic</span> <span class="o">=</span> <span class="s1">&#39;domain&#39;</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solve</span><span class="o">.</span><span class="n">enum_mode</span> <span class="o">=</span> <span class="s1">&#39;domRec&#39;</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solve</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">EQ_GLOBAL</span><span class="p">)</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">TRANSITIVE</span><span class="p">)</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">SYMMETRIC</span><span class="p">)</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">DECONSTRUCT</span><span class="p">)</span>
+
+    <span class="n">ctl</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="n">G</span><span class="o">.</span><span class="n">to_asp</span><span class="p">(</span><span class="n">atoms</span><span class="p">))</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">ground</span><span class="p">([(</span><span class="s1">&#39;base&#39;</span><span class="p">,</span> <span class="p">[])])</span>
+    <span class="n">answer_sets</span> <span class="o">=</span> <span class="n">ctl</span><span class="o">.</span><span class="n">solve_iter</span><span class="p">()</span>
+
+    <span class="c1">#num_answer_sets = 0</span>
+
+    <span class="k">for</span> <span class="n">answer_set</span> <span class="ow">in</span> <span class="n">answer_sets</span><span class="p">:</span>
+        <span class="c1">#num_answer_sets += 1</span>
+        <span class="n">current_eq_atoms</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">answer_set</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="n">gringo</span><span class="o">.</span><span class="n">Model</span><span class="o">.</span><span class="n">SHOWN</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;eq&#39;</span><span class="p">:</span>
+                <span class="n">atom_fun</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">args</span><span class="p">()</span>
+                <span class="n">atom</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="n">atom_fun</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+                <span class="n">current_eq_atoms</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+        <span class="n">eq_sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_eq_atoms</span><span class="p">)</span>
+    <span class="c1">#print(&quot;Found {} EQ sets&quot;.format(num_answer_sets))</span>
+    
+    <span class="n">disjuncts</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">eq_atoms</span> <span class="ow">in</span> <span class="n">eq_sets</span><span class="p">:</span>
+        <span class="n">conj</span> <span class="o">=</span> <span class="n">true</span>
+        <span class="n">diff_atoms</span> <span class="o">=</span> <span class="n">atoms</span> <span class="o">-</span> <span class="n">eq_atoms</span>
+        <span class="n">original_formula</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">translated_formula</span> <span class="o">=</span> <span class="n">original_formula</span><span class="o">.</span><span class="n">xreplace</span><span class="p">({</span><span class="n">x</span><span class="p">:</span> <span class="o">~</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">diff_atoms</span><span class="p">})</span>
+        <span class="n">conj</span> <span class="o">&amp;=</span> <span class="n">translated_formula</span>
+        <span class="n">disjuncts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">conj</span><span class="p">)</span>
+
+    <span class="n">resultant_formula</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">disjunction</span><span class="p">(</span><span class="n">disjuncts</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">simplify</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">eb</span><span class="o">.</span><span class="n">simplify_logic</span><span class="p">(</span><span class="n">resultant_formula</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">resultant_formula</span></div>
+
+
+<div class="viewcode-block" id="global_completion"><a class="viewcode-back" href="../../equibel.html#equibel.solver.global_completion">[docs]</a><span class="k">def</span> <span class="nf">global_completion</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">SEMANTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds the global completion of a graph and associated scenario.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : An EquibelGraph object, representing a graph and associated scenario</span>
+<span class="sd">    method : A string that is either &quot;semantic&quot; or &quot;syntactic&quot;, representing the </span>
+<span class="sd">             method by which to perform the completion; e.g. based on either the </span>
+<span class="sd">             syntactic or semantic characterizations.</span>
+<span class="sd">    opt_type : A string that is either &quot;inclusion&quot; or &quot;cardinality&quot;, </span>
+<span class="sd">               representing the type of maximization to be performed </span>
+<span class="sd">               over equivalences.</span>
+<span class="sd">    simplify : A Boolean flag specifying whether to simplify the final formulas at each node.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    R : A new EquibelGraph object, representing the global completion of ``G``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SEMANTIC</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">global_completion_semantic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="n">simplify</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SYNTACTIC</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">global_completion_syntactic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="n">simplify</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="global_completion_semantic"><a class="viewcode-back" href="../../equibel.html#equibel.solver.global_completion_semantic">[docs]</a><span class="k">def</span> <span class="nf">global_completion_semantic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds the global completion of a graph and associated scenario, using the </span>
+<span class="sd">    **semantic characterization**.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : An EquibelGraph object, representing a graph and associated scenario</span>
+<span class="sd">    opt_type : A string that is either &quot;inclusion&quot; or &quot;cardinality&quot;, representing </span>
+<span class="sd">               the type of maximization to be performed over equivalences.</span>
+<span class="sd">    simplify : A Boolean flag specifying whether to simplify the final formulas at each node.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    R : A new EquibelGraph object, representing the global completion of ``G``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">node_models</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+    <span class="n">node_model_dict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">models</span> <span class="o">=</span> <span class="n">maximal_answer_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">SEMANTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+        <span class="n">node_model_dict</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;tv&#39;</span><span class="p">:</span>
+                <span class="n">node</span><span class="p">,</span> <span class="n">atom_fun</span><span class="p">,</span> <span class="n">truth_value</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">args</span><span class="p">()</span>
+                <span class="n">atom</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="n">atom_fun</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">truth_value</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">node_model_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">node_model_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
+                <span class="n">node_models</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">(</span><span class="n">node_model_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># node has no models with true atoms</span>
+                <span class="n">node_models</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">())</span>
+
+    <span class="n">atoms</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">atoms</span><span class="p">()</span>
+    
+    <span class="n">R</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">R</span><span class="o">.</span><span class="n">clear_formulas</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_models</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">node_models</span><span class="p">[</span><span class="n">node</span><span class="p">])</span>
+        <span class="n">formula</span> <span class="o">=</span> <span class="n">formula_from_models</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">simplify</span><span class="p">:</span>
+            <span class="n">simple</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">simplify_logic</span><span class="p">(</span><span class="n">formula</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">simple</span> <span class="o">!=</span> <span class="bp">True</span><span class="p">:</span>
+                <span class="n">R</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">simple</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">R</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">formula</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">R</span></div>
+
+
+<div class="viewcode-block" id="create_eq_dicts"><a class="viewcode-back" href="../../equibel.html#equibel.solver.create_eq_dicts">[docs]</a><span class="k">def</span> <span class="nf">create_eq_dicts</span><span class="p">(</span><span class="n">answer_sets</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extracts ``eq/3`` predicates from a set of answer sets, and structures them into a </span>
+<span class="sd">    dictionary that makes it easy to retrieve the set of atoms on which two nodes agree.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    answer_sets : An iterable container of answer sets.</span>
+<span class="sd">                  Each answer set is represented as a list of *terms* (defined in the </span>
+<span class="sd">                  ``gringo`` module).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">eq_dicts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">answer_set</span> <span class="ow">in</span> <span class="n">answer_sets</span><span class="p">:</span>
+        <span class="n">current_eq_dict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">answer_set</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;eq&#39;</span><span class="p">:</span>
+                <span class="n">atom_fun</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">args</span><span class="p">()</span>
+                <span class="n">atom</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="n">atom_fun</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+                <span class="n">current_eq_dict</span><span class="p">[</span><span class="n">X</span><span class="p">][</span><span class="n">Y</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+        <span class="n">eq_dicts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_eq_dict</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">eq_dicts</span></div>
+
+
+<div class="viewcode-block" id="global_completion_syntactic"><a class="viewcode-back" href="../../equibel.html#equibel.solver.global_completion_syntactic">[docs]</a><span class="k">def</span> <span class="nf">global_completion_syntactic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds the global completion of a graph and associated scenario, using the </span>
+<span class="sd">    **syntactic characterization**.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : An EquibelGraph object, representing a graph and associated scenario</span>
+<span class="sd">    opt_type : A string that is either &quot;inclusion&quot; or &quot;cardinality&quot;, representing </span>
+<span class="sd">               the type of maximization to be performed over equivalences.</span>
+<span class="sd">    simplify : A Boolean flag specifying whether to simplify the final formulas at each node.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    R : A new EquibelGraph object, representing the global completion of ``G``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">atoms</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">atoms</span><span class="p">()</span>
+    <span class="n">answer_sets</span> <span class="o">=</span> <span class="n">maximal_answer_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">SYNTACTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+    <span class="n">eq_dicts</span> <span class="o">=</span> <span class="n">create_eq_dicts</span><span class="p">(</span><span class="n">answer_sets</span><span class="p">)</span>
+    
+    <span class="n">R</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">R</span><span class="o">.</span><span class="n">clear_formulas</span><span class="p">()</span>
+
+    <span class="n">disjuncts</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">eq_dict</span> <span class="ow">in</span> <span class="n">eq_dicts</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+            <span class="n">conj</span> <span class="o">=</span> <span class="n">true</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">j</span><span class="p">:</span>
+                    <span class="n">eq_atoms</span> <span class="o">=</span> <span class="n">eq_dict</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">diff_atoms</span> <span class="o">=</span> <span class="n">atoms</span> <span class="o">-</span> <span class="n">eq_atoms</span>
+                    <span class="n">original_formula</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    <span class="n">translated_formula</span> <span class="o">=</span> <span class="n">original_formula</span><span class="o">.</span><span class="n">xreplace</span><span class="p">({</span><span class="n">x</span><span class="p">:</span> <span class="o">~</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">diff_atoms</span><span class="p">})</span>
+                    <span class="n">conj</span> <span class="o">&amp;=</span> <span class="n">translated_formula</span>
+            <span class="n">disjuncts</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">conj</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="n">resultant_formula</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">disjunction</span><span class="p">(</span><span class="n">disjuncts</span><span class="p">[</span><span class="n">node</span><span class="p">])</span>
+        <span class="n">R</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">resultant_formula</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">R</span></div>
+
+
+<div class="viewcode-block" id="simple_semantic"><a class="viewcode-back" href="../../equibel.html#equibel.solver.simple_semantic">[docs]</a><span class="k">def</span> <span class="nf">simple_semantic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the formula for node ``center`` in graph ``G`` that results from </span>
+<span class="sd">    one iteration of the simple (fixed-radius) approach, using the *semantic characterization*.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : An EquibelGraph object, representing a graph and an associated scenario</span>
+<span class="sd">    center : A node in ``G`` for which to compute the result of simple iteration</span>
+<span class="sd">    atoms : A set of Sympy atomic propositions, representing the *alphabet*.</span>
+<span class="sd">    opt_type : A string that is either &quot;inclusion&quot; or &quot;cardinality&quot;, representing </span>
+<span class="sd">               the type of maximization to be performed over equivalences.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dist_str</span> <span class="o">=</span> <span class="n">create_distance_string</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">ecc</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">eccentricity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">)</span>
+
+    <span class="n">answer_sets</span> <span class="o">=</span> <span class="n">expanding_maximal_answer_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">dist_str</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span> <span class="n">neighborhood_type</span><span class="o">=</span><span class="n">USPT</span><span class="p">,</span>
+                                                <span class="n">method</span><span class="o">=</span><span class="n">SEMANTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+
+    <span class="n">center_models</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">node_model_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">answer_set</span> <span class="ow">in</span> <span class="n">answer_sets</span><span class="p">:</span>
+        <span class="n">current_eq_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">answer_set</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;tv&#39;</span><span class="p">:</span>
+                <span class="n">center_node</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">atom_fun</span><span class="p">,</span> <span class="n">truth_value</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">args</span><span class="p">()</span>
+                <span class="n">atom</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="n">atom_fun</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">center_node</span> <span class="o">==</span> <span class="n">node</span><span class="p">:</span>
+                    <span class="n">node_model_dict</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">=</span> <span class="n">truth_value</span>
+
+        <span class="n">true_atoms</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="n">atom</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">node_model_dict</span> <span class="k">if</span> <span class="n">node_model_dict</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">center_models</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">true_atoms</span><span class="p">)</span>
+    
+    <span class="n">formula</span> <span class="o">=</span> <span class="n">formula_from_models</span><span class="p">(</span><span class="n">center_models</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">center</span><span class="p">:</span> <span class="n">formula</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="simple_syntactic"><a class="viewcode-back" href="../../equibel.html#equibel.solver.simple_syntactic">[docs]</a><span class="k">def</span> <span class="nf">simple_syntactic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the formula for node ``center`` in graph ``G`` that results from </span>
+<span class="sd">    one iteration of the simple (fixed-radius) approach, using the *syntactic characterization*.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : An EquibelGraph object, representing a graph and an associated scenario</span>
+<span class="sd">    center : A node in ``G`` for which to compute the result of simple iteration</span>
+<span class="sd">    atoms : A set of Sympy atomic propositions, representing the *alphabet*.</span>
+<span class="sd">    opt_type : A string that is either &quot;inclusion&quot; or &quot;cardinality&quot;, representing </span>
+<span class="sd">               the type of maximization to be performed over equivalences.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dist_str</span> <span class="o">=</span> <span class="n">create_distance_string</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">ecc</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">eccentricity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">)</span>
+
+    <span class="n">eq_sets</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">answer_sets</span> <span class="o">=</span> <span class="n">expanding_maximal_answer_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">dist_str</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span> <span class="n">neighborhood_type</span><span class="o">=</span><span class="n">USPT</span><span class="p">,</span>
+                                                <span class="n">method</span><span class="o">=</span><span class="n">SYNTACTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">answer_set</span> <span class="ow">in</span> <span class="n">answer_sets</span><span class="p">:</span>
+        <span class="c1"># current_eq_set is a mapping like current_eq_set[2] = {p,q,r}, </span>
+        <span class="c1"># current_eq_set[3] = {p,q}, all with respect to a given node (e.g. node 1)</span>
+        <span class="n">current_eq_set</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">answer_set</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;eq&#39;</span><span class="p">:</span>
+                <span class="n">center_node</span><span class="p">,</span> <span class="n">atom_fun</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">args</span><span class="p">()</span>
+                <span class="n">atom</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="n">atom_fun</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">center_node</span> <span class="o">==</span> <span class="n">X</span><span class="p">:</span>
+                    <span class="n">current_eq_set</span><span class="p">[</span><span class="n">Y</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+
+        <span class="n">eq_sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_eq_set</span><span class="p">)</span>
+
+    <span class="n">formula</span> <span class="o">=</span> <span class="n">formula_from_eq_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">eq_sets</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">center</span><span class="p">:</span> <span class="n">formula</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="only_one_model_for_each_eq_set"><a class="viewcode-back" href="../../equibel.html#equibel.solver.only_one_model_for_each_eq_set">[docs]</a><span class="k">def</span> <span class="nf">only_one_model_for_each_eq_set</span><span class="p">(</span><span class="n">models_for_eq_set_dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Checks whether each EQ set in ``models_for_eq_set_dict`` is associated with </span>
+<span class="sd">    *only one* model.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    models_for_eq_set_dict : A dictionary where *keys* are EQ sets (represented by any </span>
+<span class="sd">                             hashable objects, in this case strings) and *values* are </span>
+<span class="sd">                             sets of models (where each model is a set of atoms).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Returns True if each EQ set in the dictionary is associated with a single model; </span>
+<span class="sd">    returns False otherwise (that is, if any EQ set in the dictionary is associated </span>
+<span class="sd">    with *more than* one model).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">eq_set</span> <span class="ow">in</span> <span class="n">models_for_eq_set_dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">models_for_eq_set_dict</span><span class="p">[</span><span class="n">eq_set</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+    <span class="k">return</span> <span class="bp">True</span></div>
+
+
+<div class="viewcode-block" id="expanding_semantic"><a class="viewcode-back" href="../../equibel.html#equibel.solver.expanding_semantic">[docs]</a><span class="k">def</span> <span class="nf">expanding_semantic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the formula for node ``center`` in graph ``G`` that results from </span>
+<span class="sd">    one iteration of the expanding approach, using the *semantic characterization*.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : An ``EquibelGraph`` object, representing a graph and an associated scenario</span>
+<span class="sd">    center : A node in ``G`` for which to compute the result of simple iteration</span>
+<span class="sd">    atoms : A set of Sympy atomic propositions, representing the *alphabet*.</span>
+<span class="sd">    opt_type : A string that is either &quot;inclusion&quot; or &quot;cardinality&quot;, representing </span>
+<span class="sd">               the type of maximization to be performed over equivalences.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dist_str</span> <span class="o">=</span> <span class="n">create_distance_string</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">ecc</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">eccentricity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">)</span>
+
+    <span class="c1">#print(&quot;CENTER = {}&quot;.format(center))</span>
+    <span class="c1">#print(&quot;Eccentricity = {}&quot;.format(ecc))</span>
+
+    <span class="k">for</span> <span class="n">radius</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ecc</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1">#print(&quot;RADIUS = {}&quot;.format(radius))</span>
+        <span class="c1">#print(G.to_asp(atoms))</span>
+
+        <span class="n">center_models</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">models</span> <span class="o">=</span> <span class="n">expanding_maximal_answer_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">dist_str</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span>
+                                               <span class="n">method</span><span class="o">=</span><span class="n">SEMANTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+        <span class="n">node_model_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">models_for_eq_set_dict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+            <span class="n">current_eq_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;tv&#39;</span><span class="p">:</span>
+                    <span class="n">center_node</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">atom_fun</span><span class="p">,</span> <span class="n">truth_value</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">args</span><span class="p">()</span>
+                    <span class="n">atom</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="n">atom_fun</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="n">center_node</span> <span class="o">==</span> <span class="n">node</span><span class="p">:</span>
+                        <span class="n">node_model_dict</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">=</span> <span class="n">truth_value</span>
+                <span class="k">elif</span> <span class="n">term</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;eq&#39;</span><span class="p">:</span>
+                    <span class="n">current_eq_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">term</span><span class="p">))</span>
+
+            <span class="n">true_atoms</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="n">atom</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">node_model_dict</span> <span class="k">if</span> <span class="n">node_model_dict</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">center_models</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">true_atoms</span><span class="p">)</span>
+            <span class="n">models_for_eq_set_dict</span><span class="p">[</span><span class="nb">frozenset</span><span class="p">(</span><span class="n">current_eq_set</span><span class="p">)]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">true_atoms</span><span class="p">)</span>
+
+        <span class="n">mid_formula</span> <span class="o">=</span> <span class="n">formula_from_models</span><span class="p">(</span><span class="n">center_models</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">clear_formulas_from</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">mid_formula</span><span class="p">)</span>
+
+        <span class="c1"># Early stopping condition:</span>
+        <span class="k">if</span> <span class="n">only_one_model_for_each_eq_set</span><span class="p">(</span><span class="n">models_for_eq_set_dict</span><span class="p">):</span>
+            <span class="k">break</span>
+
+    <span class="n">formula</span> <span class="o">=</span> <span class="n">formula_from_models</span><span class="p">(</span><span class="n">center_models</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">center</span><span class="p">:</span> <span class="n">formula</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="expanding_syntactic"><a class="viewcode-back" href="../../equibel.html#equibel.solver.expanding_syntactic">[docs]</a><span class="k">def</span> <span class="nf">expanding_syntactic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the formula for node ``center`` in graph ``G`` that results from </span>
+<span class="sd">    one iteration of the expanding approach, using the *syntactic characterization*.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : An ``EquibelGraph`` object, representing a graph and an associated scenario</span>
+<span class="sd">    center : A node in ``G`` for which to compute the result of simple iteration</span>
+<span class="sd">    atoms : A set of Sympy atomic propositions, representing the *alphabet*.</span>
+<span class="sd">    opt_type : A string that is either &quot;inclusion&quot; or &quot;cardinality&quot;, representing </span>
+<span class="sd">               the type of maximization to be performed over equivalences.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dist_str</span> <span class="o">=</span> <span class="n">create_distance_string</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">ecc</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">eccentricity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">)</span>
+
+    <span class="c1">#print(&quot;CENTER = {}&quot;.format(center))</span>
+    <span class="c1">#print(&quot;Eccentricity = {}&quot;.format(ecc))</span>
+
+    <span class="k">for</span> <span class="n">radius</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ecc</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">eq_sets</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1">#print(&quot;RADIUS = {}&quot;.format(radius))</span>
+        <span class="c1">#print(G.to_asp(atoms))</span>
+
+        <span class="n">answer_sets</span> <span class="o">=</span> <span class="n">expanding_maximal_answer_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">dist_str</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span>
+                                               <span class="n">method</span><span class="o">=</span><span class="n">SYNTACTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">answer_set</span> <span class="ow">in</span> <span class="n">answer_sets</span><span class="p">:</span>
+            <span class="n">current_eq_set</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span> <span class="c1"># mapping like current_eq_set[2] = {p,q,r}, current_eq_set[3] = {p,q}, all for node 1</span>
+            <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">answer_set</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;eq&#39;</span><span class="p">:</span>
+                    <span class="n">center_node</span><span class="p">,</span> <span class="n">atom_fun</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">args</span><span class="p">()</span>
+                    <span class="n">atom</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="n">atom_fun</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="n">center_node</span> <span class="o">==</span> <span class="n">X</span><span class="p">:</span>
+                        <span class="n">current_eq_set</span><span class="p">[</span><span class="n">Y</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+            <span class="n">eq_sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_eq_set</span><span class="p">)</span>
+
+        <span class="n">mid_formula</span> <span class="o">=</span> <span class="n">formula_from_eq_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">eq_sets</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">clear_formulas_from</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">mid_formula</span><span class="p">)</span>
+
+    <span class="n">final_formula</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">center</span><span class="p">:</span> <span class="n">final_formula</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="formula_from_eq_sets"><a class="viewcode-back" href="../../equibel.html#equibel.solver.formula_from_eq_sets">[docs]</a><span class="k">def</span> <span class="nf">formula_from_eq_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">current_node</span><span class="p">,</span> <span class="n">eq_sets</span><span class="p">,</span> <span class="n">atoms</span><span class="p">):</span>
+    <span class="n">disjuncts</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">eq_set</span> <span class="ow">in</span> <span class="n">eq_sets</span><span class="p">:</span>
+        <span class="n">conj</span> <span class="o">=</span> <span class="n">true</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">eq_set</span><span class="p">:</span>
+            <span class="n">eq_atoms</span> <span class="o">=</span> <span class="n">eq_set</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+            <span class="n">diff_atoms</span> <span class="o">=</span> <span class="n">atoms</span> <span class="o">-</span> <span class="n">eq_atoms</span>
+            <span class="n">original_formula</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="n">translated_formula</span> <span class="o">=</span> <span class="n">original_formula</span><span class="o">.</span><span class="n">xreplace</span><span class="p">({</span><span class="n">x</span><span class="p">:</span> <span class="o">~</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">diff_atoms</span><span class="p">})</span>
+            <span class="n">conj</span> <span class="o">&amp;=</span> <span class="n">translated_formula</span>
+        <span class="n">disjuncts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">conj</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="n">current_node</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">disjunction</span><span class="p">(</span><span class="n">disjuncts</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="simplify_all_formulas"><a class="viewcode-back" href="../../equibel.html#equibel.solver.simplify_all_formulas">[docs]</a><span class="k">def</span> <span class="nf">simplify_all_formulas</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Simplifies the formulas of all nodes in ``G``.</span>
+
+<span class="sd">    This function modifies ``G`` in place; it does **not** return a new graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : An ``EquibelGraph`` object.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; G = eb.path_graph(2)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_formula(0, &#39;p &amp; (p | q | r | s)&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_formula(1, &#39;(p &amp; q) | (p &amp; ~q)&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; eb.simplify_all_formulas(G)</span>
+<span class="sd">    &gt;&gt;&gt; G.formulas()</span>
+<span class="sd">    {0: set([p]), 1: set([p])}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="n">formula</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="n">simplified_formula</span> <span class="o">=</span> <span class="n">simplify_logic</span><span class="p">(</span><span class="n">formula</span><span class="p">)</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">clear_formulas_from</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">simplified_formula</span> <span class="o">!=</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">simplified_formula</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="iterate_function_fixpoint"><a class="viewcode-back" href="../../equibel.html#equibel.solver.iterate_function_fixpoint">[docs]</a><span class="k">def</span> <span class="nf">iterate_function_fixpoint</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">iteration_function</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">SEMANTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds the fixpoint of ``iteration_function`` applied on the graph ``G``.</span>
+
+<span class="sd">    This is a higher-order function that repeatedly applies a *function* ``iteration_function``, </span>
+<span class="sd">    starting with the initial graph ``G``, producing a sequence of ``EquibelGraph`` objects, </span>
+<span class="sd">    until reaching a state where the current ``EquibelGraph`` is equal to the previous one; then, </span>
+<span class="sd">    the final ``EquibelGraph`` is returned.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : An ``EquibelGraph`` object</span>
+<span class="sd">    iteration_function : The function to be applied iteratively, starting with ``G``</span>
+<span class="sd">    method : A string that is either &quot;semantic&quot; or &quot;syntactic&quot;, representing the </span>
+<span class="sd">             method by which to perform the completion; e.g. based on either the </span>
+<span class="sd">             syntactic or semantic characterizations.</span>
+<span class="sd">    opt_type : A string that is either &quot;inclusion&quot; or &quot;cardinality&quot;, </span>
+<span class="sd">               representing the type of maximization to be performed </span>
+<span class="sd">               over equivalences.</span>
+<span class="sd">    simplify : A Boolean flag specifying whether to simplify the final formulas at each node.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">old_R</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">G</span>
+
+    <span class="n">num_iterations</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">R</span> <span class="o">!=</span> <span class="n">old_R</span><span class="p">:</span>
+        <span class="n">num_iterations</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">old_R</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">iteration_function</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="n">simplify</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">R</span><span class="p">,</span> <span class="n">num_iterations</span></div>
+
+
+<div class="viewcode-block" id="iterate_expanding_fixpoint"><a class="viewcode-back" href="../../equibel.html#equibel.solver.iterate_expanding_fixpoint">[docs]</a><span class="k">def</span> <span class="nf">iterate_expanding_fixpoint</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">SEMANTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds the fixpoint of *expanding iteration* with respect the graph ``G``.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">iterate_function_fixpoint</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">iterate_expanding</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="n">simplify</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="iterate_augmenting_fixpoint"><a class="viewcode-back" href="../../equibel.html#equibel.solver.iterate_augmenting_fixpoint">[docs]</a><span class="k">def</span> <span class="nf">iterate_augmenting_fixpoint</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">SEMANTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds the fixpoint of *augmenting iteration* with respect the graph ``G``.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">iterate_function_fixpoint</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">iterate_augmenting</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="n">simplify</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="iterate_simple_fixpoint"><a class="viewcode-back" href="../../equibel.html#equibel.solver.iterate_simple_fixpoint">[docs]</a><span class="k">def</span> <span class="nf">iterate_simple_fixpoint</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">SEMANTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds the fixpoint of *simple iteration* with respect the graph ``G``.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">iterate_function_fixpoint</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">iterate_simple</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="n">simplify</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="iterate_ring_fixpoint"><a class="viewcode-back" href="../../equibel.html#equibel.solver.iterate_ring_fixpoint">[docs]</a><span class="k">def</span> <span class="nf">iterate_ring_fixpoint</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">SEMANTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds the fixpoint of the *ring method* with respect to the graph ``G``.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">iterate_function_fixpoint</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">iterate_ring</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="n">simplify</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="iterate_expanding"><a class="viewcode-back" href="../../equibel.html#equibel.solver.iterate_expanding">[docs]</a><span class="k">def</span> <span class="nf">iterate_expanding</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">SEMANTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SEMANTIC</span><span class="p">:</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">parallel_iteration</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">expanding_semantic</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SYNTACTIC</span><span class="p">:</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">parallel_iteration</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">expanding_syntactic</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">simplify</span><span class="p">:</span>
+        <span class="n">simplify_all_formulas</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">R</span></div>
+
+
+<div class="viewcode-block" id="iterate_simple"><a class="viewcode-back" href="../../equibel.html#equibel.solver.iterate_simple">[docs]</a><span class="k">def</span> <span class="nf">iterate_simple</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">SEMANTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SEMANTIC</span><span class="p">:</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">parallel_iteration</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">simple_semantic</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SYNTACTIC</span><span class="p">:</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">parallel_iteration</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">simple_syntactic</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">simplify</span><span class="p">:</span>
+        <span class="n">simplify_all_formulas</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">R</span></div>
+
+
+<div class="viewcode-block" id="iterate_augmenting"><a class="viewcode-back" href="../../equibel.html#equibel.solver.iterate_augmenting">[docs]</a><span class="k">def</span> <span class="nf">iterate_augmenting</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">SEMANTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SEMANTIC</span><span class="p">:</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">parallel_iteration</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">augmenting_semantic</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SYNTACTIC</span><span class="p">:</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">parallel_iteration</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">augmenting_syntactic</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">simplify</span><span class="p">:</span>
+        <span class="n">simplify_all_formulas</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">R</span></div>
+
+
+<div class="viewcode-block" id="iterate_ring"><a class="viewcode-back" href="../../equibel.html#equibel.solver.iterate_ring">[docs]</a><span class="k">def</span> <span class="nf">iterate_ring</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">SEMANTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SEMANTIC</span><span class="p">:</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">parallel_iteration</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">ring_semantic</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SYNTACTIC</span><span class="p">:</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">parallel_iteration</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">ring_syntactic</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">simplify</span><span class="p">:</span>
+        <span class="n">simplify_all_formulas</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">R</span></div>
+
+
+<div class="viewcode-block" id="augmenting_semantic"><a class="viewcode-back" href="../../equibel.html#equibel.solver.augmenting_semantic">[docs]</a><span class="k">def</span> <span class="nf">augmenting_semantic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">):</span>
+    <span class="n">dist_str</span> <span class="o">=</span> <span class="n">create_distance_string</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">ecc</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">eccentricity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">)</span>
+
+    <span class="n">center_models</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">models</span> <span class="o">=</span> <span class="n">augmenting_iteration_maximal_answer_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">dist_str</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">ecc</span><span class="p">)</span>
+    <span class="n">node_model_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;tv&#39;</span><span class="p">:</span>
+                <span class="n">center_node</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">atom_fun</span><span class="p">,</span> <span class="n">truth_value</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">args</span><span class="p">()</span>
+                <span class="n">atom</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="n">atom_fun</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">center_node</span> <span class="o">==</span> <span class="n">node</span><span class="p">:</span>
+                    <span class="n">node_model_dict</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">=</span> <span class="n">truth_value</span>
+
+        <span class="n">true_atoms</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="n">atom</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">node_model_dict</span> <span class="k">if</span> <span class="n">node_model_dict</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">center_models</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">true_atoms</span><span class="p">)</span>
+
+    <span class="n">formula</span> <span class="o">=</span> <span class="n">formula_from_models</span><span class="p">(</span><span class="n">center_models</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">center</span><span class="p">:</span> <span class="n">formula</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="augmenting_syntactic"><a class="viewcode-back" href="../../equibel.html#equibel.solver.augmenting_syntactic">[docs]</a><span class="k">def</span> <span class="nf">augmenting_syntactic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">):</span>
+    <span class="n">dist_str</span> <span class="o">=</span> <span class="n">create_distance_string</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">ecc</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">eccentricity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">)</span>
+
+    <span class="n">answer_sets</span> <span class="o">=</span> <span class="n">augmenting_iteration_maximal_answer_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">dist_str</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">ecc</span><span class="p">)</span>
+
+    <span class="n">eq_sets</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">answer_set</span> <span class="ow">in</span> <span class="n">answer_sets</span><span class="p">:</span>
+        <span class="n">current_eq_set</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">answer_set</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;eq&#39;</span><span class="p">:</span>
+                <span class="n">center_node</span><span class="p">,</span> <span class="n">atom_fun</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">args</span><span class="p">()</span>
+                <span class="n">atom</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="n">atom_fun</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">center_node</span> <span class="o">==</span> <span class="n">X</span><span class="p">:</span>
+                    <span class="n">current_eq_set</span><span class="p">[</span><span class="n">Y</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+
+        <span class="c1">#print(&quot;CURRENT EQ SET = {}&quot;.format(current_eq_set))</span>
+        <span class="n">eq_sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_eq_set</span><span class="p">)</span>
+
+    <span class="c1">#print(&quot;ALL EQ SETS AT RADIUS {} = {}&quot;.format(radius, eq_sets))</span>
+
+    <span class="n">formula</span> <span class="o">=</span> <span class="n">formula_from_eq_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">eq_sets</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">center</span><span class="p">:</span> <span class="n">formula</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="ring_semantic"><a class="viewcode-back" href="../../equibel.html#equibel.solver.ring_semantic">[docs]</a><span class="k">def</span> <span class="nf">ring_semantic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">):</span>
+    <span class="n">dist_str</span> <span class="o">=</span> <span class="n">create_distance_string</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">ecc</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">eccentricity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">)</span>
+
+    <span class="n">iteration_model_sets</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">radius</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ecc</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">center_models</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">models</span> <span class="o">=</span> <span class="n">expanding_maximal_answer_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">dist_str</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span> <span class="n">neighborhood_type</span><span class="o">=</span><span class="n">RING</span><span class="p">,</span> 
+                                               <span class="n">method</span><span class="o">=</span><span class="n">SEMANTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+        <span class="n">node_model_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;tv&#39;</span><span class="p">:</span>
+                    <span class="n">center_node</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">atom_fun</span><span class="p">,</span> <span class="n">truth_value</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">args</span><span class="p">()</span>
+                    <span class="n">atom</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="n">atom_fun</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="n">center_node</span> <span class="o">==</span> <span class="n">node</span><span class="p">:</span>
+                        <span class="n">node_model_dict</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">=</span> <span class="n">truth_value</span>
+
+            <span class="n">true_atoms</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="n">atom</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">node_model_dict</span> <span class="k">if</span> <span class="n">node_model_dict</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">center_models</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">true_atoms</span><span class="p">)</span>
+
+        <span class="n">iteration_model_sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">(</span><span class="n">center_models</span><span class="p">))</span>
+
+        <span class="n">mid_formula</span> <span class="o">=</span> <span class="n">formula_from_models</span><span class="p">(</span><span class="n">center_models</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">clear_formulas_from</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">mid_formula</span><span class="p">)</span>
+
+    <span class="n">formula</span> <span class="o">=</span> <span class="n">formula_from_models</span><span class="p">(</span><span class="n">center_models</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span>
+    <span class="n">simplified_formula</span> <span class="o">=</span> <span class="n">simplify_logic</span><span class="p">(</span><span class="n">formula</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">center</span><span class="p">:</span> <span class="n">simplified_formula</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="ring_syntactic"><a class="viewcode-back" href="../../equibel.html#equibel.solver.ring_syntactic">[docs]</a><span class="k">def</span> <span class="nf">ring_syntactic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">):</span>
+    <span class="n">dist_str</span> <span class="o">=</span> <span class="n">create_distance_string</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">ecc</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">eccentricity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">)</span>
+
+    <span class="c1">#print(&quot;CENTER = {}&quot;.format(center))</span>
+    <span class="c1">#print(&quot;Eccentricity = {}&quot;.format(ecc))</span>
+
+    <span class="k">for</span> <span class="n">radius</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ecc</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">eq_sets</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1">#print(&quot;RADIUS = {}&quot;.format(radius))</span>
+        <span class="c1">#print(G.to_asp(atoms))</span>
+
+        <span class="n">answer_sets</span> <span class="o">=</span> <span class="n">expanding_maximal_answer_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">dist_str</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span> <span class="n">neighborhood_type</span><span class="o">=</span><span class="n">RING</span><span class="p">,</span>
+                                               <span class="n">method</span><span class="o">=</span><span class="n">SYNTACTIC</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">answer_set</span> <span class="ow">in</span> <span class="n">answer_sets</span><span class="p">:</span>
+            <span class="c1"># current_eq_set is a mapping like current_eq_set[2] = {p,q,r}, </span>
+            <span class="c1"># current_eq_set[3] = {p,q}, all with respect to a given node (e.g. node 1)</span>
+            <span class="n">current_eq_set</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">answer_set</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;eq&#39;</span><span class="p">:</span>
+                    <span class="n">center_node</span><span class="p">,</span> <span class="n">atom_fun</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">args</span><span class="p">()</span>
+                    <span class="n">atom</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="n">atom_fun</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="n">center_node</span> <span class="o">==</span> <span class="n">X</span><span class="p">:</span>
+                        <span class="n">current_eq_set</span><span class="p">[</span><span class="n">Y</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+
+            <span class="c1">#print(&quot;CURRENT EQ SET = {}&quot;.format(current_eq_set))</span>
+            <span class="n">eq_sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_eq_set</span><span class="p">)</span>
+
+        <span class="c1">#print(&quot;ALL EQ SETS AT RADIUS {} = {}&quot;.format(radius, eq_sets))</span>
+
+        <span class="n">mid_formula</span> <span class="o">=</span> <span class="n">formula_from_eq_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">eq_sets</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">clear_formulas_from</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">mid_formula</span><span class="p">)</span>
+
+    <span class="n">final_formula</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">center</span><span class="p">:</span> <span class="n">final_formula</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="serial_iteration"><a class="viewcode-back" href="../../equibel.html#equibel.solver.serial_iteration">[docs]</a><span class="k">def</span> <span class="nf">serial_iteration</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">iteration_function</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Applies ``iteration_function`` over all nodes in ``G`` in a *serial fashion* (i.e. one </span>
+<span class="sd">    node at a time).</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : An EquibelGraph object</span>
+<span class="sd">    iteration_function : A function that conforms to the following input/output interface: </span>
+<span class="sd">                         **Input:** Takes a graph ``G``, a node ``center`` for which to compute </span>
+<span class="sd">                                    the results of the iteration, and a set of ``atoms``.</span>
+<span class="sd">                         **Output:** Returns a singleton dictionary of the form ``{ center: formula }``</span>
+<span class="sd">                                     mapping the node ``center`` to a formula resulting from the iteration.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">atoms</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">atoms</span><span class="p">()</span>
+    <span class="n">final_formula_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">center</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">iteration_function</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="n">center</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+        <span class="n">final_formula_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="n">R</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">R</span><span class="o">.</span><span class="n">clear_formulas</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">final_formula_dict</span><span class="p">:</span>
+        <span class="n">R</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">final_formula_dict</span><span class="p">[</span><span class="n">node</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">R</span></div>
+
+
+<div class="viewcode-block" id="parallel_iteration"><a class="viewcode-back" href="../../equibel.html#equibel.solver.parallel_iteration">[docs]</a><span class="k">def</span> <span class="nf">parallel_iteration</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">iteration_function</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Applies ``iteration_function`` over all nodes in ``G`` *in parallel* (using process pools).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : An EquibelGraph object</span>
+<span class="sd">    iteration_function : A function that conforms to the following input/output interface: </span>
+<span class="sd">                         **Input:** Takes a graph ``G``, a node ``center`` for which to compute </span>
+<span class="sd">                                    the results of the iteration, and a set of ``atoms``.</span>
+<span class="sd">                         **Output:** Returns a singleton dictionary of the form ``{ center: formula }``</span>
+<span class="sd">                                     mapping the node ``center`` to a formula resulting from the iteration.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">atoms</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">atoms</span><span class="p">()</span>
+
+    <span class="c1"># Using &quot;processes=None&quot; results in as many processes being created as </span>
+    <span class="c1"># there are cores (real or virtual) on the current machine.</span>
+    <span class="n">pool</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">pool</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">iteration_function</span><span class="p">,</span> <span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">atoms</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;opt_type&quot;</span><span class="p">:</span> <span class="n">opt_type</span><span class="p">})</span> <span class="k">for</span> <span class="n">center</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()]</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+    <span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+    <span class="n">final_formula_dict</span> <span class="o">=</span> <span class="n">merge_dicts</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+    <span class="n">R</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">R</span><span class="o">.</span><span class="n">clear_formulas</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">final_formula_dict</span><span class="p">:</span>
+        <span class="n">R</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">final_formula_dict</span><span class="p">[</span><span class="n">node</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">R</span></div>
+
+
+<div class="viewcode-block" id="merge_dicts"><a class="viewcode-back" href="../../equibel.html#equibel.solver.merge_dicts">[docs]</a><span class="k">def</span> <span class="nf">merge_dicts</span><span class="p">(</span><span class="n">dictionaries</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Merges multiple separate dictionaries into a single dictionary.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dictionaries : An iterable container of Python dictionaries.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    merged : A single dictionary that represents the result of merging the all the </span>
+<span class="sd">             dicts in ``dictionaries``.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    The primary purpose of this function is to create a single dictionary </span>
+<span class="sd">    by combining multiple singleton dictionaries, as shown in the following example:</span>
+
+<span class="sd">    &gt;&gt;&gt; dicts = [{&#39;a&#39;: 1}, {&#39;b&#39;: 2}, {&#39;c&#39;: 3}]</span>
+<span class="sd">    &gt;&gt;&gt; eb.merge_dicts(dicts)</span>
+<span class="sd">    {&#39;a&#39;: 1, &#39;c&#39;: 3, &#39;b&#39;: 2}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">merged</span> <span class="o">=</span> <span class="n">dictionaries</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dictionaries</span><span class="p">)):</span>
+        <span class="n">merged</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dictionaries</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">merged</span></div>
+
+
+<div class="viewcode-block" id="print_formulas"><a class="viewcode-back" href="../../equibel.html#equibel.solver.print_formulas">[docs]</a><span class="k">def</span> <span class="nf">print_formulas</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Pretty-prints the formulas associated with nodes in ``G``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : An ``EquibelGraph`` object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Node {}:&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+        <span class="n">pprint</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_distance_string"><a class="viewcode-back" href="../../equibel.html#equibel.solver.create_distance_string">[docs]</a><span class="k">def</span> <span class="nf">create_distance_string</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a string containing the ASP encoding of the shortest-path </span>
+<span class="sd">    distances between all pairs of nodes in ``G``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : An EquibelGraph object.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dist_str : A string containing ``dist/3`` predicates, where ``dist(x,y,d)``</span>
+<span class="sd">               represents that the distance between nodes ``x`` and ``y`` is ``d``.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; G = eb.path_graph(3)</span>
+<span class="sd">    &gt;&gt;&gt; print(eb.create_distance_string(G))</span>
+<span class="sd">    dist(0,0,0).</span>
+<span class="sd">    dist(0,1,1).</span>
+<span class="sd">    dist(0,2,2).</span>
+<span class="sd">    dist(1,0,1).</span>
+<span class="sd">    dist(1,1,0).</span>
+<span class="sd">    dist(1,2,1).</span>
+<span class="sd">    dist(2,0,2).</span>
+<span class="sd">    dist(2,1,1).</span>
+<span class="sd">    dist(2,2,0).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dist_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">lengths</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">all_pairs_shortest_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">node1</span> <span class="ow">in</span> <span class="n">lengths</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">node2</span> <span class="ow">in</span> <span class="n">lengths</span><span class="p">[</span><span class="n">node1</span><span class="p">]:</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">lengths</span><span class="p">[</span><span class="n">node1</span><span class="p">][</span><span class="n">node2</span><span class="p">]</span>
+            <span class="n">dist_str</span> <span class="o">+=</span> <span class="s2">&quot;dist({0},{1},{2}).</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">,</span> <span class="n">dist</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dist_str</span></div>
+
+
+<div class="viewcode-block" id="formula_from_models"><a class="viewcode-back" href="../../equibel.html#equibel.solver.formula_from_models">[docs]</a><span class="k">def</span> <span class="nf">formula_from_models</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">alphabet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a formula in disjunctive normal form (DNF) given a set of models </span>
+<span class="sd">    and an alphabet.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    models   : An iterable container (set, list, etc.) of *sets of atoms*, where </span>
+<span class="sd">               an atom is represented by a Sympy symbol</span>
+<span class="sd">    alphabet : An iterable container of atoms, represented by Sympy symbols</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; p,q,r,s = [eb.parse_formula(f) for f in &quot;pqrs&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; alphabet = [p,q,r,s]</span>
+<span class="sd">    &gt;&gt;&gt; models = [{p,q}]</span>
+<span class="sd">    &gt;&gt;&gt; eb.formula_from_models(models, alphabet)</span>
+<span class="sd">    And(Not(r), Not(s), p, q)</span>
+
+<span class="sd">    &gt;&gt;&gt; models = [{p,q}, {p}]</span>
+<span class="sd">    &gt;&gt;&gt; eb.formula_from_models(models, alphabet)</span>
+<span class="sd">    Or(And(Not(q), Not(r), Not(s), p), And(Not(r), Not(s), p, q))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">conjuncts</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+        <span class="n">conj</span> <span class="o">=</span> <span class="n">true</span>
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">alphabet</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
+                <span class="n">conj</span> <span class="o">&amp;=</span> <span class="n">atom</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">conj</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="n">atom</span>
+        <span class="n">conjuncts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">conj</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">disjunction</span><span class="p">(</span><span class="n">conjuncts</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="conjunction"><a class="viewcode-back" href="../../equibel.html#equibel.solver.conjunction">[docs]</a><span class="k">def</span> <span class="nf">conjunction</span><span class="p">(</span><span class="n">formulas</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the conjunction of a set of propositional formulas.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    formulas : an iterable container of Sympy formulas</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; formulas = [eb.parse_formula(s) for s in &quot;pqrst&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; formulas</span>
+<span class="sd">    [p, q, r, s, t]</span>
+<span class="sd">    &gt;&gt;&gt; eb.conjunction(formulas)</span>
+<span class="sd">    And(p, q, r, s, t)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">And</span><span class="p">(</span><span class="o">*</span><span class="n">formulas</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="disjunction"><a class="viewcode-back" href="../../equibel.html#equibel.solver.disjunction">[docs]</a><span class="k">def</span> <span class="nf">disjunction</span><span class="p">(</span><span class="n">formulas</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the disjunction of a set of propositional formulas.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    formulas : An iterable container of Sympy formulas</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; formulas = [eb.parse_formula(s) for s in &quot;pqrst&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; formulas</span>
+<span class="sd">    [p, q, r, s, t]</span>
+<span class="sd">    &gt;&gt;&gt; eb.disjunction(formulas)</span>
+<span class="sd">    Or(p, q, r, s, t)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Or</span><span class="p">(</span><span class="o">*</span><span class="n">formulas</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Paul Vicol.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

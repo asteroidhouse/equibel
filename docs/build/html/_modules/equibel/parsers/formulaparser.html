@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>equibel.parsers.formulaparser &mdash; Equibel a1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     'a1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Equibel a1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for equibel.parsers.formulaparser</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Parser for propositional formulas represented using infix notation.</span>
+
+<span class="sd">The symbols used for the logical connectives are as follows:</span>
+
+<span class="sd">        ----------------------</span>
+<span class="sd">       | Connective | Symbol |</span>
+<span class="sd">       |----------------------</span>
+<span class="sd">       |    conj.   |    &amp;   |</span>
+<span class="sd">       |    disj.   |    |   |</span>
+<span class="sd">       |   implies  |   -&gt;   |</span>
+<span class="sd">       |    equiv   |    =   |</span>
+<span class="sd">       |     neg    |    ~   |</span>
+<span class="sd">        ----------------------</span>
+
+<span class="sd">The precedence and right/left associativity rules of the conectives are as follows:</span>
+
+<span class="sd">1. Negation (~) has the highest precendence, and is right-associative.</span>
+<span class="sd">2. Conjunction (&amp;) has the next highest precedence, and is left-associative.</span>
+<span class="sd">3. Disjunction (|) is next, is left-associative.</span>
+<span class="sd">4. Implication (-&gt;) comes next, and is right-associative.</span>
+<span class="sd">5. Finally, equivalence (=) is last, and is right-associative.</span>
+
+<span class="sd">Using these precedence rules, the following formulas are equivalent:</span>
+
+<span class="sd">     p &amp; q | r   ===   (p &amp; q) | r</span>
+<span class="sd">    p &amp; q -&gt; r   ===   (p &amp; q) -&gt; r</span>
+<span class="sd">    p | ~r = q   ===   (p | (~r)) = q</span>
+<span class="sd">   ~p | ~q &amp; r   ===   ((~p) | (~q)) &amp; r</span>
+
+<span class="sd">The only importable function from this file is parse_formula, </span>
+<span class="sd">which takes a string such as &quot;p &amp; q | ~r&quot; and creates a Sympy logical</span>
+<span class="sd">formula object representing that formula.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1">#    Copyright (C) 2016</span>
+<span class="c1">#    Paul Vicol &lt;pvicol@sfu.ca&gt;</span>
+<span class="c1">#    All rights reserved.</span>
+<span class="c1">#    MIT license.</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">ply</span>
+<span class="kn">import</span> <span class="nn">ply.lex</span> <span class="kn">as</span> <span class="nn">lex</span>
+<span class="kn">import</span> <span class="nn">ply.yacc</span> <span class="kn">as</span> <span class="nn">yacc</span>
+
+<span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">simplify</span>
+<span class="kn">from</span> <span class="nn">sympy.logic.boolalg</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;parse_formula&quot;</span><span class="p">]</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;ply&#39;</span><span class="p">)</span>
+
+
+<span class="c1">##################################################################</span>
+<span class="c1">######                       LEXER                          ######</span>
+<span class="c1">##################################################################</span>
+
+<span class="n">keywords</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;True&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">,</span> <span class="s2">&quot;False&quot;</span><span class="p">:</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">}</span>
+
+<span class="n">tokens</span> <span class="o">=</span> <span class="p">([</span><span class="s2">&quot;NEG&quot;</span><span class="p">,</span> <span class="s2">&quot;AND&quot;</span><span class="p">,</span> <span class="s2">&quot;OR&quot;</span><span class="p">,</span> <span class="s2">&quot;IMPLIES&quot;</span><span class="p">,</span> <span class="s2">&quot;EQUIV&quot;</span><span class="p">,</span> <span class="s2">&quot;LPAREN&quot;</span><span class="p">,</span> <span class="s2">&quot;RPAREN&quot;</span><span class="p">,</span> 
+           <span class="s2">&quot;INTEGER&quot;</span><span class="p">,</span> <span class="s2">&quot;IDENTIFIER&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">keywords</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+<span class="k">def</span> <span class="nf">t_IDENTIFIER</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="s2">r&quot;[_a-zA-Z][_a-zA-Z0-9]*&quot;</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;IDENTIFIER&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">t</span>
+
+<span class="n">t_NEG</span> <span class="o">=</span> <span class="s2">r&quot;~&quot;</span>
+<span class="n">t_AND</span> <span class="o">=</span> <span class="s2">r&quot;&amp;&quot;</span>
+<span class="n">t_OR</span> <span class="o">=</span> <span class="s2">r&quot;\|&quot;</span>
+<span class="n">t_IMPLIES</span> <span class="o">=</span> <span class="s2">r&quot;-&gt;&quot;</span>
+<span class="n">t_EQUIV</span> <span class="o">=</span> <span class="s2">r&quot;=&quot;</span>
+<span class="n">t_LPAREN</span> <span class="o">=</span> <span class="s2">r&quot;\(&quot;</span>
+<span class="n">t_RPAREN</span> <span class="o">=</span> <span class="s2">r&quot;\)&quot;</span>
+<span class="n">t_INTEGER</span> <span class="o">=</span> <span class="s2">r&quot;[0-9]+&quot;</span>
+
+<span class="n">t_ignore</span> <span class="o">=</span> <span class="s2">&quot; </span><span class="se">\t\n</span><span class="s2">&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">t_NEWLINE</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="s2">r&quot;\n+&quot;</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">lexer</span><span class="o">.</span><span class="n">lineno</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">t</span>
+
+
+<span class="k">def</span> <span class="nf">t_error</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="n">line</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="n">line</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Syntax error, line {0}: {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">lineno</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">line</span><span class="p">))</span>
+
+
+<span class="c1">##################################################################</span>
+<span class="c1">######                     PARSER                           ######</span>
+<span class="c1">##################################################################</span>
+
+<span class="k">def</span> <span class="nf">p_FORMULA</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;FORMULA : ATOM</span>
+<span class="sd">               | BOOLEAN</span>
+<span class="sd">               | COMPOUND</span>
+<span class="sd">               | LPAREN FORMULA RPAREN&quot;&quot;&quot;</span>
+    <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">p_ATOM</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;ATOM : IDENTIFIER</span>
+<span class="sd">            | INTEGER&quot;&quot;&quot;</span>
+    <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">p_BOOLEAN_TRUE</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;BOOLEAN : TRUE&quot;&quot;&quot;</span>
+    <span class="c1"># true is a singleton object from sympy, of type sympy.logic.boolalg.BooleanTrue</span>
+    <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">true</span>
+
+
+<span class="k">def</span> <span class="nf">p_BOOLEAN_FALSE</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;BOOLEAN : FALSE&quot;&quot;&quot;</span>
+    <span class="c1"># false is a singleton object from sympy, of type sympy.logic.boolalg.BooleanFalse</span>
+    <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">false</span>
+
+<span class="k">def</span> <span class="nf">p_COMPOUND</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;COMPOUND : NEGATION</span>
+<span class="sd">                | CONJUNCTION</span>
+<span class="sd">                | DISJUNCTION</span>
+<span class="sd">                | IMPLICATION</span>
+<span class="sd">                | EQUIVALENCE&quot;&quot;&quot;</span>
+    <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">p_NEGATION</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;NEGATION : NEG FORMULA&quot;&quot;&quot;</span>
+    <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">p_CONJUNCTION</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;CONJUNCTION : FORMULA AND FORMULA&quot;&quot;&quot;</span>
+    <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">p_DISJUNCTION</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;DISJUNCTION : FORMULA OR FORMULA&quot;&quot;&quot;</span>
+    <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">|</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">p_IMPLICATION</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;IMPLICATION : FORMULA IMPLIES FORMULA&quot;&quot;&quot;</span>
+    <span class="c1"># Material implication using sympy operator &quot;&gt;&gt;&quot;</span>
+    <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">p_EQUIVALENCE</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;EQUIVALENCE : FORMULA EQUIV FORMULA&quot;&quot;&quot;</span>
+    <span class="c1">#p[0] = Equivalent(p[1], p[3])</span>
+    <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">p_error</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">p</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown error&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Syntax error, line {0}: {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lineno</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">type</span><span class="p">))</span>
+
+
+<span class="n">precedence</span> <span class="o">=</span> <span class="p">((</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="s2">&quot;EQUIV&quot;</span><span class="p">),</span>
+              <span class="p">(</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="s2">&quot;IMPLIES&quot;</span><span class="p">),</span>
+              <span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;OR&quot;</span><span class="p">),</span>
+              <span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;AND&quot;</span><span class="p">),</span>
+              <span class="p">(</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="s2">&quot;NEG&quot;</span><span class="p">))</span>
+
+<span class="c1">#lexer = ply.lex.lex(optimize=1, debug=0)</span>
+<span class="c1">#parser = ply.yacc.yacc(debug=0, write_tables=0)</span>
+<span class="n">lexer</span> <span class="o">=</span> <span class="n">lex</span><span class="o">.</span><span class="n">lex</span><span class="p">()</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">yacc</span><span class="o">.</span><span class="n">yacc</span><span class="p">(</span><span class="n">errorlog</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="parse_formula"><a class="viewcode-back" href="../../../equibel.parsers.html#equibel.parsers.formulaparser.parse_formula">[docs]</a><span class="k">def</span> <span class="nf">parse_formula</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">lexer</span><span class="o">=</span><span class="n">lexer</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;usage: python formulaparser.py FORMULA_STRING&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">formula_str</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="n">formula</span> <span class="o">=</span> <span class="n">parse_infix_formula</span><span class="p">(</span><span class="n">formula_str</span><span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">formula</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Simplified = </span><span class="se">\n</span><span class="s2">{0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">simplify</span><span class="p">(</span><span class="n">formula</span><span class="p">))))</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Paul Vicol.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>equibel.draw &mdash; Equibel a1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'a1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Equibel a1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for equibel.draw</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Provides drawing functions that enable visualization of:</span>
+
+<span class="sd">1. Arbitrary graphs and associated scenarios;</span>
+<span class="sd">2. Model graphs corresponding to base graphs, for the </span>
+<span class="sd">   restricted case where the base graphs are paths.</span>
+
+<span class="sd">This file defines functions that extend the graph drawing capabilities </span>
+<span class="sd">of NetworkX by adding the option to display formulas associated with nodes.</span>
+
+<span class="sd">Visualization of model graphs is limited to the case where the </span>
+<span class="sd">base graph is a path graph; this is not due to technical constraints, </span>
+<span class="sd">but rather due to the fact that it is difficult to spatially lay </span>
+<span class="sd">out nodes of arbitrary graphs in such a way that the resulting model </span>
+<span class="sd">graph is human-readable.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1">#    Copyright (C) 2016</span>
+<span class="c1">#    Paul Vicol &lt;pvicol@sfu.ca&gt;</span>
+<span class="c1">#    All rights reserved.</span>
+<span class="c1">#    MIT license.</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">pprint</span><span class="p">,</span> <span class="n">satisfiable</span><span class="p">,</span> <span class="n">to_cnf</span><span class="p">,</span> <span class="n">simplify</span><span class="p">,</span> <span class="n">latex</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="kn">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">equibel</span> <span class="kn">as</span> <span class="nn">eb</span>
+
+<span class="kn">from</span> <span class="nn">equibel.graph</span> <span class="kn">import</span> <span class="n">EquibelGraph</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+
+
+<div class="viewcode-block" id="copy_dict"><a class="viewcode-back" href="../../equibel.html#equibel.draw.copy_dict">[docs]</a><span class="k">def</span> <span class="nf">copy_dict</span><span class="p">(</span><span class="n">source_dict</span><span class="p">,</span> <span class="n">diffs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a copy of source_dict, updated with the new key-value pairs in diffs.&quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">source_dict</span><span class="p">)</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">diffs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="tablize"><a class="viewcode-back" href="../../equibel.html#equibel.draw.tablize">[docs]</a><span class="k">def</span> <span class="nf">tablize</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">truths</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">atoms</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">truths</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">curr_atom</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">atoms</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">truth_val</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">True</span><span class="p">,</span> <span class="bp">False</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">tablize</span><span class="p">(</span><span class="n">atoms</span><span class="o">-</span><span class="p">{</span><span class="n">curr_atom</span><span class="p">},</span> <span class="n">copy_dict</span><span class="p">(</span><span class="n">truths</span><span class="p">,</span> <span class="p">{</span><span class="n">curr_atom</span><span class="p">:</span> <span class="n">truth_val</span><span class="p">})):</span>
+                <span class="k">yield</span> <span class="n">model</span></div>
+
+
+<div class="viewcode-block" id="models_with_all_atoms"><a class="viewcode-back" href="../../equibel.html#equibel.draw.models_with_all_atoms">[docs]</a><span class="k">def</span> <span class="nf">models_with_all_atoms</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">atoms</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Takes a formula and a set of atoms (that do not necessarily appear in the formula), </span>
+<span class="sd">    and returns a set of *models* of the formula, where each model is represented by a </span>
+<span class="sd">    *dictionary* that maps each atom to a Boolean value, where atoms are drawn from the </span>
+<span class="sd">    set of atoms that appear in ``formula`` *and* the set of atoms represented by ``atoms``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    formula : A Sympy formula.</span>
+<span class="sd">    atoms : A set of Sympy atoms.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; p,q,r = [eb.parse_formula(letter) for letter in &quot;pqr&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; f = p | q</span>
+<span class="sd">    &gt;&gt;&gt; eb.models_with_all_atoms(f, {p,q})</span>
+<span class="sd">    [{p: True, q: True}, </span>
+<span class="sd">     {p: True, q: False},</span>
+<span class="sd">     {p: False, q: True}]</span>
+<span class="sd">    &gt;&gt;&gt; eb.models_with_all_atoms(f, {p,q,r})</span>
+<span class="sd">    [{p: True, q: True, r: True}, </span>
+<span class="sd">     {p: True, q: True, r: False},</span>
+<span class="sd">     {p: True, q: False, r: True},</span>
+<span class="sd">     {p: True, q: False, r: False},</span>
+<span class="sd">     {p: False, q: True, r: True},</span>
+<span class="sd">     {p: False, q: True, r: False}]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">formula</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">model</span> <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">tablize</span><span class="p">(</span><span class="n">atoms</span><span class="p">)]</span>
+
+    <span class="n">original_models</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span> <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">satisfiable</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">all_models</span><span class="o">=</span><span class="bp">True</span><span class="p">)]</span>
+    <span class="n">extra_atoms</span> <span class="o">=</span> <span class="n">atoms</span> <span class="o">-</span> <span class="n">formula</span><span class="o">.</span><span class="n">atoms</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">extra_atoms</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">original_models</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">models_all_atoms</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">original_models</span><span class="p">:</span>
+            <span class="n">models_all_atoms</span> <span class="o">+=</span> <span class="p">[</span><span class="n">updated_model</span> <span class="k">for</span> <span class="n">updated_model</span> <span class="ow">in</span> <span class="n">tablize</span><span class="p">(</span><span class="n">extra_atoms</span><span class="p">,</span> <span class="n">model</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">models_all_atoms</span></div>
+        
+
+
+<div class="viewcode-block" id="model_set"><a class="viewcode-back" href="../../equibel.html#equibel.draw.model_set">[docs]</a><span class="k">def</span> <span class="nf">model_set</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Converts a model from a dictionary representation to a set representation.</span>
+
+<span class="sd">    Given a ``model`` represented by a dictionary mapping atoms to Boolean values, </span>
+<span class="sd">    this function returns the *set* of atoms that are mapped to ``True`` in the dictionary.</span>
+
+<span class="sd">    Paramters</span>
+<span class="sd">    ---------</span>
+<span class="sd">    model : A dictionary mapping atoms to Boolean values.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; p,q,r = [eb.parse_formula(letter) for letter in &quot;pqr&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; eb.model_set({p: True, q: False, r: True})</span>
+<span class="sd">    set([p, r])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">set</span><span class="p">([</span><span class="n">atom</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">model</span> <span class="k">if</span> <span class="n">model</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">==</span> <span class="bp">True</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="symmetric_diff"><a class="viewcode-back" href="../../equibel.html#equibel.draw.symmetric_diff">[docs]</a><span class="k">def</span> <span class="nf">symmetric_diff</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the symmetric difference of sets ``a`` and ``b``.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">^</span> <span class="n">b</span></div>
+
+
+<div class="viewcode-block" id="allmin"><a class="viewcode-back" href="../../equibel.html#equibel.draw.allmin">[docs]</a><span class="k">def</span> <span class="nf">allmin</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span><span class="n">less_than</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">less_than</span><span class="p">:</span>
+        <span class="n">less_than</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">y</span>
+
+    <span class="n">min_lst</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+        <span class="n">found_subset</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">less_than</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">a</span><span class="p">):</span>
+                <span class="n">found_subset</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">break</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">found_subset</span><span class="p">:</span>
+            <span class="n">min_lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">min_lst</span></div>
+
+
+<div class="viewcode-block" id="min_model_edges"><a class="viewcode-back" href="../../equibel.html#equibel.draw.min_model_edges">[docs]</a><span class="k">def</span> <span class="nf">min_model_edges</span><span class="p">(</span><span class="n">edge_change_sets</span><span class="p">):</span>
+    <span class="n">unique_min_model_edge_dict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">duplicated_min_model_edge_dict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edge_change_sets</span><span class="p">:</span>
+        <span class="n">change_sets</span> <span class="o">=</span> <span class="n">edge_change_sets</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span>
+        <span class="n">min_change_sets</span> <span class="o">=</span> <span class="n">allmin</span><span class="p">(</span><span class="n">change_sets</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">min_change_sets</span><span class="p">:</span>
+            <span class="n">found_duplicate</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">min_change_sets</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">s</span> <span class="o">!=</span> <span class="n">t</span> <span class="ow">and</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">found_duplicate</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">found_duplicate</span><span class="p">:</span>
+                <span class="n">duplicated_min_model_edge_dict</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">unique_min_model_edge_dict</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="p">(</span><span class="n">unique_min_model_edge_dict</span><span class="p">,</span> <span class="n">duplicated_min_model_edge_dict</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="draw_graph"><a class="viewcode-back" href="../../equibel.html#equibel.draw.draw_graph">[docs]</a><span class="k">def</span> <span class="nf">draw_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">pos</span><span class="p">:</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="n">fig_size</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span>
+    <span class="n">fig_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">fig_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;${}$&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">latex</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="n">node</span><span class="p">))),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
+    
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="draw_model_lifting"><a class="viewcode-back" href="../../equibel.html#equibel.draw.draw_model_lifting">[docs]</a><span class="k">def</span> <span class="nf">draw_model_lifting</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">show_only_min_edges</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">highlight_nodes</span><span class="o">=</span><span class="p">[],</span> <span class="n">highlight_color</span><span class="o">=</span><span class="s1">&#39;#33FF99&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">pos</span><span class="p">:</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="n">fig_size</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span>
+    <span class="n">fig_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">fig_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">18</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+
+    <span class="n">atoms</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">atoms</span><span class="p">()</span>
+    <span class="n">model_pos</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">lifting</span> <span class="o">=</span> <span class="n">EquibelGraph</span><span class="p">()</span>
+    <span class="n">model_nodes</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">model_num</span> <span class="o">=</span> <span class="mi">1</span>
+    
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+        <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+
+        <span class="n">formula</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="n">models</span> <span class="o">=</span> <span class="n">models_with_all_atoms</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span>
+        
+        <span class="n">num_models</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
+        
+        <span class="c1">######################################################################</span>
+        <span class="c1">###   PUT RECTANGLES AROUND MODELS CORRESPONDING TO THE SAME NODE  ###</span>
+        <span class="c1">######################################################################</span>
+        <span class="n">currentAxis</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">highlight_nodes</span><span class="p">:</span>
+            <span class="n">currentAxis</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">Rectangle</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="n">num_models</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">),</span> <span class="mf">0.6</span><span class="p">,</span> <span class="n">num_models</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="n">highlight_color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">currentAxis</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">Rectangle</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="n">num_models</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">),</span> <span class="mf">0.6</span><span class="p">,</span> <span class="n">num_models</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mf">0.8</span><span class="p">,</span> <span class="s2">&quot;{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="p">),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
+        <span class="c1">######################################################################</span>
+
+        <span class="n">cur_mod_num</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+            <span class="n">lifting</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">model_num</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model_set</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
+            <span class="n">model_nodes</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_num</span><span class="p">)</span>
+            <span class="n">model_pos</span><span class="p">[</span><span class="n">model_num</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="n">cur_mod_num</span><span class="p">)</span>
+            <span class="n">model_num</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">cur_mod_num</span> <span class="o">+=</span> <span class="mi">1</span>
+    
+    
+    <span class="n">edge_change_sets</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">model_node1</span> <span class="ow">in</span> <span class="n">model_nodes</span><span class="p">[</span><span class="n">node1</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">model_node2</span> <span class="ow">in</span> <span class="n">model_nodes</span><span class="p">[</span><span class="n">node2</span><span class="p">]:</span>
+                <span class="n">model1</span> <span class="o">=</span> <span class="n">lifting</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">model_node1</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span>
+                <span class="n">model2</span> <span class="o">=</span> <span class="n">lifting</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">model_node2</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span>
+                <span class="n">lifting</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">model_node1</span><span class="p">,</span> <span class="n">model_node2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">symmetric_diff</span><span class="p">(</span><span class="n">model1</span><span class="p">,</span> <span class="n">model2</span><span class="p">))</span>
+                <span class="n">edge_change_sets</span><span class="p">[(</span><span class="n">node1</span><span class="p">,</span><span class="n">node2</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(((</span><span class="n">model_node1</span><span class="p">,</span><span class="n">model_node2</span><span class="p">),</span><span class="n">symmetric_diff</span><span class="p">(</span><span class="n">model1</span><span class="p">,</span> <span class="n">model2</span><span class="p">)))</span>
+    
+    
+    <span class="p">(</span><span class="n">unique_dict</span><span class="p">,</span> <span class="n">duplicated_dict</span><span class="p">)</span> <span class="o">=</span> <span class="n">min_model_edges</span><span class="p">(</span><span class="n">edge_change_sets</span><span class="p">)</span>
+    
+    <span class="n">unique_min_model_edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">tup</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">unique_dict</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">unique_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]]</span>
+    <span class="n">duplicated_min_model_edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">tup</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">duplicated_dict</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">duplicated_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]]</span>
+    
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">lifting</span><span class="p">,</span> <span class="n">model_pos</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="s1">&#39;#4444FF&#39;</span><span class="p">)</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span><span class="n">lifting</span><span class="p">,</span> <span class="n">model_pos</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">show_only_min_edges</span><span class="p">:</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">lifting</span><span class="p">,</span> <span class="n">model_pos</span><span class="p">)</span>
+        
+    
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">lifting</span><span class="p">,</span> <span class="n">model_pos</span><span class="p">,</span> <span class="n">edgelist</span><span class="o">=</span><span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">unique_min_model_edges</span><span class="p">],</span> 
+                           <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">edge_color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">lifting</span><span class="p">,</span> <span class="n">model_pos</span><span class="p">,</span> <span class="n">edgelist</span><span class="o">=</span><span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">duplicated_min_model_edges</span><span class="p">],</span> 
+                            <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">edge_color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Specifiy edge labels explicitly</span>
+    <span class="n">edge_labels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([((</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">),</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">d</span> <span class="ow">in</span> <span class="n">lifting</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">True</span><span class="p">)])</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">show_only_min_edges</span><span class="p">:</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edge_labels</span><span class="p">(</span><span class="n">lifting</span><span class="p">,</span> <span class="n">model_pos</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="n">edge_labels</span><span class="p">,</span> <span class="n">label_pos</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">rotate</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span>
+                                     <span class="n">bbox</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;#EEEEEE&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">boxstyle</span><span class="o">=</span><span class="s1">&#39;round,pad=0.3&#39;</span><span class="p">))</span>
+    
+    <span class="n">unique_edge_labels</span> <span class="o">=</span> <span class="p">{(</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">):</span> <span class="s2">&quot;{{{}}}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">s</span><span class="p">)))</span> <span class="k">for</span> <span class="p">((</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">),</span><span class="n">s</span><span class="p">)</span> <span class="ow">in</span> <span class="n">unique_min_model_edges</span><span class="p">}</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edge_labels</span><span class="p">(</span><span class="n">lifting</span><span class="p">,</span> <span class="n">model_pos</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="n">unique_edge_labels</span><span class="p">,</span> <span class="n">label_pos</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">rotate</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span>
+                                 <span class="n">bbox</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;#FFAAAA&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">boxstyle</span><span class="o">=</span><span class="s1">&#39;round,pad=0.3&#39;</span><span class="p">))</span>
+    
+    <span class="n">duplicated_edge_labels</span> <span class="o">=</span> <span class="p">{(</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">):</span> <span class="s2">&quot;{{{}}}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">s</span><span class="p">)))</span> <span class="k">for</span> <span class="p">((</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">),</span><span class="n">s</span><span class="p">)</span> <span class="ow">in</span> <span class="n">duplicated_min_model_edges</span><span class="p">}</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edge_labels</span><span class="p">(</span><span class="n">lifting</span><span class="p">,</span> <span class="n">model_pos</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="n">duplicated_edge_labels</span><span class="p">,</span> <span class="n">label_pos</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">rotate</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span>
+                                 <span class="n">bbox</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;#FFFFAA&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="n">boxstyle</span><span class="o">=</span><span class="s1">&#39;round,pad=0.3&#39;</span><span class="p">))</span>
+    
+    
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">model_node</span> <span class="ow">in</span> <span class="n">model_nodes</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
+            <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">model_pos</span><span class="p">[</span><span class="n">model_node</span><span class="p">]</span>
+            <span class="n">sorted_strings_for_label</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">lifting</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">model_node</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">])</span>
+            <span class="n">above_node_label</span> <span class="o">=</span> <span class="s2">&quot;{{{}}}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sorted_strings_for_label</span><span class="p">))</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">above_node_label</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span></div>
+
+    <span class="c1">#plt.show()</span>
+
+
+
+<div class="viewcode-block" id="draw_path_model_lifting"><a class="viewcode-back" href="../../equibel.html#equibel.draw.draw_path_model_lifting">[docs]</a><span class="k">def</span> <span class="nf">draw_path_model_lifting</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">R1</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">R2</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">show_only_min_edges</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">R1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">R2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">diff_nodes</span> <span class="o">=</span> <span class="n">find_diff_nodes</span><span class="p">(</span><span class="n">R1</span><span class="p">,</span> <span class="n">R2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">diff_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">y_coord</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">x_coord</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">pos</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="n">pos</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_coord</span><span class="p">,</span> <span class="n">y_coord</span><span class="p">)</span>
+        <span class="n">x_coord</span> <span class="o">+=</span> <span class="mi">2</span>
+
+    <span class="n">draw_model_lifting</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">show_only_min_edges</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">highlight_nodes</span><span class="o">=</span><span class="n">diff_nodes</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="find_diff_nodes"><a class="viewcode-back" href="../../equibel.html#equibel.draw.find_diff_nodes">[docs]</a><span class="k">def</span> <span class="nf">find_diff_nodes</span><span class="p">(</span><span class="n">S</span><span class="p">,</span><span class="n">T</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a list of nodes that have different formulas in graphs S and T.&quot;&quot;&quot;</span>
+    <span class="n">diff_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">S</span><span class="p">:</span>
+        <span class="n">s_formula</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="n">t_formula</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">s_formula</span> <span class="o">!=</span> <span class="n">t_formula</span><span class="p">:</span>
+            <span class="n">diff_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">diff_nodes</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Paul Vicol.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

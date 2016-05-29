@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; Equibel a1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'a1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Equibel a1 documentation" href="index.html" />
+    <link rel="next" title="Quickstart Guide" href="quickstart.html" />
+    <link rel="prev" title="Equibel Documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>This is a brief guide for installing <code class="docutils literal"><span class="pre">Equibel</span></code>.</p>
+<p>The following steps assume that you have the <code class="docutils literal"><span class="pre">pip</span></code> Python package manager installed.
+If you don&#8217;t have <code class="docutils literal"><span class="pre">pip</span></code>, you can get it <a class="reference external" href="https://pip.pypa.io/en/latest/installing.html">here</a>.</p>
+<p><code class="docutils literal"><span class="pre">Equibel</span></code> currently supports Mac OS X and Linux (32-bit and 64-bit), with Python 2.7.x or Python 3.</p>
+<div class="section" id="quick-install">
+<h2>Quick Install<a class="headerlink" href="#quick-install" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="system-wide-installation">
+<h3>System-Wide Installation<a class="headerlink" href="#system-wide-installation" title="Permalink to this headline">¶</a></h3>
+<p>To install <code class="docutils literal"><span class="pre">Equibel</span></code> into the system-wide set of Python packages, simply use:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install equibel
+</pre></div>
+</div>
+</div>
+<div class="section" id="virtual-environments">
+<h3>Virtual Environments<a class="headerlink" href="#virtual-environments" title="Permalink to this headline">¶</a></h3>
+<p>In order to keep the dependencies of <code class="docutils literal"><span class="pre">Equibel</span></code> separate from those of other Python packages on your
+system, you may wish to install Equibel inside a <em>virtual environment</em>. Virtual environments
+provide isolation between different Python projects, allowing you to have separate installations
+of Python for each project. To create a virtual environment, you must first install <code class="docutils literal"><span class="pre">virtualenv</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install virtualenv
+</pre></div>
+</div>
+<p>Once <code class="docutils literal"><span class="pre">virtualenv</span></code> is installed, you can create a project directory and initialize a
+virtual environment in it as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ mkdir try_equibel
+$ cd try_equibel
+$ virtualenv venv --python=python2.7
+</pre></div>
+</div>
+<p>Before you can install packages into the virtual environment, you must <em>activate</em> it:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ source venv/bin/activate
+</pre></div>
+</div>
+<p>When you do this, your terminal prompt will update so that it is prepended by <code class="docutils literal"><span class="pre">(venv)</span></code>.
+Whenever you want to exit the virtual environment and return to the system-wide Python
+installation, simply use:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(venv)$ deactivate
+</pre></div>
+</div>
+<p>With a virtual environment activated, you can simply install <code class="docutils literal"><span class="pre">Equibel</span></code> using <code class="docutils literal"><span class="pre">pip</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(venv)$ pip install equibel
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="installing-from-source">
+<h2>Installing from Source<a class="headerlink" href="#installing-from-source" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="optional-packages">
+<h2>Optional Packages<a class="headerlink" href="#optional-packages" title="Permalink to this headline">¶</a></h2>
+<p>The following packages are optional, and are used by <code class="docutils literal"><span class="pre">Equibel</span></code> to provide additional functions.</p>
+<div class="section" id="matplotlib">
+<h3>Matplotlib<a class="headerlink" href="#matplotlib" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal"><span class="pre">Matplotlib</span></code> is a 2D plotting library in Python. When installed alongside <code class="docutils literal"><span class="pre">Equibel</span></code>, it
+enables visualization of graphs and associated scenarios, as well as model graphs.
+<code class="docutils literal"><span class="pre">Matplotlib</span></code> is available on <a class="reference external" href="https://pypi.python.org/pypi/matplotlib">PyPI</a>, and can
+be installed using:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install matplotlib
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#quick-install">Quick Install</a><ul>
+<li><a class="reference internal" href="#system-wide-installation">System-Wide Installation</a></li>
+<li><a class="reference internal" href="#virtual-environments">Virtual Environments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#installing-from-source">Installing from Source</a></li>
+<li><a class="reference internal" href="#optional-packages">Optional Packages</a><ul>
+<li><a class="reference internal" href="#matplotlib">Matplotlib</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Equibel Documentation</a></li>
+      <li>Next: <a href="quickstart.html" title="next chapter">Quickstart Guide</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/installation.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Paul Vicol.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/installation.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

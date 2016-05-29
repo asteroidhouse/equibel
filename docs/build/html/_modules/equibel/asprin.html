@@ -1,0 +1,405 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>equibel.asprin &mdash; Equibel a1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'a1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Equibel a1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for equibel.asprin</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This file provides a programmatic interface to the ``asprin`` preference handling </span>
+<span class="sd">framework - this allows asprin to be invoked from Python, and allows preferred answer </span>
+<span class="sd">to be returned directly in Python.</span>
+<span class="sd">The currently distributed version of ``asprin`` is designed as a stand-alone system, </span>
+<span class="sd">so using it as-is would involve parsing its command-line output.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Original Author: Javier Romero</span>
+<span class="c1"># Modified by: Paul Vicol</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">platform</span>
+<span class="kn">import</span> <span class="nn">pkg_resources</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Linux&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">architecture</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;64bit&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">equibel.includes.linux_64.gringo</span> <span class="kn">import</span> <span class="o">*</span>
+        <span class="n">asprin_parser</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;includes/linux_64/asprin.parser&#39;</span><span class="p">)</span>
+    <span class="c1">#elif platform.architecture()[0] == &#39;32bit&#39;:</span>
+    <span class="c1">#    from equibel.includes.linux_32.gringo import *</span>
+    <span class="c1">#    asprin_parser = pkg_resources.resource_filename(&#39;equibel&#39;, &#39;includes/linux_32/asprin.parser&#39;)</span>
+<span class="k">elif</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Darwin&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">equibel.includes.mac.gringo</span> <span class="kn">import</span> <span class="o">*</span>
+    <span class="n">asprin_parser</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;includes/mac/asprin.parser&#39;</span><span class="p">)</span>
+
+
+<span class="n">aspypart</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;asp/aspypart.lp&#39;</span><span class="p">)</span>
+<span class="n">asprin_lib</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;equibel&#39;</span><span class="p">,</span> <span class="s1">&#39;asp/asprin.lib&#39;</span><span class="p">)</span>
+
+
+<span class="n">current_module</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">__name__</span><span class="p">]</span>
+
+
+<span class="n">holds</span><span class="p">,</span> <span class="n">nholds</span><span class="p">,</span> <span class="n">shown</span><span class="p">,</span> <span class="n">base</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+<span class="n">enum</span><span class="p">,</span> <span class="n">nmodels</span><span class="p">,</span> <span class="n">answers</span><span class="p">,</span> <span class="n">maxmodels</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+
+
+<span class="n">optimal_models</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<div class="viewcode-block" id="get"><a class="viewcode-back" href="../../equibel.html#equibel.asprin.get">[docs]</a><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">val</span> <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">default</span></div>
+
+<div class="viewcode-block" id="getHolds"><a class="viewcode-back" href="../../equibel.html#equibel.asprin.getHolds">[docs]</a><span class="k">def</span> <span class="nf">getHolds</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">holds</span>
+    <span class="k">return</span> <span class="n">holds</span></div>
+
+<div class="viewcode-block" id="getNHolds"><a class="viewcode-back" href="../../equibel.html#equibel.asprin.getNHolds">[docs]</a><span class="k">def</span> <span class="nf">getNHolds</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">nholds</span>
+    <span class="k">return</span> <span class="n">nholds</span></div>
+
+<div class="viewcode-block" id="printShown"><a class="viewcode-back" href="../../equibel.html#equibel.asprin.printShown">[docs]</a><span class="k">def</span> <span class="nf">printShown</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">enum</span><span class="p">,</span> <span class="n">answers</span><span class="p">,</span> <span class="n">shown</span><span class="p">,</span> <span class="n">nmodels</span><span class="p">,</span> <span class="n">noprint</span>
+    <span class="c1">#print &quot;Answer: &quot; + str(answers)</span>
+    <span class="n">answers</span> <span class="o">=</span> <span class="n">answers</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">enum</span> <span class="o">=</span> <span class="n">enum</span> <span class="o">+</span> <span class="mi">1</span></div>
+    <span class="c1">#print(&quot;Answer: &quot; + str(enum))</span>
+    <span class="c1">#if noprint == 0:</span>
+    <span class="c1">#    print(&#39;%s&#39; % &#39; &#39;.join(map(str,shown)))</span>
+
+<div class="viewcode-block" id="printShownOpt"><a class="viewcode-back" href="../../equibel.html#equibel.asprin.printShownOpt">[docs]</a><span class="k">def</span> <span class="nf">printShownOpt</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">nmodels</span><span class="p">,</span> <span class="n">noprint</span>
+    <span class="k">if</span> <span class="n">noprint</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">noprint</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">printShown</span><span class="p">()</span>
+        <span class="n">noprint</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">printShown</span><span class="p">()</span>
+    <span class="c1">#print(&quot;OPTIMUM FOUND *&quot;)</span>
+    <span class="n">nmodels</span> <span class="o">=</span> <span class="n">nmodels</span> <span class="o">+</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="cat"><a class="viewcode-back" href="../../equibel.html#equibel.asprin.cat">[docs]</a><span class="k">def</span> <span class="nf">cat</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="handleError"><a class="viewcode-back" href="../../equibel.html#equibel.asprin.handleError">[docs]</a><span class="k">def</span> <span class="nf">handleError</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">error</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">m</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;_error&quot;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">args</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">args</span><span class="p">()[</span><span class="mi">0</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="onModel"><a class="viewcode-back" href="../../equibel.html#equibel.asprin.onModel">[docs]</a><span class="k">def</span> <span class="nf">onModel</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">holds</span><span class="p">,</span> <span class="n">nholds</span><span class="p">,</span> <span class="n">shown</span><span class="p">,</span> <span class="n">maxmodels</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">nosyntax</span><span class="p">,</span> <span class="n">mode</span>
+    <span class="c1"># syntax errors</span>
+    <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">nosyntax</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_error&quot;</span><span class="p">,[])</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">TERMS</span><span class="p">)):</span>
+        <span class="n">handleError</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">TERMS</span><span class="p">))</span>
+        <span class="k">return</span>
+    <span class="c1"># shown atoms</span>
+    <span class="n">holds</span><span class="p">,</span> <span class="n">shown</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">SHOWN</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;_holds_at_zero&quot;</span><span class="p">):</span>
+            <span class="n">holds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">args</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;_&quot;</span><span class="p">):</span>
+            <span class="n">shown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="c1"># false _holds_at_zero terms</span>
+    <span class="k">if</span> <span class="n">maxmodels</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">nholds</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">TERMS</span> <span class="o">|</span> <span class="n">Model</span><span class="o">.</span><span class="n">COMP</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;_holds_at_zero&quot;</span><span class="p">):</span>
+                <span class="n">nholds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">args</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="onModelMany"><a class="viewcode-back" href="../../equibel.html#equibel.asprin.onModelMany">[docs]</a><span class="k">def</span> <span class="nf">onModelMany</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">shown</span><span class="p">,</span> <span class="n">found</span><span class="p">,</span> <span class="n">base</span>
+    <span class="k">global</span> <span class="n">optimal_models</span>
+    <span class="n">shown</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">SHOWN</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;_&quot;</span><span class="p">):</span>
+            <span class="n">shown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">found</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">shown</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">base</span><span class="p">):</span> <span class="c1"># do not repeat model!</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">base</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">shown</span><span class="p">:</span>
+                <span class="c1">#printShownOpt()</span>
+                <span class="n">optimal_models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shown</span><span class="p">)</span>
+                <span class="k">return</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1">#printShownOpt()</span>
+        <span class="n">optimal_models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shown</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="doEnumerate"><a class="viewcode-back" href="../../equibel.html#equibel.asprin.doEnumerate">[docs]</a><span class="k">def</span> <span class="nf">doEnumerate</span><span class="p">(</span><span class="n">prg</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">maxmodels</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">base</span><span class="p">,</span> <span class="n">shown</span><span class="p">,</span> <span class="n">nmodels</span><span class="p">,</span> <span class="n">found</span><span class="p">,</span> <span class="n">holds</span><span class="p">,</span> <span class="n">nholds</span><span class="p">,</span> <span class="n">mode</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">maxmodels</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solve</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solve</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="n">maxmodels</span> <span class="o">-</span> <span class="n">nmodels</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">shown</span>
+    <span class="n">assumptions</span> <span class="o">=</span> <span class="p">[(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_holds&quot;</span><span class="p">,[</span><span class="n">x</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span><span class="bp">True</span><span class="p">)</span>  <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">holds</span><span class="p">]</span> <span class="o">+</span> <span class="p">[(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_holds&quot;</span><span class="p">,[</span><span class="n">x</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span><span class="bp">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nholds</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">assumptions</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_holds&quot;</span><span class="p">,[</span><span class="n">x</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span><span class="bp">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">holds</span><span class="p">]</span> <span class="o">+</span> <span class="p">[(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_holds&quot;</span><span class="p">,[</span><span class="n">x</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span><span class="bp">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nholds</span><span class="p">]</span>
+    <span class="n">prg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">assumptions</span><span class="p">,</span> <span class="n">on_model</span> <span class="o">=</span> <span class="n">onModelMany</span><span class="p">)</span>
+    <span class="n">prg</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solve</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="compute_optimal_models"><a class="viewcode-back" href="../../equibel.html#equibel.asprin.compute_optimal_models">[docs]</a><span class="k">def</span> <span class="nf">compute_optimal_models</span><span class="p">(</span><span class="n">input_files</span><span class="p">,</span> <span class="n">program_parts_to_add</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+    <span class="k">global</span> <span class="n">found</span><span class="p">,</span> <span class="n">shown</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">nosyntax</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">mode</span>
+    <span class="k">global</span> <span class="n">enum</span><span class="p">,</span> <span class="n">nmodels</span><span class="p">,</span> <span class="n">answers</span><span class="p">,</span> <span class="n">maxmodels</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">noprint</span>
+    <span class="k">global</span> <span class="n">optimal_models</span>
+
+    <span class="n">holds</span><span class="p">,</span> <span class="n">nholds</span><span class="p">,</span> <span class="n">shown</span><span class="p">,</span> <span class="n">base</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="c1">#, nmodels, answers, maxmodels = 0, 0, 1, 1</span>
+    <span class="n">optimal_models</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">step</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">unsat</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">startone</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">opt</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">prg</span> <span class="o">=</span> <span class="n">Control</span><span class="p">()</span>
+    <span class="c1"># NEW</span>
+    <span class="n">prg</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="s1">&#39;crafty&#39;</span>
+    <span class="n">prg</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">heuristic</span> <span class="o">=</span> <span class="s1">&#39;domain&#39;</span>
+
+    <span class="n">compiled_asp_code</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="n">asprin_parser</span><span class="p">,</span> <span class="n">asprin_lib</span><span class="p">]</span> <span class="o">+</span> <span class="n">input_files</span><span class="p">)</span>
+
+    <span class="c1">#print(compiled_asp_code)</span>
+
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp_file</span><span class="p">:</span>
+        <span class="n">temp_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">compiled_asp_code</span><span class="p">)</span>
+        <span class="n">temp_file</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">temp_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="n">prg</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">aspypart</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">program_parts_to_add</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">program_part</span> <span class="ow">in</span> <span class="n">program_parts_to_add</span><span class="p">:</span>
+            <span class="n">prg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">*</span><span class="n">program_part</span><span class="p">)</span>
+
+    <span class="c1">#print(&quot;ASPRIN STARTED...&quot;)</span>
+
+    <span class="c1"># options</span>
+    <span class="n">maxmodels</span>   <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">prg</span><span class="o">.</span><span class="n">get_const</span><span class="p">(</span><span class="s2">&quot;_asprin_n&quot;</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">project</span>     <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">prg</span><span class="o">.</span><span class="n">get_const</span><span class="p">(</span><span class="s2">&quot;_asprin_project&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">releaselast</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">prg</span><span class="o">.</span><span class="n">get_const</span><span class="p">(</span><span class="s2">&quot;_asprin_release_last&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">forgetopt</span>   <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">prg</span><span class="o">.</span><span class="n">get_const</span><span class="p">(</span><span class="s2">&quot;_asprin_no_opt_improving&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">dovolatile</span>  <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">prg</span><span class="o">.</span><span class="n">get_const</span><span class="p">(</span><span class="s2">&quot;_asprin_do_external&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">nosyntax</span>    <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">prg</span><span class="o">.</span><span class="n">get_const</span><span class="p">(</span><span class="s2">&quot;_asprin_no_syntax_check&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">nobf</span>        <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">prg</span><span class="o">.</span><span class="n">get_const</span><span class="p">(</span><span class="s2">&quot;_asprin_no_boolean_formula&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">tr</span>          <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">prg</span><span class="o">.</span><span class="n">get_const</span><span class="p">(</span><span class="s2">&quot;_asprin_tr&quot;</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">steps</span>       <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">prg</span><span class="o">.</span><span class="n">get_const</span><span class="p">(</span><span class="s2">&quot;_asprin_steps&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">noprint</span>     <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">prg</span><span class="o">.</span><span class="n">get_const</span><span class="p">(</span><span class="s2">&quot;_asprin_no_print&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">heuristic</span>   <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">prg</span><span class="o">.</span><span class="n">get_const</span><span class="p">(</span><span class="s2">&quot;_asprin_heuristic&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">mode</span>        <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">prg</span><span class="o">.</span><span class="n">get_const</span><span class="p">(</span><span class="s2">&quot;_asprin_mode&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># ground base</span>
+    <span class="k">if</span> <span class="n">nobf</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">ground</span><span class="p">([(</span><span class="s2">&quot;base&quot;</span><span class="p">,[])],</span> <span class="n">current_module</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">ground</span><span class="p">([(</span><span class="s2">&quot;base&quot;</span><span class="p">,[]),</span> <span class="p">(</span><span class="s2">&quot;_bf&quot;</span><span class="p">,[])],</span> <span class="n">current_module</span><span class="p">)</span>
+
+    <span class="c1"># heuristic</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">heuristic</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_show_heuristic&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;#show _heuristic/3. #show _holds/2.&quot;</span><span class="p">)</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">ground</span><span class="p">([(</span><span class="s2">&quot;_heuristic&quot;</span><span class="p">,[]),</span> <span class="p">(</span><span class="s2">&quot;_show_heuristic&quot;</span><span class="p">,[])],</span> <span class="n">current_module</span><span class="p">)</span>
+
+    <span class="c1"># syntax</span>
+    <span class="k">if</span> <span class="n">nosyntax</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">ground</span><span class="p">([(</span><span class="s2">&quot;_syntax_check&quot;</span><span class="p">,[])],</span> <span class="n">current_module</span><span class="p">)</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">assign_external</span><span class="p">(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_check&quot;</span><span class="p">,[]),</span> <span class="bp">True</span><span class="p">)</span>
+
+    <span class="c1"># main loop</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+
+        <span class="c1"># add rules to improve on previous model</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">step</span> <span class="o">&gt;</span> <span class="n">startone</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">releaselast</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">step</span> <span class="o">-</span> <span class="n">startone</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">prg</span><span class="o">.</span><span class="n">release_external</span><span class="p">(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_volatile&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">step</span><span class="o">-</span><span class="mi">2</span><span class="p">]))</span>
+            <span class="c1"># ground to improve (with volatile or fact)</span>
+            <span class="k">if</span> <span class="p">((</span><span class="n">maxmodels</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">releaselast</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">dovolatile</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)):</span>
+                <span class="n">prg</span><span class="o">.</span><span class="n">ground</span><span class="p">([(</span><span class="s2">&quot;_doholds&quot;</span><span class="p">,[</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;_preference&quot;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;_constraints&quot;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;_volatile_external&quot;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">])],</span> <span class="n">current_module</span><span class="p">)</span>
+                <span class="n">prg</span><span class="o">.</span><span class="n">assign_external</span><span class="p">(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_volatile&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="bp">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">prg</span><span class="o">.</span><span class="n">ground</span><span class="p">([(</span><span class="s2">&quot;_doholds&quot;</span><span class="p">,[</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;_preference&quot;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;_constraints&quot;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;_volatile_fact&quot;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">])],</span> <span class="n">current_module</span><span class="p">)</span>
+
+        <span class="c1"># ground once mode</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">maxmodels</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">prg</span><span class="o">.</span><span class="n">ground</span><span class="p">([(</span><span class="s2">&quot;_openholds&quot;</span><span class="p">,[</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;_preference&quot;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;_constraints&quot;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;_volatile_external&quot;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">])],</span> <span class="n">current_module</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">prg</span><span class="o">.</span><span class="n">ground</span><span class="p">([(</span><span class="s2">&quot;_openholds&quot;</span><span class="p">,[</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;_preference&quot;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;_constraints&quot;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;_volatile_fact&quot;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">])],</span> <span class="n">current_module</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">maxmodels</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">==</span> <span class="p">(</span><span class="n">startone</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">prg</span><span class="o">.</span><span class="n">assign_external</span><span class="p">(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_volatile&quot;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span> <span class="bp">True</span><span class="p">)</span>
+
+        <span class="c1"># solve</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="n">startone</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">prg</span><span class="o">.</span><span class="n">solve</span><span class="p">([(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_holds&quot;</span><span class="p">,[</span><span class="n">x</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span><span class="bp">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">holds</span><span class="p">]</span> <span class="o">+</span> <span class="p">[(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_holds&quot;</span><span class="p">,[</span><span class="n">x</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span><span class="bp">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nholds</span><span class="p">],</span> <span class="n">on_model</span><span class="o">=</span><span class="n">onModel</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">prg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">on_model</span><span class="o">=</span><span class="n">onModel</span><span class="p">)</span>
+
+        <span class="c1"># syntax</span>
+        <span class="k">if</span> <span class="n">error</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">nosyntax</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">prg</span><span class="o">.</span><span class="n">release_external</span><span class="p">(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_check&quot;</span><span class="p">,[]))</span>
+
+        <span class="c1"># set translation of extended rules</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">step</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">tr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+            <span class="n">prg</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">asp</span><span class="o">.</span><span class="n">trans_ext</span> <span class="o">=</span> <span class="n">tr</span>
+
+        <span class="c1"># if UNSAT</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="n">SolveResult</span><span class="o">.</span><span class="n">UNSAT</span><span class="p">:</span>
+
+            <span class="c1"># stop if program is unsat (step==1), last call was unsat (unsat==1) or we already computed maxmodels</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">step</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">print</span> <span class="s2">&quot;UNSATISFIABLE&quot;</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">unsat</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="c1">#if noprint==999: print &quot;\nAnswer: &quot; + str(enum) + &quot;\n&quot; +</span>
+            <span class="k">if</span> <span class="n">noprint</span><span class="o">==-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="c1">#print(&#39;%s&#39; % &#39; &#39;.join(map(str,shown)))</span>
+                <span class="n">optimal_models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shown</span><span class="p">)</span>
+            <span class="n">nmodels</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">maxmodels</span> <span class="o">==</span> <span class="n">nmodels</span><span class="p">):</span>
+                <span class="k">break</span>
+
+            <span class="c1"># relax conditions on previous models</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">prg</span><span class="o">.</span><span class="n">release_external</span><span class="p">(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_volatile&quot;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">releaselast</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">startone</span><span class="p">,</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                        <span class="n">prg</span><span class="o">.</span><span class="n">release_external</span><span class="p">(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_volatile&quot;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="n">i</span><span class="p">]))</span>
+            <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">prg</span><span class="o">.</span><span class="n">assign_external</span><span class="p">(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_volatile&quot;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span> <span class="bp">False</span><span class="p">)</span>
+
+            <span class="c1"># if no projection, enumerate many</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">project</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">doEnumerate</span><span class="p">(</span><span class="n">prg</span><span class="p">,</span><span class="n">step</span><span class="p">,</span><span class="n">maxmodels</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">maxmodels</span> <span class="o">==</span> <span class="n">nmodels</span><span class="p">):</span>
+                <span class="k">break</span>
+
+            <span class="c1"># add rules to be different and not worse than optimal models</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">step</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># hack to avoid redefining _holds(X,1)</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">prg</span><span class="o">.</span><span class="n">ground</span><span class="p">([(</span><span class="s2">&quot;_doholds&quot;</span><span class="p">,[</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">])],</span> <span class="n">current_module</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">forgetopt</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">prg</span><span class="o">.</span><span class="n">ground</span><span class="p">([(</span><span class="s2">&quot;_deletemodel&quot;</span><span class="p">,[]),(</span><span class="s2">&quot;_preference&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]),(</span><span class="s2">&quot;_unsat_constraints&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]),(</span><span class="s2">&quot;_volatile_external&quot;</span><span class="p">,[</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])],</span> <span class="n">current_module</span><span class="p">)</span>
+                <span class="n">prg</span><span class="o">.</span><span class="n">assign_external</span><span class="p">(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_volatile&quot;</span><span class="p">,[</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span> <span class="bp">True</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">opt</span><span class="p">:</span>
+                    <span class="n">prg</span><span class="o">.</span><span class="n">assign_external</span><span class="p">(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_volatile&quot;</span><span class="p">,[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span> <span class="bp">True</span><span class="p">)</span>
+                <span class="n">opt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">prg</span><span class="o">.</span><span class="n">ground</span><span class="p">([(</span><span class="s2">&quot;_deletemodel&quot;</span><span class="p">,[]),(</span><span class="s2">&quot;_preference&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]),(</span><span class="s2">&quot;_unsat_constraints&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]),(</span><span class="s2">&quot;_volatile_fact&quot;</span><span class="p">,[</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])],</span> <span class="n">current_module</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">step</span> <span class="o">=</span> <span class="mi">2</span>
+
+            <span class="n">startone</span> <span class="o">=</span> <span class="n">step</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">unsat</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1">#if SAT</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">printShown</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">unsat</span><span class="o">==</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">forgetopt</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">opt</span><span class="p">:</span>
+                    <span class="n">prg</span><span class="o">.</span><span class="n">assign_external</span><span class="p">(</span><span class="n">Fun</span><span class="p">(</span><span class="s2">&quot;_volatile&quot;</span><span class="p">,[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span> <span class="bp">False</span><span class="p">)</span>
+            <span class="n">unsat</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="n">steps</span> <span class="o">==</span> <span class="n">step</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">step</span><span class="o">+</span><span class="mi">1</span>
+
+    <span class="c1">#print(&quot;ASPRIN ENDED...&quot;)</span>
+
+    <span class="k">return</span> <span class="n">optimal_models</span></div>
+
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">models</span> <span class="o">=</span> <span class="n">compute_optimal_models</span><span class="p">([</span><span class="s1">&#39;./equibel/asp/eq_base.lp&#39;</span><span class="p">,</span> <span class="s1">&#39;./equibel/asp/preference.lp&#39;</span><span class="p">,</span> <span class="s1">&#39;./equibel/asp/test_chain.lp&#39;</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Paul Vicol.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

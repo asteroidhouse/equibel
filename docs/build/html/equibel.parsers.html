@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>equibel.parsers package &mdash; Equibel a1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'a1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Equibel a1 documentation" href="index.html" />
+    <link rel="up" title="equibel package" href="equibel.html" />
+    <link rel="next" title="Licence" href="licence.html" />
+    <link rel="prev" title="equibel.includes package" href="equibel.includes.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="equibel-parsers-package">
+<h1>equibel.parsers package<a class="headerlink" href="#equibel-parsers-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="equibel-parsers-bcfparser-module">
+<h2>equibel.parsers.bcfparser module<a class="headerlink" href="#equibel-parsers-bcfparser-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-equibel.parsers.formulaparser">
+<span id="equibel-parsers-formulaparser-module"></span><h2>equibel.parsers.formulaparser module<a class="headerlink" href="#module-equibel.parsers.formulaparser" title="Permalink to this headline">¶</a></h2>
+<p>Parser for propositional formulas represented using infix notation.</p>
+<p>The symbols used for the logical connectives are as follows:</p>
+<blockquote>
+<div><blockquote>
+<div></div></blockquote>
+<div class="line-block">
+<div class="line">Connective | Symbol |</div>
+</div>
+<p><a href="#id1"><span class="problematic" id="id2">|</span></a>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-
+|    conj.   |    &amp;   |
+|    disj.   |    |   |
+|   implies  |   -&gt;   |
+|    equiv   |    =   |
+|     neg    |    ~   |</p>
+<blockquote>
+<div></div></blockquote>
+</div></blockquote>
+<p>The precedence and right/left associativity rules of the conectives are as follows:</p>
+<ol class="arabic simple">
+<li>Negation (~) has the highest precendence, and is right-associative.</li>
+<li>Conjunction (&amp;) has the next highest precedence, and is left-associative.</li>
+<li>Disjunction (|) is next, is left-associative.</li>
+<li>Implication (-&gt;) comes next, and is right-associative.</li>
+<li>Finally, equivalence (=) is last, and is right-associative.</li>
+</ol>
+<p>Using these precedence rules, the following formulas are equivalent:</p>
+<blockquote>
+<div><blockquote>
+<div><blockquote>
+<div>p &amp; q | r   ===   (p &amp; q) | r</div></blockquote>
+<p>p &amp; q -&gt; r   ===   (p &amp; q) -&gt; r
+p | ~r = q   ===   (p | (~r)) = q</p>
+</div></blockquote>
+<p>~p | ~q &amp; r   ===   ((~p) | (~q)) &amp; r</p>
+</div></blockquote>
+<p>The only importable function from this file is parse_formula, 
+which takes a string such as &#8220;p &amp; q | ~r&#8221; and creates a Sympy logical
+formula object representing that formula.</p>
+<dl class="function">
+<dt id="equibel.parsers.formulaparser.parse_formula">
+<code class="descclassname">equibel.parsers.formulaparser.</code><code class="descname">parse_formula</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/parsers/formulaparser.html#parse_formula"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.parsers.formulaparser.parse_formula" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-equibel.parsers.parsetab">
+<span id="equibel-parsers-parsetab-module"></span><h2>equibel.parsers.parsetab module<a class="headerlink" href="#module-equibel.parsers.parsetab" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-equibel.parsers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-equibel.parsers" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">equibel.parsers package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#equibel-parsers-bcfparser-module">equibel.parsers.bcfparser module</a></li>
+<li><a class="reference internal" href="#module-equibel.parsers.formulaparser">equibel.parsers.formulaparser module</a></li>
+<li><a class="reference internal" href="#module-equibel.parsers.parsetab">equibel.parsers.parsetab module</a></li>
+<li><a class="reference internal" href="#module-equibel.parsers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">equibel</a><ul>
+  <li><a href="equibel.html">equibel package</a><ul>
+      <li>Previous: <a href="equibel.includes.html" title="previous chapter">equibel.includes package</a></li>
+      <li>Next: <a href="licence.html" title="next chapter">Licence</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/equibel.parsers.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Paul Vicol.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/equibel.parsers.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

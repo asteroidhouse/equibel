@@ -1,0 +1,1256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>equibel package &mdash; Equibel a1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'a1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Equibel a1 documentation" href="index.html" />
+    <link rel="up" title="equibel" href="modules.html" />
+    <link rel="next" title="equibel.asp package" href="equibel.asp.html" />
+    <link rel="prev" title="equibel" href="modules.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="equibel-package">
+<h1>equibel package<a class="headerlink" href="#equibel-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="equibel.asp.html">equibel.asp package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="equibel.asp.html#module-equibel.asp">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="equibel.formatters.html">equibel.formatters package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="equibel.formatters.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="equibel.formatters.html#module-equibel.formatters.aspformatter">equibel.formatters.aspformatter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="equibel.formatters.html#equibel-formatters-bcfformatter-module">equibel.formatters.bcfformatter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="equibel.formatters.html#module-equibel.formatters">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="equibel.includes.html">equibel.includes package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="equibel.includes.html#subpackages">Subpackages</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="equibel.includes.html#module-equibel.includes">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="equibel.parsers.html">equibel.parsers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="equibel.parsers.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="equibel.parsers.html#equibel-parsers-bcfparser-module">equibel.parsers.bcfparser module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="equibel.parsers.html#module-equibel.parsers.formulaparser">equibel.parsers.formulaparser module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="equibel.parsers.html#module-equibel.parsers.parsetab">equibel.parsers.parsetab module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="equibel.parsers.html#module-equibel.parsers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-equibel.asprin">
+<span id="equibel-asprin-module"></span><h2>equibel.asprin module<a class="headerlink" href="#module-equibel.asprin" title="Permalink to this headline">¶</a></h2>
+<p>This file provides a programmatic interface to the <code class="docutils literal"><span class="pre">asprin</span></code> preference handling 
+framework - this allows asprin to be invoked from Python, and allows preferred answer 
+to be returned directly in Python.
+The currently distributed version of <code class="docutils literal"><span class="pre">asprin</span></code> is designed as a stand-alone system, 
+so using it as-is would involve parsing its command-line output.</p>
+<dl class="function">
+<dt id="equibel.asprin.cat">
+<code class="descclassname">equibel.asprin.</code><code class="descname">cat</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/asprin.html#cat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.asprin.cat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.asprin.compute_optimal_models">
+<code class="descclassname">equibel.asprin.</code><code class="descname">compute_optimal_models</code><span class="sig-paren">(</span><em>input_files</em>, <em>program_parts_to_add=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/asprin.html#compute_optimal_models"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.asprin.compute_optimal_models" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.asprin.doEnumerate">
+<code class="descclassname">equibel.asprin.</code><code class="descname">doEnumerate</code><span class="sig-paren">(</span><em>prg</em>, <em>step</em>, <em>maxmodels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/asprin.html#doEnumerate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.asprin.doEnumerate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.asprin.get">
+<code class="descclassname">equibel.asprin.</code><code class="descname">get</code><span class="sig-paren">(</span><em>val</em>, <em>default</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/asprin.html#get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.asprin.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.asprin.getHolds">
+<code class="descclassname">equibel.asprin.</code><code class="descname">getHolds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/asprin.html#getHolds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.asprin.getHolds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.asprin.getNHolds">
+<code class="descclassname">equibel.asprin.</code><code class="descname">getNHolds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/asprin.html#getNHolds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.asprin.getNHolds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.asprin.handleError">
+<code class="descclassname">equibel.asprin.</code><code class="descname">handleError</code><span class="sig-paren">(</span><em>m</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/asprin.html#handleError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.asprin.handleError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.asprin.onModel">
+<code class="descclassname">equibel.asprin.</code><code class="descname">onModel</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/asprin.html#onModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.asprin.onModel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.asprin.onModelMany">
+<code class="descclassname">equibel.asprin.</code><code class="descname">onModelMany</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/asprin.html#onModelMany"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.asprin.onModelMany" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.asprin.printShown">
+<code class="descclassname">equibel.asprin.</code><code class="descname">printShown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/asprin.html#printShown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.asprin.printShown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.asprin.printShownOpt">
+<code class="descclassname">equibel.asprin.</code><code class="descname">printShownOpt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/asprin.html#printShownOpt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.asprin.printShownOpt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-equibel.draw">
+<span id="equibel-draw-module"></span><h2>equibel.draw module<a class="headerlink" href="#module-equibel.draw" title="Permalink to this headline">¶</a></h2>
+<p>Provides drawing functions that enable visualization of:</p>
+<ol class="arabic simple">
+<li>Arbitrary graphs and associated scenarios;</li>
+<li>Model graphs corresponding to base graphs, for the 
+restricted case where the base graphs are paths.</li>
+</ol>
+<p>This file defines functions that extend the graph drawing capabilities 
+of NetworkX by adding the option to display formulas associated with nodes.</p>
+<p>Visualization of model graphs is limited to the case where the 
+base graph is a path graph; this is not due to technical constraints, 
+but rather due to the fact that it is difficult to spatially lay 
+out nodes of arbitrary graphs in such a way that the resulting model 
+graph is human-readable.</p>
+<dl class="function">
+<dt id="equibel.draw.allmin">
+<code class="descclassname">equibel.draw.</code><code class="descname">allmin</code><span class="sig-paren">(</span><em>lst</em>, <em>less_than=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/draw.html#allmin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.draw.allmin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.draw.copy_dict">
+<code class="descclassname">equibel.draw.</code><code class="descname">copy_dict</code><span class="sig-paren">(</span><em>source_dict</em>, <em>diffs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/draw.html#copy_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.draw.copy_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of source_dict, updated with the new key-value pairs in diffs.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.draw.draw_graph">
+<code class="descclassname">equibel.draw.</code><code class="descname">draw_graph</code><span class="sig-paren">(</span><em>G</em>, <em>pos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/draw.html#draw_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.draw.draw_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.draw.draw_model_lifting">
+<code class="descclassname">equibel.draw.</code><code class="descname">draw_model_lifting</code><span class="sig-paren">(</span><em>G</em>, <em>pos=None</em>, <em>show_only_min_edges=False</em>, <em>highlight_nodes=[]</em>, <em>highlight_color='#33FF99'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/draw.html#draw_model_lifting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.draw.draw_model_lifting" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.draw.draw_path_model_lifting">
+<code class="descclassname">equibel.draw.</code><code class="descname">draw_path_model_lifting</code><span class="sig-paren">(</span><em>G</em>, <em>R1=None</em>, <em>R2=None</em>, <em>show_only_min_edges=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/draw.html#draw_path_model_lifting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.draw.draw_path_model_lifting" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.draw.find_diff_nodes">
+<code class="descclassname">equibel.draw.</code><code class="descname">find_diff_nodes</code><span class="sig-paren">(</span><em>S</em>, <em>T</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/draw.html#find_diff_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.draw.find_diff_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of nodes that have different formulas in graphs S and T.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.draw.min_model_edges">
+<code class="descclassname">equibel.draw.</code><code class="descname">min_model_edges</code><span class="sig-paren">(</span><em>edge_change_sets</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/draw.html#min_model_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.draw.min_model_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.draw.model_set">
+<code class="descclassname">equibel.draw.</code><code class="descname">model_set</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/draw.html#model_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.draw.model_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a model from a dictionary representation to a set representation.</p>
+<p>Given a <code class="docutils literal"><span class="pre">model</span></code> represented by a dictionary mapping atoms to Boolean values, 
+this function returns the <em>set</em> of atoms that are mapped to <code class="docutils literal"><span class="pre">True</span></code> in the dictionary.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.draw.models_with_all_atoms">
+<code class="descclassname">equibel.draw.</code><code class="descname">models_with_all_atoms</code><span class="sig-paren">(</span><em>formula</em>, <em>atoms</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/draw.html#models_with_all_atoms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.draw.models_with_all_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a formula and a set of atoms (that do not necessarily appear in the formula), 
+and returns a set of <em>models</em> of the formula, where each model is represented by a 
+<em>dictionary</em> that maps each atom to a Boolean value, where atoms are drawn from the 
+set of atoms that appear in <code class="docutils literal"><span class="pre">formula</span></code> <em>and</em> the set of atoms represented by <code class="docutils literal"><span class="pre">atoms</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>formula</strong> : A Sympy formula.</p>
+<p class="last"><strong>atoms</strong> : A set of Sympy atoms.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.draw.symmetric_diff">
+<code class="descclassname">equibel.draw.</code><code class="descname">symmetric_diff</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/draw.html#symmetric_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.draw.symmetric_diff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the symmetric difference of sets <code class="docutils literal"><span class="pre">a</span></code> and <code class="docutils literal"><span class="pre">b</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.draw.tablize">
+<code class="descclassname">equibel.draw.</code><code class="descname">tablize</code><span class="sig-paren">(</span><em>atoms</em>, <em>truths={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/draw.html#tablize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.draw.tablize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-equibel.formulagen">
+<span id="equibel-formulagen-module"></span><h2>equibel.formulagen module<a class="headerlink" href="#module-equibel.formulagen" title="Permalink to this headline">¶</a></h2>
+<p>This file contains functions to generate random propositional formulas.</p>
+<dl class="function">
+<dt id="equibel.formulagen.random_formula">
+<code class="descclassname">equibel.formulagen.</code><code class="descname">random_formula</code><span class="sig-paren">(</span><em>num_atoms=3</em>, <em>num_connectives=3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/formulagen.html#random_formula"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.formulagen.random_formula" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.formulagen.random_formula_simplified">
+<code class="descclassname">equibel.formulagen.</code><code class="descname">random_formula_simplified</code><span class="sig-paren">(</span><em>num_atoms=3</em>, <em>num_connectives=3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/formulagen.html#random_formula_simplified"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.formulagen.random_formula_simplified" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.formulagen.simplify">
+<code class="descclassname">equibel.formulagen.</code><code class="descname">simplify</code><span class="sig-paren">(</span><em>formula</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/formulagen.html#simplify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.formulagen.simplify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-equibel.graph">
+<span id="equibel-graph-module"></span><h2>equibel.graph module<a class="headerlink" href="#module-equibel.graph" title="Permalink to this headline">¶</a></h2>
+<p>The EquibelGraph class represents a graph $G$ together with an associated 
+$G$-scenario $sigma$. It extends the NetworkX <code class="docutils literal"><span class="pre">Graph</span></code> class and adds the 
+ability to associate propositional formulas with nodes. Such formulas are 
+represented using Sympy formula objects, from the <code class="docutils literal"><span class="pre">logic</span></code> module of the 
+Sympy package for symbolic mathematics.</p>
+<dl class="class">
+<dt id="equibel.graph.EquibelGraph">
+<em class="property">class </em><code class="descclassname">equibel.graph.</code><code class="descname">EquibelGraph</code><span class="sig-paren">(</span><em>data=None</em>, <em>**attr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graph.html#EquibelGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graph.EquibelGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">networkx.classes.graph.Graph</span></code></p>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
+<dl class="method">
+<dt id="equibel.graph.EquibelGraph.add_formula">
+<code class="descname">add_formula</code><span class="sig-paren">(</span><em>node_id</em>, <em>formula</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graph.html#EquibelGraph.add_formula"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graph.EquibelGraph.add_formula" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a formula to the set of formulas associated with a node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>node_id</strong> : The identifier of the desired node (usually an int)</p>
+<p><strong>formula</strong> : This can be either a <em>Sympy formula object</em>, or a <em>string</em></p>
+<blockquote class="last">
+<div><p>representing a formua in infix notation</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">EquibelGraph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Create a Sympy formula object and associate it with node 1:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">form</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">parse_formula</span><span class="p">(</span><span class="s1">&#39;p &amp; q&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">form</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formulas</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">set([And(p, q)])</span>
+</pre></div>
+</div>
+<p>Add a formula using a formula string expressed in infix notation:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;q | ~r&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formulas</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">set([Or(Not(r), q), And(p, q)])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="equibel.graph.EquibelGraph.atoms">
+<code class="descname">atoms</code><span class="sig-paren">(</span><em>node_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graph.html#EquibelGraph.atoms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graph.EquibelGraph.atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns either the set of atoms used by a specific node in the graph, or 
+the set of all atoms used by <em>any</em> node in the graph.</p>
+<p>If <code class="docutils literal"><span class="pre">node_id</span></code> is not <code class="docutils literal"><span class="pre">None</span></code>, then this function returns the set of 
+atoms used by the formula at <code class="docutils literal"><span class="pre">node_id</span></code>; if <code class="docutils literal"><span class="pre">node_id</span></code> is <code class="docutils literal"><span class="pre">None</span></code>, then 
+this function returns the set of all atoms used by formulas of <em>any</em> node 
+in the graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_id</strong> : The identifier of the desired node (usually an int)</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;p -&gt; q&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;q | ~r&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">set([p, q])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">set([r, q])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">atoms</span><span class="p">()</span>
+<span class="go">set([p, r, q])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="equibel.graph.EquibelGraph.clear_formulas">
+<code class="descname">clear_formulas</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graph.html#EquibelGraph.clear_formulas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graph.EquibelGraph.clear_formulas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes all formulas from all nodes in the graph.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;p | (q &amp; r)&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;~p&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;q | r&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formulas</span><span class="p">()</span>
+<span class="go">{1: set([Or(And(q, r), p)]), 2: set([Not(p)]), 3: set([Or(q, r)])}</span>
+</pre></div>
+</div>
+<p>Now clear all formulas:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">clear_formulas</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formulas</span><span class="p">()</span>
+<span class="go">{0: set([]), 1: set([]), 2: set([]), 3: set([])}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="equibel.graph.EquibelGraph.clear_formulas_from">
+<code class="descname">clear_formulas_from</code><span class="sig-paren">(</span><em>node_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graph.html#EquibelGraph.clear_formulas_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graph.EquibelGraph.clear_formulas_from" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes all formulas from a node. Thus, resets a node to a blank slate.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_id</strong> : The identifier of the desired node (usually an int)</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">EquibelGraph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;p &amp; q | r&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formulas</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">set([Or(And(p, q), r)])</span>
+</pre></div>
+</div>
+<p>Clear the formulas from node 1:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">clear_formulas_from</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formulas</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">set([])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="equibel.graph.EquibelGraph.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graph.html#EquibelGraph.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graph.EquibelGraph.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a deep copy of this graph.</p>
+<p class="rubric">Examples</p>
+<p>Create a graph:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Create a copy of the graph:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">C</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The copy is independently modifiable:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">C</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">C</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+<span class="go">[(0, 1), (1, 2), (2, 3)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+<span class="go">[(0, 1), (1, 2)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="equibel.graph.EquibelGraph.formula_conj">
+<code class="descname">formula_conj</code><span class="sig-paren">(</span><em>node_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graph.html#EquibelGraph.formula_conj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graph.EquibelGraph.formula_conj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the conjunction of all formulas associated with a given node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_id</strong> : The identifier of the desired node (usually an int)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="equibel.graph.EquibelGraph.formulas">
+<code class="descname">formulas</code><span class="sig-paren">(</span><em>node_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graph.html#EquibelGraph.formulas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graph.EquibelGraph.formulas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the set of formulas associated with <code class="docutils literal"><span class="pre">node_id</span></code>, or, 
+if <code class="docutils literal"><span class="pre">node_id</span></code> is <code class="docutils literal"><span class="pre">None</span></code>, returns a dictionary of 
+(<code class="docutils literal"><span class="pre">node_id</span></code>, <code class="docutils literal"><span class="pre">formula_set</span></code>) mappings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_id</strong> : The identifier of the desired node (usually an integer)</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;p &amp; q&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;p | ~r&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Get the formulas at a specific node:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formulas</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">set([And(p, q)])</span>
+</pre></div>
+</div>
+<p>Get a dictionary showing the formulas at every node:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formulas</span><span class="p">()</span>
+<span class="go">{0: set([And(p, q)]), 1: set([Or(Not(r), p)]), 2: set([]), 3: set([])}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="equibel.graph.EquibelGraph.to_asp">
+<code class="descname">to_asp</code><span class="sig-paren">(</span><em>atoms=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graph.html#EquibelGraph.to_asp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graph.EquibelGraph.to_asp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the ASP encoding of this EquibelGraph object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>atoms</strong> : An iterable container of Sympy atoms</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="equibel.graph.EquibelGraphException">
+<em class="property">exception </em><code class="descclassname">equibel.graph.</code><code class="descname">EquibelGraphException</code><a class="reference internal" href="_modules/equibel/graph.html#EquibelGraphException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graph.EquibelGraphException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-equibel.graphgen">
+<span id="equibel-graphgen-module"></span><h2>equibel.graphgen module<a class="headerlink" href="#module-equibel.graphgen" title="Permalink to this headline">¶</a></h2>
+<p>Equibel wrappers for NetworkX graph generator functions.</p>
+<p>This file contains wrapper functions for several networkx graph 
+generators. The wrappers return EquibelGraph objects that contain 
+the corresponding NetworkX graphs.</p>
+<dl class="function">
+<dt id="equibel.graphgen.complete_graph">
+<code class="descclassname">equibel.graphgen.</code><code class="descname">complete_graph</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graphgen.html#complete_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graphgen.complete_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an undirected complete graph on n nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>n</strong> : int</p>
+<blockquote>
+<div><p>The desired number of nodes for the complete graph.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>G</strong> : EquibelGraph</p>
+<blockquote class="last">
+<div><p>An EquibelGraph containing a complete graph on <code class="docutils literal"><span class="pre">n</span></code> nodes.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">complete_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.graphgen.connected_watts_strogatz_graph">
+<code class="descclassname">equibel.graphgen.</code><code class="descname">connected_watts_strogatz_graph</code><span class="sig-paren">(</span><em>n=10</em>, <em>k=4</em>, <em>p=0.5</em>, <em>tries=100</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graphgen.html#connected_watts_strogatz_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graphgen.connected_watts_strogatz_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.graphgen.erdos_renyi_graph">
+<code class="descclassname">equibel.graphgen.</code><code class="descname">erdos_renyi_graph</code><span class="sig-paren">(</span><em>n</em>, <em>p</em>, <em>seed=None</em>, <em>directed=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graphgen.html#erdos_renyi_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graphgen.erdos_renyi_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.graphgen.gnm_random_graph">
+<code class="descclassname">equibel.graphgen.</code><code class="descname">gnm_random_graph</code><span class="sig-paren">(</span><em>n</em>, <em>m</em>, <em>seed=None</em>, <em>directed=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graphgen.html#gnm_random_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graphgen.gnm_random_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.graphgen.path_graph">
+<code class="descclassname">equibel.graphgen.</code><code class="descname">path_graph</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graphgen.html#path_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graphgen.path_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an undirected line graph on n nodes, numbered using 
+the integers 0 to n-1, inclusive.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>n</strong> : int</p>
+<blockquote>
+<div><p>The desired number of nodes for the line graph.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>G</strong> : EquibelGraph</p>
+<blockquote class="last">
+<div><p>An EquibelGraph representing a path graph on <code class="docutils literal"><span class="pre">n</span></code> nodes.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Create an undirected path graph 0 &lt;-&gt; 1 &lt;-&gt; 2 &lt;-&gt; 3:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.graphgen.petersen_graph">
+<code class="descclassname">equibel.graphgen.</code><code class="descname">petersen_graph</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graphgen.html#petersen_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graphgen.petersen_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.graphgen.star_graph">
+<code class="descclassname">equibel.graphgen.</code><code class="descname">star_graph</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graphgen.html#star_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graphgen.star_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an undirected star graph on n+1 nodes, with one 
+central node, and n outer nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>n</strong> : int</p>
+<blockquote>
+<div><p>The desired number of outer nodes for the star graph.
+The generated graph will have a central node numbered 
+<code class="docutils literal"><span class="pre">0</span></code>, and <code class="docutils literal"><span class="pre">n</span></code> outer nodes numbered from <code class="docutils literal"><span class="pre">1</span></code> to <code class="docutils literal"><span class="pre">n</span></code>.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>G</strong> : EquibelGraph</p>
+<blockquote class="last">
+<div><p>An EquibelGraph containing a star graph on <code class="docutils literal"><span class="pre">n+1</span></code> nodes.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">star_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.graphgen.waxman_graph">
+<code class="descclassname">equibel.graphgen.</code><code class="descname">waxman_graph</code><span class="sig-paren">(</span><em>n</em>, <em>alpha=0.4</em>, <em>beta=0.1</em>, <em>L=None</em>, <em>domain=(0</em>, <em>0</em>, <em>1</em>, <em>1)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/graphgen.html#waxman_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.graphgen.waxman_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-equibel.solver">
+<span id="equibel-solver-module"></span><h2>equibel.solver module<a class="headerlink" href="#module-equibel.solver" title="Permalink to this headline">¶</a></h2>
+<p>This file contains functions that implement the following approaches 
+to consistency-based belief change in a graph-oriented setting:</p>
+<ol class="arabic simple">
+<li>Global completion: <code class="docutils literal"><span class="pre">eb.global_completion(G)</span></code></li>
+<li>Simple iteration: <code class="docutils literal"><span class="pre">eb.iterate_simple(G)</span></code></li>
+<li>Expanding iteration: <code class="docutils literal"><span class="pre">eb.iterate_expanding(G)</span></code></li>
+<li>Augmenting iteration: <code class="docutils literal"><span class="pre">eb.iterate_augmenting(G)</span></code></li>
+<li>The ring method: <code class="docutils literal"><span class="pre">eb.iterate_ring(G)</span></code></li>
+</ol>
+<p>Each of the approaches has two separate implementations, corresponding to 
+the <em>semantic</em> and <em>syntactic</em> characterizations. In addition, there are 
+two ways of maximizing equivalences used by any approach: <em>inclusion-based</em> 
+or <em>cardinality-based</em> maximization.</p>
+<dl class="docutils">
+<dt>Each function listed above takes three optional arguments: </dt>
+<dd><ol class="first last arabic simple">
+<li><code class="docutils literal"><span class="pre">method</span></code>, which is a string that is either &#8220;semantic&#8221; or &#8220;syntactic&#8221;, 
+representing the method by which to perform the completion; e.g. based 
+on either the syntactic or semantic characterizations</li>
+<li><code class="docutils literal"><span class="pre">opt_type</span></code>, which is a string that is either &#8220;inclusion&#8221; or &#8220;cardinality&#8221;, 
+representing the type of maximization to be  performed over equivalences</li>
+<li><code class="docutils literal"><span class="pre">simplify</span></code>, which is a Boolean flag specifying whether to simplify the 
+final formulas at each node.</li>
+</ol>
+</dd>
+</dl>
+<dl class="function">
+<dt id="equibel.solver.augmenting_iteration_maximal_answer_sets">
+<code class="descclassname">equibel.solver.</code><code class="descname">augmenting_iteration_maximal_answer_sets</code><span class="sig-paren">(</span><em>G</em>, <em>distances</em>, <em>center</em>, <em>eccentricity</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#augmenting_iteration_maximal_answer_sets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.augmenting_iteration_maximal_answer_sets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.augmenting_semantic">
+<code class="descclassname">equibel.solver.</code><code class="descname">augmenting_semantic</code><span class="sig-paren">(</span><em>G</em>, <em>center</em>, <em>atoms</em>, <em>opt_type='inclusion'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#augmenting_semantic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.augmenting_semantic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.augmenting_syntactic">
+<code class="descclassname">equibel.solver.</code><code class="descname">augmenting_syntactic</code><span class="sig-paren">(</span><em>G</em>, <em>center</em>, <em>atoms</em>, <em>opt_type='inclusion'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#augmenting_syntactic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.augmenting_syntactic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.conjunction">
+<code class="descclassname">equibel.solver.</code><code class="descname">conjunction</code><span class="sig-paren">(</span><em>formulas</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#conjunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.conjunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the conjunction of a set of propositional formulas.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>formulas</strong> : an iterable container of Sympy formulas</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.create_distance_string">
+<code class="descclassname">equibel.solver.</code><code class="descname">create_distance_string</code><span class="sig-paren">(</span><em>G</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#create_distance_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.create_distance_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a string containing the ASP encoding of the shortest-path 
+distances between all pairs of nodes in <code class="docutils literal"><span class="pre">G</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>G</strong> : An EquibelGraph object.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dist_str</strong> : A string containing <code class="docutils literal"><span class="pre">dist/3</span></code> predicates, where <code class="docutils literal"><span class="pre">dist(x,y,d)</span></code></p>
+<blockquote class="last">
+<div><p>represents that the distance between nodes <code class="docutils literal"><span class="pre">x</span></code> and <code class="docutils literal"><span class="pre">y</span></code> is <code class="docutils literal"><span class="pre">d</span></code>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.create_eq_dicts">
+<code class="descclassname">equibel.solver.</code><code class="descname">create_eq_dicts</code><span class="sig-paren">(</span><em>answer_sets</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#create_eq_dicts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.create_eq_dicts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts <code class="docutils literal"><span class="pre">eq/3</span></code> predicates from a set of answer sets, and structures them into a 
+dictionary that makes it easy to retrieve the set of atoms on which two nodes agree.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>answer_sets</strong> : An iterable container of answer sets.</p>
+<blockquote class="last">
+<div><p>Each answer set is represented as a list of <em>terms</em> (defined in the 
+<code class="docutils literal"><span class="pre">gringo</span></code> module).</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.disjunction">
+<code class="descclassname">equibel.solver.</code><code class="descname">disjunction</code><span class="sig-paren">(</span><em>formulas</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#disjunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.disjunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the disjunction of a set of propositional formulas.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>formulas</strong> : An iterable container of Sympy formulas</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.expanding_maximal_answer_sets">
+<code class="descclassname">equibel.solver.</code><code class="descname">expanding_maximal_answer_sets</code><span class="sig-paren">(</span><em>G</em>, <em>distances</em>, <em>center</em>, <em>radius</em>, <em>atoms=None</em>, <em>neighborhood_type='/Users/paulvicol/Code/Python/equibel_refactor7/equibel/asp/neighborhoods/uspt.lp'</em>, <em>method='semantic'</em>, <em>opt_type='inclusion'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#expanding_maximal_answer_sets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.expanding_maximal_answer_sets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.expanding_semantic">
+<code class="descclassname">equibel.solver.</code><code class="descname">expanding_semantic</code><span class="sig-paren">(</span><em>G</em>, <em>center</em>, <em>atoms</em>, <em>opt_type='inclusion'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#expanding_semantic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.expanding_semantic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the formula for node <code class="docutils literal"><span class="pre">center</span></code> in graph <code class="docutils literal"><span class="pre">G</span></code> that results from 
+one iteration of the expanding approach, using the <em>semantic characterization</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>G</strong> : An <code class="docutils literal"><span class="pre">EquibelGraph</span></code> object, representing a graph and an associated scenario</p>
+<p><strong>center</strong> : A node in <code class="docutils literal"><span class="pre">G</span></code> for which to compute the result of simple iteration</p>
+<p><strong>atoms</strong> : A set of Sympy atomic propositions, representing the <em>alphabet</em>.</p>
+<p><strong>opt_type</strong> : A string that is either &#8220;inclusion&#8221; or &#8220;cardinality&#8221;, representing</p>
+<blockquote class="last">
+<div><p>the type of maximization to be performed over equivalences.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.expanding_syntactic">
+<code class="descclassname">equibel.solver.</code><code class="descname">expanding_syntactic</code><span class="sig-paren">(</span><em>G</em>, <em>center</em>, <em>atoms</em>, <em>opt_type='inclusion'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#expanding_syntactic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.expanding_syntactic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the formula for node <code class="docutils literal"><span class="pre">center</span></code> in graph <code class="docutils literal"><span class="pre">G</span></code> that results from 
+one iteration of the expanding approach, using the <em>syntactic characterization</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>G</strong> : An <code class="docutils literal"><span class="pre">EquibelGraph</span></code> object, representing a graph and an associated scenario</p>
+<p><strong>center</strong> : A node in <code class="docutils literal"><span class="pre">G</span></code> for which to compute the result of simple iteration</p>
+<p><strong>atoms</strong> : A set of Sympy atomic propositions, representing the <em>alphabet</em>.</p>
+<p><strong>opt_type</strong> : A string that is either &#8220;inclusion&#8221; or &#8220;cardinality&#8221;, representing</p>
+<blockquote class="last">
+<div><p>the type of maximization to be performed over equivalences.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.formula_from_eq_sets">
+<code class="descclassname">equibel.solver.</code><code class="descname">formula_from_eq_sets</code><span class="sig-paren">(</span><em>G</em>, <em>current_node</em>, <em>eq_sets</em>, <em>atoms</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#formula_from_eq_sets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.formula_from_eq_sets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.formula_from_models">
+<code class="descclassname">equibel.solver.</code><code class="descname">formula_from_models</code><span class="sig-paren">(</span><em>models</em>, <em>alphabet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#formula_from_models"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.formula_from_models" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a formula in disjunctive normal form (DNF) given a set of models 
+and an alphabet.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>models</strong> : An iterable container (set, list, etc.) of <em>sets of atoms</em>, where</p>
+<blockquote>
+<div><p>an atom is represented by a Sympy symbol</p>
+</div></blockquote>
+<p class="last"><strong>alphabet</strong> : An iterable container of atoms, represented by Sympy symbols</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.global_completion">
+<code class="descclassname">equibel.solver.</code><code class="descname">global_completion</code><span class="sig-paren">(</span><em>G</em>, <em>method='semantic'</em>, <em>opt_type='inclusion'</em>, <em>simplify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#global_completion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.global_completion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the global completion of a graph and associated scenario.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>G</strong> : An EquibelGraph object, representing a graph and associated scenario</p>
+<p><strong>method</strong> : A string that is either &#8220;semantic&#8221; or &#8220;syntactic&#8221;, representing the</p>
+<blockquote>
+<div><p>method by which to perform the completion; e.g. based on either the 
+syntactic or semantic characterizations.</p>
+</div></blockquote>
+<p><strong>opt_type</strong> : A string that is either &#8220;inclusion&#8221; or &#8220;cardinality&#8221;,</p>
+<blockquote>
+<div><p>representing the type of maximization to be performed 
+over equivalences.</p>
+</div></blockquote>
+<p><strong>simplify</strong> : A Boolean flag specifying whether to simplify the final formulas at each node.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>R</strong> : A new EquibelGraph object, representing the global completion of <code class="docutils literal"><span class="pre">G</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.global_completion_semantic">
+<code class="descclassname">equibel.solver.</code><code class="descname">global_completion_semantic</code><span class="sig-paren">(</span><em>G</em>, <em>opt_type='inclusion'</em>, <em>simplify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#global_completion_semantic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.global_completion_semantic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the global completion of a graph and associated scenario, using the 
+<strong>semantic characterization</strong>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>G</strong> : An EquibelGraph object, representing a graph and associated scenario</p>
+<p><strong>opt_type</strong> : A string that is either &#8220;inclusion&#8221; or &#8220;cardinality&#8221;, representing</p>
+<blockquote>
+<div><p>the type of maximization to be performed over equivalences.</p>
+</div></blockquote>
+<p><strong>simplify</strong> : A Boolean flag specifying whether to simplify the final formulas at each node.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>R</strong> : A new EquibelGraph object, representing the global completion of <code class="docutils literal"><span class="pre">G</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.global_completion_syntactic">
+<code class="descclassname">equibel.solver.</code><code class="descname">global_completion_syntactic</code><span class="sig-paren">(</span><em>G</em>, <em>opt_type='inclusion'</em>, <em>simplify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#global_completion_syntactic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.global_completion_syntactic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the global completion of a graph and associated scenario, using the 
+<strong>syntactic characterization</strong>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>G</strong> : An EquibelGraph object, representing a graph and associated scenario</p>
+<p><strong>opt_type</strong> : A string that is either &#8220;inclusion&#8221; or &#8220;cardinality&#8221;, representing</p>
+<blockquote>
+<div><p>the type of maximization to be performed over equivalences.</p>
+</div></blockquote>
+<p><strong>simplify</strong> : A Boolean flag specifying whether to simplify the final formulas at each node.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>R</strong> : A new EquibelGraph object, representing the global completion of <code class="docutils literal"><span class="pre">G</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.iterate_augmenting">
+<code class="descclassname">equibel.solver.</code><code class="descname">iterate_augmenting</code><span class="sig-paren">(</span><em>G</em>, <em>method='semantic'</em>, <em>opt_type='inclusion'</em>, <em>simplify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#iterate_augmenting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.iterate_augmenting" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.iterate_augmenting_fixpoint">
+<code class="descclassname">equibel.solver.</code><code class="descname">iterate_augmenting_fixpoint</code><span class="sig-paren">(</span><em>G</em>, <em>method='semantic'</em>, <em>opt_type='inclusion'</em>, <em>simplify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#iterate_augmenting_fixpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.iterate_augmenting_fixpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the fixpoint of <em>augmenting iteration</em> with respect the graph <code class="docutils literal"><span class="pre">G</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.iterate_expanding">
+<code class="descclassname">equibel.solver.</code><code class="descname">iterate_expanding</code><span class="sig-paren">(</span><em>G</em>, <em>method='semantic'</em>, <em>opt_type='inclusion'</em>, <em>simplify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#iterate_expanding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.iterate_expanding" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.iterate_expanding_fixpoint">
+<code class="descclassname">equibel.solver.</code><code class="descname">iterate_expanding_fixpoint</code><span class="sig-paren">(</span><em>G</em>, <em>method='semantic'</em>, <em>opt_type='inclusion'</em>, <em>simplify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#iterate_expanding_fixpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.iterate_expanding_fixpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the fixpoint of <em>expanding iteration</em> with respect the graph <code class="docutils literal"><span class="pre">G</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.iterate_function_fixpoint">
+<code class="descclassname">equibel.solver.</code><code class="descname">iterate_function_fixpoint</code><span class="sig-paren">(</span><em>G</em>, <em>iteration_function</em>, <em>method='semantic'</em>, <em>opt_type='inclusion'</em>, <em>simplify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#iterate_function_fixpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.iterate_function_fixpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the fixpoint of <code class="docutils literal"><span class="pre">iteration_function</span></code> applied on the graph <code class="docutils literal"><span class="pre">G</span></code>.</p>
+<p>This is a higher-order function that repeatedly applies a <em>function</em> <code class="docutils literal"><span class="pre">iteration_function</span></code>, 
+starting with the initial graph <code class="docutils literal"><span class="pre">G</span></code>, producing a sequence of <code class="docutils literal"><span class="pre">EquibelGraph</span></code> objects, 
+until reaching a state where the current <code class="docutils literal"><span class="pre">EquibelGraph</span></code> is equal to the previous one; then, 
+the final <code class="docutils literal"><span class="pre">EquibelGraph</span></code> is returned.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>G</strong> : An <code class="docutils literal"><span class="pre">EquibelGraph</span></code> object</p>
+<p><strong>iteration_function</strong> : The function to be applied iteratively, starting with <code class="docutils literal"><span class="pre">G</span></code></p>
+<p><strong>method</strong> : A string that is either &#8220;semantic&#8221; or &#8220;syntactic&#8221;, representing the</p>
+<blockquote>
+<div><p>method by which to perform the completion; e.g. based on either the 
+syntactic or semantic characterizations.</p>
+</div></blockquote>
+<p><strong>opt_type</strong> : A string that is either &#8220;inclusion&#8221; or &#8220;cardinality&#8221;,</p>
+<blockquote>
+<div><p>representing the type of maximization to be performed 
+over equivalences.</p>
+</div></blockquote>
+<p class="last"><strong>simplify</strong> : A Boolean flag specifying whether to simplify the final formulas at each node.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.iterate_ring">
+<code class="descclassname">equibel.solver.</code><code class="descname">iterate_ring</code><span class="sig-paren">(</span><em>G</em>, <em>method='semantic'</em>, <em>opt_type='inclusion'</em>, <em>simplify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#iterate_ring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.iterate_ring" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.iterate_ring_fixpoint">
+<code class="descclassname">equibel.solver.</code><code class="descname">iterate_ring_fixpoint</code><span class="sig-paren">(</span><em>G</em>, <em>method='semantic'</em>, <em>opt_type='inclusion'</em>, <em>simplify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#iterate_ring_fixpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.iterate_ring_fixpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the fixpoint of the <em>ring method</em> with respect to the graph <code class="docutils literal"><span class="pre">G</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.iterate_simple">
+<code class="descclassname">equibel.solver.</code><code class="descname">iterate_simple</code><span class="sig-paren">(</span><em>G</em>, <em>method='semantic'</em>, <em>opt_type='inclusion'</em>, <em>simplify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#iterate_simple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.iterate_simple" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.iterate_simple_fixpoint">
+<code class="descclassname">equibel.solver.</code><code class="descname">iterate_simple_fixpoint</code><span class="sig-paren">(</span><em>G</em>, <em>method='semantic'</em>, <em>opt_type='inclusion'</em>, <em>simplify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#iterate_simple_fixpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.iterate_simple_fixpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the fixpoint of <em>simple iteration</em> with respect the graph <code class="docutils literal"><span class="pre">G</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.maximal_answer_sets">
+<code class="descclassname">equibel.solver.</code><code class="descname">maximal_answer_sets</code><span class="sig-paren">(</span><em>G</em>, <em>method='semantic'</em>, <em>opt_type='inclusion'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#maximal_answer_sets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.maximal_answer_sets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.merge_dicts">
+<code class="descclassname">equibel.solver.</code><code class="descname">merge_dicts</code><span class="sig-paren">(</span><em>dictionaries</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#merge_dicts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.merge_dicts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merges multiple separate dictionaries into a single dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dictionaries</strong> : An iterable container of Python dictionaries.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>merged</strong> : A single dictionary that represents the result of merging the all the</p>
+<blockquote class="last">
+<div><p>dicts in <code class="docutils literal"><span class="pre">dictionaries</span></code>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.only_one_model_for_each_eq_set">
+<code class="descclassname">equibel.solver.</code><code class="descname">only_one_model_for_each_eq_set</code><span class="sig-paren">(</span><em>models_for_eq_set_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#only_one_model_for_each_eq_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.only_one_model_for_each_eq_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether each EQ set in <code class="docutils literal"><span class="pre">models_for_eq_set_dict</span></code> is associated with 
+<em>only one</em> model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>models_for_eq_set_dict</strong> : A dictionary where <em>keys</em> are EQ sets (represented by any</p>
+<blockquote>
+<div><p>hashable objects, in this case strings) and <em>values</em> are 
+sets of models (where each model is a set of atoms).</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Returns True if each EQ set in the dictionary is associated with a single model;</p>
+<p>returns False otherwise (that is, if any EQ set in the dictionary is associated</p>
+<p class="last">with <em>more than</em> one model).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.parallel_iteration">
+<code class="descclassname">equibel.solver.</code><code class="descname">parallel_iteration</code><span class="sig-paren">(</span><em>G</em>, <em>iteration_function</em>, <em>opt_type='inclusion'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#parallel_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.parallel_iteration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies <code class="docutils literal"><span class="pre">iteration_function</span></code> over all nodes in <code class="docutils literal"><span class="pre">G</span></code> <em>in parallel</em> (using process pools).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>G</strong> : An EquibelGraph object</p>
+<p><strong>iteration_function</strong> : A function that conforms to the following input/output interface:</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt><strong>Input:</strong> Takes a graph <code class="docutils literal"><span class="pre">G</span></code>, a node <code class="docutils literal"><span class="pre">center</span></code> for which to compute </dt>
+<dd><p class="first last">the results of the iteration, and a set of <code class="docutils literal"><span class="pre">atoms</span></code>.</p>
+</dd>
+<dt><strong>Output:</strong> Returns a singleton dictionary of the form <code class="docutils literal"><span class="pre">{</span> <span class="pre">center:</span> <span class="pre">formula</span> <span class="pre">}</span></code></dt>
+<dd><p class="first last">mapping the node <code class="docutils literal"><span class="pre">center</span></code> to a formula resulting from the iteration.</p>
+</dd>
+</dl>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.print_formulas">
+<code class="descclassname">equibel.solver.</code><code class="descname">print_formulas</code><span class="sig-paren">(</span><em>G</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#print_formulas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.print_formulas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pretty-prints the formulas associated with nodes in <code class="docutils literal"><span class="pre">G</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>G</strong> : An <code class="docutils literal"><span class="pre">EquibelGraph</span></code> object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.revise">
+<code class="descclassname">equibel.solver.</code><code class="descname">revise</code><span class="sig-paren">(</span><em>K</em>, <em>alpha</em>, <em>simplify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#revise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.revise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Revises a knowledge base $K$ by a formula $lpha$.</p>
+<dl class="docutils">
+<dt>This function implements the consistency-based revision operator introduced in [?], by:</dt>
+<dd><ol class="first last arabic simple">
+<li>Constructing a two-node path graph 0 &lt;&#8211;&gt; 1;</li>
+<li>Associating the formulas in $K$ with node 0, and the formula $lpha$ with node 1;</li>
+<li>Computing the new belief at node 1 by determining what parts of $K$ can be incorporated 
+while maintaining consistency with $lpha$.</li>
+</ol>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>K</strong> : A formula string or a list of formula strings (taken conjunctively as a knowledge base)</p>
+<p><strong>alpha</strong> : A formula string or a list of formula strings (taken conjunctively)</p>
+<p><strong>simplify</strong> : A Boolean flag specifying whether to simplify the result of revision.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>R</strong> : A single formula representing the resultant knowledge base $K dot{+} lpha$, taken</p>
+<blockquote class="last">
+<div><p>conjunctively.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>The simplest way to call this function is to provide a single formula for each of <code class="docutils literal"><span class="pre">K</span></code> 
+and <code class="docutils literal"><span class="pre">alpha</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eb</span><span class="o">.</span><span class="n">revise</span><span class="p">(</span><span class="s1">&#39;p &amp; q&#39;</span><span class="p">,</span> <span class="s1">&#39;~p | ~q&#39;</span><span class="p">)</span>
+<span class="go">And(Or(And(Not(p), q), And(Not(q), p)), Or(Not(p), Not(q)))</span>
+</pre></div>
+</div>
+<p>To pretty-print formulas in infix notation with Unicode symbols, we can use:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eb</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">eb</span><span class="o">.</span><span class="n">revise</span><span class="p">(</span><span class="s1">&#39;p &amp; q&#39;</span><span class="p">,</span> <span class="s1">&#39;~p | ~q&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Note that, by default, the formula representing the result of revision is not simplified.
+Setting the optional argument <code class="docutils literal"><span class="pre">simplify=True</span></code> enables this final simplification step:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eb</span><span class="o">.</span><span class="n">revise</span><span class="p">(</span><span class="s1">&#39;p &amp; q&#39;</span><span class="p">,</span> <span class="s1">&#39;~p | ~q&#39;</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">Or(And(Not(p), q), And(Not(q), p))</span>
+</pre></div>
+</div>
+<p>The above revision is equivalent to the following form, using a list of formula strings 
+[&#8216;p&#8217;, &#8216;q&#8217;] (taken conjunctively) instead of the single formula string &#8216;p &amp; q&#8217;:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eb</span><span class="o">.</span><span class="n">revise</span><span class="p">([</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;q&#39;</span><span class="p">],</span> <span class="s1">&#39;~p | ~q&#39;</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">Or(And(Not(p), q), And(Not(q), p))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.ring_semantic">
+<code class="descclassname">equibel.solver.</code><code class="descname">ring_semantic</code><span class="sig-paren">(</span><em>G</em>, <em>center</em>, <em>atoms</em>, <em>opt_type='inclusion'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#ring_semantic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.ring_semantic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.ring_syntactic">
+<code class="descclassname">equibel.solver.</code><code class="descname">ring_syntactic</code><span class="sig-paren">(</span><em>G</em>, <em>center</em>, <em>atoms</em>, <em>opt_type='inclusion'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#ring_syntactic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.ring_syntactic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.serial_iteration">
+<code class="descclassname">equibel.solver.</code><code class="descname">serial_iteration</code><span class="sig-paren">(</span><em>G</em>, <em>iteration_function</em>, <em>opt_type='inclusion'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#serial_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.serial_iteration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies <code class="docutils literal"><span class="pre">iteration_function</span></code> over all nodes in <code class="docutils literal"><span class="pre">G</span></code> in a <em>serial fashion</em> (i.e. one 
+node at a time).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>G</strong> : An EquibelGraph object</p>
+<p><strong>iteration_function</strong> : A function that conforms to the following input/output interface:</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt><strong>Input:</strong> Takes a graph <code class="docutils literal"><span class="pre">G</span></code>, a node <code class="docutils literal"><span class="pre">center</span></code> for which to compute </dt>
+<dd><p class="first last">the results of the iteration, and a set of <code class="docutils literal"><span class="pre">atoms</span></code>.</p>
+</dd>
+<dt><strong>Output:</strong> Returns a singleton dictionary of the form <code class="docutils literal"><span class="pre">{</span> <span class="pre">center:</span> <span class="pre">formula</span> <span class="pre">}</span></code></dt>
+<dd><p class="first last">mapping the node <code class="docutils literal"><span class="pre">center</span></code> to a formula resulting from the iteration.</p>
+</dd>
+</dl>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.simple_semantic">
+<code class="descclassname">equibel.solver.</code><code class="descname">simple_semantic</code><span class="sig-paren">(</span><em>G</em>, <em>center</em>, <em>atoms</em>, <em>opt_type='inclusion'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#simple_semantic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.simple_semantic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the formula for node <code class="docutils literal"><span class="pre">center</span></code> in graph <code class="docutils literal"><span class="pre">G</span></code> that results from 
+one iteration of the simple (fixed-radius) approach, using the <em>semantic characterization</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>G</strong> : An EquibelGraph object, representing a graph and an associated scenario</p>
+<p><strong>center</strong> : A node in <code class="docutils literal"><span class="pre">G</span></code> for which to compute the result of simple iteration</p>
+<p><strong>atoms</strong> : A set of Sympy atomic propositions, representing the <em>alphabet</em>.</p>
+<p><strong>opt_type</strong> : A string that is either &#8220;inclusion&#8221; or &#8220;cardinality&#8221;, representing</p>
+<blockquote class="last">
+<div><p>the type of maximization to be performed over equivalences.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.simple_syntactic">
+<code class="descclassname">equibel.solver.</code><code class="descname">simple_syntactic</code><span class="sig-paren">(</span><em>G</em>, <em>center</em>, <em>atoms</em>, <em>opt_type='inclusion'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#simple_syntactic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.simple_syntactic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the formula for node <code class="docutils literal"><span class="pre">center</span></code> in graph <code class="docutils literal"><span class="pre">G</span></code> that results from 
+one iteration of the simple (fixed-radius) approach, using the <em>syntactic characterization</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>G</strong> : An EquibelGraph object, representing a graph and an associated scenario</p>
+<p><strong>center</strong> : A node in <code class="docutils literal"><span class="pre">G</span></code> for which to compute the result of simple iteration</p>
+<p><strong>atoms</strong> : A set of Sympy atomic propositions, representing the <em>alphabet</em>.</p>
+<p><strong>opt_type</strong> : A string that is either &#8220;inclusion&#8221; or &#8220;cardinality&#8221;, representing</p>
+<blockquote class="last">
+<div><p>the type of maximization to be performed over equivalences.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.solver.simplify_all_formulas">
+<code class="descclassname">equibel.solver.</code><code class="descname">simplify_all_formulas</code><span class="sig-paren">(</span><em>G</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#simplify_all_formulas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.simplify_all_formulas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simplifies the formulas of all nodes in <code class="docutils literal"><span class="pre">G</span></code>.</p>
+<p>This function modifies <code class="docutils literal"><span class="pre">G</span></code> in place; it does <strong>not</strong> return a new graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>G</strong> : An <code class="docutils literal"><span class="pre">EquibelGraph</span></code> object.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-equibel">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-equibel" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">equibel package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-equibel.asprin">equibel.asprin module</a></li>
+<li><a class="reference internal" href="#module-equibel.draw">equibel.draw module</a></li>
+<li><a class="reference internal" href="#module-equibel.formulagen">equibel.formulagen module</a></li>
+<li><a class="reference internal" href="#module-equibel.graph">equibel.graph module</a></li>
+<li><a class="reference internal" href="#module-equibel.graphgen">equibel.graphgen module</a></li>
+<li><a class="reference internal" href="#module-equibel.solver">equibel.solver module</a></li>
+<li><a class="reference internal" href="#module-equibel">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">equibel</a><ul>
+      <li>Previous: <a href="modules.html" title="previous chapter">equibel</a></li>
+      <li>Next: <a href="equibel.asp.html" title="next chapter">equibel.asp package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/equibel.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Paul Vicol.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/equibel.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

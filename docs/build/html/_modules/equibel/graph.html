@@ -1,0 +1,409 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>equibel.graph &mdash; Equibel a1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'a1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Equibel a1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for equibel.graph</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;The EquibelGraph class represents a graph $G$ together with an associated </span>
+<span class="sd">$G$-scenario $\sigma$. It extends the NetworkX ``Graph`` class and adds the </span>
+<span class="sd">ability to associate propositional formulas with nodes. Such formulas are </span>
+<span class="sd">represented using Sympy formula objects, from the ``logic`` module of the </span>
+<span class="sd">Sympy package for symbolic mathematics.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1">#    Copyright (C) 2016</span>
+<span class="c1">#    Paul Vicol &lt;pvicol@sfu.ca&gt;</span>
+<span class="c1">#    All rights reserved.</span>
+<span class="c1">#    MIT license.</span>
+
+<span class="kn">from</span> <span class="nn">sympy.logic.boolalg</span> <span class="kn">import</span> <span class="n">simplify_logic</span><span class="p">,</span> <span class="n">true</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="kn">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">equibel</span> <span class="kn">as</span> <span class="nn">eb</span>
+
+
+<div class="viewcode-block" id="EquibelGraphException"><a class="viewcode-back" href="../../equibel.html#equibel.graph.EquibelGraphException">[docs]</a><span class="k">class</span> <span class="nc">EquibelGraphException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="EquibelGraph"><a class="viewcode-back" href="../../equibel.html#equibel.graph.EquibelGraph">[docs]</a><span class="k">class</span> <span class="nc">EquibelGraph</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">)</span>
+    
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Tests this graph for equality with ``other``. Two graphs are equal</span>
+<span class="sd">        if they contain the same nodes, edges, and formulas at each node.</span>
+
+<span class="sd">        This operation can be expensive, since it check whether formulas are </span>
+<span class="sd">        equivalent by first simplifying the formulas, and then testing the </span>
+<span class="sd">        simplified representations for equivalence.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : An object to test for equality with the current Graph</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ``True`` if ``self`` and ``other`` represent the same graph and scenario; </span>
+<span class="sd">        ``False`` otherwise.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Create the first graph:</span>
+
+<span class="sd">        &gt;&gt;&gt; G1 = eb.path_graph(4)</span>
+<span class="sd">        &gt;&gt;&gt; G1.add_formula(0, &#39;p &amp; q&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G1.add_formula(1, &#39;q | r&#39;)</span>
+
+<span class="sd">        Create the second graph:</span>
+
+<span class="sd">        &gt;&gt;&gt; G2 = eb.path_graph(4)</span>
+<span class="sd">        &gt;&gt;&gt; G2.add_formula(0, &#39;p &amp; q&#39;)</span>
+
+<span class="sd">        These graphs are not equal:</span>
+
+<span class="sd">        &gt;&gt;&gt; G1 == G2</span>
+<span class="sd">        False</span>
+
+<span class="sd">        But we can add a formula to G2 to make it equal to G1:</span>
+
+<span class="sd">        &gt;&gt;&gt; G2.add_formula(1, &#39;q | r&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G1 == G2</span>
+<span class="sd">        True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">nodes</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">edges</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">simplify_logic</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="n">node</span><span class="p">))</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">simplify_logic</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="n">node</span><span class="p">))):</span>
+                    <span class="k">return</span> <span class="bp">False</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+
+    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Tests for non-equality. Negates the result of equality testing.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="EquibelGraph.copy"><a class="viewcode-back" href="../../equibel.html#equibel.graph.EquibelGraph.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a deep copy of this graph.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Create a graph:</span>
+
+<span class="sd">        &gt;&gt;&gt; G = eb.path_graph(3)</span>
+
+<span class="sd">        Create a copy of the graph:</span>
+
+<span class="sd">        &gt;&gt;&gt; C = G.copy()</span>
+
+<span class="sd">        The copy is independently modifiable:</span>
+
+<span class="sd">        &gt;&gt;&gt; C.add_edge(2,3)</span>
+<span class="sd">        &gt;&gt;&gt; C.edges()</span>
+<span class="sd">        [(0, 1), (1, 2), (2, 3)]</span>
+<span class="sd">        &gt;&gt;&gt; G.edges()</span>
+<span class="sd">        [(0, 1), (1, 2)]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="EquibelGraph.add_formula"><a class="viewcode-back" href="../../equibel.html#equibel.graph.EquibelGraph.add_formula">[docs]</a>    <span class="k">def</span> <span class="nf">add_formula</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">formula</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a formula to the set of formulas associated with a node.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        node_id : The identifier of the desired node (usually an int)</span>
+<span class="sd">        formula : This can be either a *Sympy formula object*, or a *string*</span>
+<span class="sd">                  representing a formua in infix notation</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; G = eb.EquibelGraph()</span>
+<span class="sd">        &gt;&gt;&gt; G.add_node(1)</span>
+
+<span class="sd">        Create a Sympy formula object and associate it with node 1:</span>
+
+<span class="sd">        &gt;&gt;&gt; form = eb.parse_formula(&#39;p &amp; q&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_formula(1, form)</span>
+<span class="sd">        &gt;&gt;&gt; G.formulas(1)</span>
+<span class="sd">        set([And(p, q)])</span>
+
+<span class="sd">        Add a formula using a formula string expressed in infix notation:</span>
+
+<span class="sd">        &gt;&gt;&gt; G.add_formula(1, &#39;q | ~r&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.formulas(1)</span>
+<span class="sd">        set([Or(Not(r), q), And(p, q)])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">node_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">EquibelGraphException</span><span class="p">(</span><span class="s2">&quot;Node {} does not exist.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node_id</span><span class="p">))</span>
+        
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">formula</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">parse_formula</span><span class="p">(</span><span class="n">formula</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="s1">&#39;formulas&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node_id</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node_id</span><span class="p">][</span><span class="s1">&#39;formulas&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">formula</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node_id</span><span class="p">][</span><span class="s1">&#39;formulas&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">formula</span><span class="p">)</span></div>
+    
+
+<div class="viewcode-block" id="EquibelGraph.formulas"><a class="viewcode-back" href="../../equibel.html#equibel.graph.EquibelGraph.formulas">[docs]</a>    <span class="k">def</span> <span class="nf">formulas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the set of formulas associated with ``node_id``, or, </span>
+<span class="sd">        if ``node_id`` is ``None``, returns a dictionary of </span>
+<span class="sd">        (``node_id``, ``formula_set``) mappings.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        node_id : The identifier of the desired node (usually an integer)</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; G = eb.path_graph(4)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_formula(0, &#39;p &amp; q&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_formula(1, &#39;p | ~r&#39;)</span>
+
+<span class="sd">        Get the formulas at a specific node:</span>
+
+<span class="sd">        &gt;&gt;&gt; G.formulas(0)</span>
+<span class="sd">        set([And(p, q)])</span>
+
+<span class="sd">        Get a dictionary showing the formulas at every node:</span>
+
+<span class="sd">        &gt;&gt;&gt; G.formulas()</span>
+<span class="sd">        {0: set([And(p, q)]), 1: set([Or(Not(r), p)]), 2: set([]), 3: set([])}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">node_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">EquibelGraphException</span><span class="p">(</span><span class="s2">&quot;Node {} does not exist.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node_id</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;formulas&#39;</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span> <span class="n">node</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;formulas&#39;</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span> <span class="p">}</span></div>
+            <span class="c1">#return nx.get_node_attributes(self, &#39;formulas&#39;)</span>
+    
+
+<div class="viewcode-block" id="EquibelGraph.formula_conj"><a class="viewcode-back" href="../../equibel.html#equibel.graph.EquibelGraph.formula_conj">[docs]</a>    <span class="k">def</span> <span class="nf">formula_conj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the conjunction of all formulas associated with a given node.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        node_id : The identifier of the desired node (usually an int)</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; G = eb.EquibelGraph()</span>
+<span class="sd">        &gt;&gt;&gt; G.add_node(1)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_formula(1, &#39;p &amp; q&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_formula(1, &#39;r -&gt; s&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.formula_conj(1)</span>
+<span class="sd">        And(Implies(r, s), p, q)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">true</span>
+        <span class="k">for</span> <span class="n">formula</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">formulas</span><span class="p">(</span><span class="n">node_id</span><span class="p">):</span>
+            <span class="n">f</span> <span class="o">&amp;=</span> <span class="n">formula</span>
+        <span class="k">return</span> <span class="n">f</span></div>
+
+
+<div class="viewcode-block" id="EquibelGraph.clear_formulas_from"><a class="viewcode-back" href="../../equibel.html#equibel.graph.EquibelGraph.clear_formulas_from">[docs]</a>    <span class="k">def</span> <span class="nf">clear_formulas_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes all formulas from a node. Thus, resets a node to a blank slate.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        node_id : The identifier of the desired node (usually an int)</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; G = eb.EquibelGraph()</span>
+<span class="sd">        &gt;&gt;&gt; G.add_node(1)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_formula(1, &#39;p &amp; q | r&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.formulas(1)</span>
+<span class="sd">        set([Or(And(p, q), r)])</span>
+
+<span class="sd">        Clear the formulas from node 1:</span>
+
+<span class="sd">        &gt;&gt;&gt; G.clear_formulas_from(1)</span>
+<span class="sd">        &gt;&gt;&gt; G.formulas(1)</span>
+<span class="sd">        set([])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">node_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">EquibelGraphException</span><span class="p">(</span><span class="s2">&quot;Node {} does not exist.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node_id</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;formulas&#39;</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="EquibelGraph.clear_formulas"><a class="viewcode-back" href="../../equibel.html#equibel.graph.EquibelGraph.clear_formulas">[docs]</a>    <span class="k">def</span> <span class="nf">clear_formulas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes all formulas from all nodes in the graph.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; G = eb.path_graph(4)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_formula(1, &#39;p | (q &amp; r)&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_formula(2, &#39;~p&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_formula(3, &#39;q | r&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.formulas()</span>
+<span class="sd">        {1: set([Or(And(q, r), p)]), 2: set([Not(p)]), 3: set([Or(q, r)])}</span>
+
+<span class="sd">        Now clear all formulas:</span>
+
+<span class="sd">        &gt;&gt;&gt; G.clear_formulas()</span>
+<span class="sd">        &gt;&gt;&gt; G.formulas()</span>
+<span class="sd">        {0: set([]), 1: set([]), 2: set([]), 3: set([])}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear_formulas_from</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EquibelGraph.atoms"><a class="viewcode-back" href="../../equibel.html#equibel.graph.EquibelGraph.atoms">[docs]</a>    <span class="k">def</span> <span class="nf">atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns either the set of atoms used by a specific node in the graph, or </span>
+<span class="sd">        the set of all atoms used by *any* node in the graph.</span>
+
+<span class="sd">        If ``node_id`` is not ``None``, then this function returns the set of </span>
+<span class="sd">        atoms used by the formula at ``node_id``; if ``node_id`` is ``None``, then </span>
+<span class="sd">        this function returns the set of all atoms used by formulas of *any* node </span>
+<span class="sd">        in the graph.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        node_id : The identifier of the desired node (usually an int)</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; G = eb.path_graph(2)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_formula(0, &#39;p -&gt; q&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_formula(1, &#39;q | ~r&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.atoms(0)</span>
+<span class="sd">        set([p, q])</span>
+<span class="sd">        &gt;&gt;&gt; G.atoms(1)</span>
+<span class="sd">        set([r, q])</span>
+<span class="sd">        &gt;&gt;&gt; G.atoms()</span>
+<span class="sd">        set([p, r, q])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">node_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">atoms</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span></div>
+
+
+    <span class="c1">#####################################################</span>
+    <span class="c1">###            CONVENIENCE METHODS                ###</span>
+    <span class="c1">#####################################################</span>
+
+<div class="viewcode-block" id="EquibelGraph.to_asp"><a class="viewcode-back" href="../../equibel.html#equibel.graph.EquibelGraph.to_asp">[docs]</a>    <span class="k">def</span> <span class="nf">to_asp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the ASP encoding of this EquibelGraph object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atoms : An iterable container of Sympy atoms </span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; G = eb.complete_graph(3)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_formula(0, &#39;p &amp; q&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_formula(1, &#39;~q | r&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_formula(2, &#39;p -&gt; ~r&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; print(G.to_asp())</span>
+<span class="sd">        node(0).</span>
+<span class="sd">        node(1).</span>
+<span class="sd">        node(2).</span>
+<span class="sd">        edge(0,1).</span>
+<span class="sd">        edge(1,0).</span>
+<span class="sd">        edge(0,2).</span>
+<span class="sd">        edge(2,0).</span>
+<span class="sd">        edge(1,2).</span>
+<span class="sd">        edge(2,1).</span>
+<span class="sd">        formula(0,and(p,q)).</span>
+<span class="sd">        formula(1,or(r,neg(q))).</span>
+<span class="sd">        formula(2,implies(p,neg(r))).</span>
+<span class="sd">        atom(p).</span>
+<span class="sd">        atom(r).</span>
+<span class="sd">        atom(q).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">eb</span><span class="o">.</span><span class="n">to_asp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Paul Vicol.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

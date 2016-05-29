@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>equibel.graphgen &mdash; Equibel a1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'a1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Equibel a1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for equibel.graphgen</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Equibel wrappers for NetworkX graph generator functions.</span>
+
+<span class="sd">This file contains wrapper functions for several networkx graph </span>
+<span class="sd">generators. The wrappers return EquibelGraph objects that contain </span>
+<span class="sd">the corresponding NetworkX graphs.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1">#    Copyright (C) 2016</span>
+<span class="c1">#    Paul Vicol &lt;pvicol@sfu.ca&gt;</span>
+<span class="c1">#    All rights reserved.</span>
+<span class="c1">#    MIT license.</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="kn">as</span> <span class="nn">nx</span>
+
+<span class="kn">from</span> <span class="nn">equibel.graph</span> <span class="kn">import</span> <span class="n">EquibelGraph</span>
+
+
+<span class="c1">##############################################################</span>
+<span class="c1">### Classic Graph Generators -- Line, Star, Complete, etc. ###</span>
+<span class="c1">##############################################################</span>
+
+<div class="viewcode-block" id="path_graph"><a class="viewcode-back" href="../../equibel.html#equibel.graphgen.path_graph">[docs]</a><span class="k">def</span> <span class="nf">path_graph</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create an undirected line graph on n nodes, numbered using </span>
+<span class="sd">    the integers 0 to n-1, inclusive.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int</span>
+<span class="sd">        The desired number of nodes for the line graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    G : EquibelGraph</span>
+<span class="sd">        An EquibelGraph representing a path graph on ``n`` nodes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Create an undirected path graph 0 &lt;-&gt; 1 &lt;-&gt; 2 &lt;-&gt; 3:</span>
+
+<span class="sd">    &gt;&gt;&gt; G = eb.path_graph(4)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="n">EquibelGraph</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="complete_graph"><a class="viewcode-back" href="../../equibel.html#equibel.graphgen.complete_graph">[docs]</a><span class="k">def</span> <span class="nf">complete_graph</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create an undirected complete graph on n nodes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int</span>
+<span class="sd">        The desired number of nodes for the complete graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    G : EquibelGraph</span>
+<span class="sd">        An EquibelGraph containing a complete graph on ``n`` nodes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = eb.complete_graph(5)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">complete_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="n">EquibelGraph</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="star_graph"><a class="viewcode-back" href="../../equibel.html#equibel.graphgen.star_graph">[docs]</a><span class="k">def</span> <span class="nf">star_graph</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create an undirected star graph on n+1 nodes, with one </span>
+<span class="sd">    central node, and n outer nodes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int</span>
+<span class="sd">        The desired number of outer nodes for the star graph.</span>
+<span class="sd">        The generated graph will have a central node numbered </span>
+<span class="sd">        ``0``, and ``n`` outer nodes numbered from ``1`` to ``n``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    G : EquibelGraph</span>
+<span class="sd">        An EquibelGraph containing a star graph on ``n+1`` nodes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = eb.star_graph(5)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">star_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="n">EquibelGraph</span><span class="p">())</span></div>
+
+
+<span class="c1">################################################################</span>
+<span class="c1">### Random Graph Generators -- Waxman, Barabasi-Albert, etc. ###</span>
+<span class="c1">################################################################</span>
+
+<div class="viewcode-block" id="waxman_graph"><a class="viewcode-back" href="../../equibel.html#equibel.graphgen.waxman_graph">[docs]</a><span class="k">def</span> <span class="nf">waxman_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)):</span>
+    <span class="k">return</span> <span class="n">EquibelGraph</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">waxman_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">domain</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="erdos_renyi_graph"><a class="viewcode-back" href="../../equibel.html#equibel.graphgen.erdos_renyi_graph">[docs]</a><span class="k">def</span> <span class="nf">erdos_renyi_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">EquibelGraph</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">erdos_renyi_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">directed</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="gnm_random_graph"><a class="viewcode-back" href="../../equibel.html#equibel.graphgen.gnm_random_graph">[docs]</a><span class="k">def</span> <span class="nf">gnm_random_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">EquibelGraph</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">gnm_random_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="petersen_graph"><a class="viewcode-back" href="../../equibel.html#equibel.graphgen.petersen_graph">[docs]</a><span class="k">def</span> <span class="nf">petersen_graph</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">EquibelGraph</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">petersen_graph</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="connected_watts_strogatz_graph"><a class="viewcode-back" href="../../equibel.html#equibel.graphgen.connected_watts_strogatz_graph">[docs]</a><span class="k">def</span> <span class="nf">connected_watts_strogatz_graph</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">tries</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">EquibelGraph</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_watts_strogatz_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">tries</span><span class="p">,</span><span class="n">seed</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Paul Vicol.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
