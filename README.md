@@ -26,7 +26,7 @@ In particular, Equibel has two ASP-related dependencies:
 the [Python `gringo` module](http://potassco.sourceforge.net/gringo.html), which provides an 
 interface to an ASP solver from within Python, and `asprin.parser`, which is a component of 
 the `asprin` preference-handling framework. `asprin` is described in more detail 
-[here](http://www.cs.uni-potsdam.de/asprin/), and can be download from 
+[here](http://www.cs.uni-potsdam.de/asprin/), and can be downloaded from 
 [here](https://sourceforge.net/projects/potassco/files/asprin/).
 
 The *Python* component of Equibel is highly portable across platforms; however, the `gringo`
@@ -121,7 +121,7 @@ installed. If you don't have `pip`, you can get it [here](https://pip.pypa.io/en
 
 To use Equibel within a Python program, you need to import the `equibel`
 module. The following Python script creates a path graph, assigns formulas 
-to nodes, find the global completion, and prints the resulting formulas at 
+to nodes, finds the global completion, and prints the resulting formulas at 
 each node:
 
 ```python
@@ -136,7 +136,7 @@ if __name__ == '__main__':
     G.add_nodes_from([1, 2, 3, 4])
 
     # Create edges:
-    G.add_edges_from([(1,2), (2,3), (3,4)]) 
+    G.add_edges_from([(1,2), (2,3), (3,4)])
 
     # Add formulas to nodes:
     G.add_formula(1, "p & q & r")
@@ -145,9 +145,8 @@ if __name__ == '__main__':
     # Find the global completion of the G-scenario:
     R = eb.global_completion(G)
 
-    # Print the resulting formulas at each node:
-    for node_id in R.nodes():
-        print("Node {0}: {1}".format(node_id, R.formula_conj(node_id)))
+    # Pretty-print the resulting formulas at each node:
+    eb.print_formulas(R)
 ```
 
 
@@ -174,14 +173,14 @@ Equibel allows for experimentation with several different approaches to
 consistency-based belief change in a graph-oriented setting, namely:
 
 
-1. Global completion,
-2. Simple iteration,
-3. Expanding iteration,
-4. Augmenting iteration, and 
+1. Global completion
+2. Simple iteration
+3. Expanding iteration
+4. Augmenting iteration
 5. The ring method.
 
 
-The global completion opteration is performed on an `EquibelGraph` `G` by 
+The global completion operation is performed on an `EquibelGraph` `G` by 
 `eb.global_completion(G)`; this performs a "one-shot" procedure to update 
 the information at every node in the graph, and thus is not an iterative approach. All 
 of the other approaches---*simple*, *expanding*, *augmenting*, and *ring*---can be performed 
@@ -234,7 +233,7 @@ faster for large graphs in practice).
 ### Some Examples
 
 To show how the `method` and `opt_type` arguments can be combined, we consider the following 
-(by no means exhausitive) examples.
+(by no means exhaustive) examples.
 
 In the following example, we can see the difference between using inclusion-based optimization and 
 cardinality-based optimization in the global completion:
