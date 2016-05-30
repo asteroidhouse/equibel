@@ -4,7 +4,7 @@ python:
 addons:
   apt:
     packages:
-    - libtbb2
+    - "libtbb-dev"
 install:
   - pip install .
 script: "nosetests tests/"
