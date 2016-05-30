@@ -24,5 +24,18 @@ def test_global_expanding_noncomparable():
     assert(not strictly_stronger(R_completion, R_expanding))
 
 
+def test_global_expanding_fixpoints_noncomparable():
+    G = eb.path_graph(5)
+    G.add_formula(0, 'x2 | (x3 & ~x4)')
+    G.add_formula(1, 'x1')
+    G.add_formula(2, '(~x1 & ~x2) | x4')
+    G.add_formula(4, '~x4')
+    R_completion = eb.global_completion(G, simplify=True)
+    R_expanding, num_expanding_iterations = eb.iterate_expanding_fixpoint(G, simplify=True)
+    assert(R_completion != R_expanding)
+    assert(not strictly_stronger(R_expanding, R_completion))
+    assert(not strictly_stronger(R_completion, R_expanding))
+
 if __name__ == '__main__':
     test_global_expanding_noncomparable()
+    test_global_expanding_fixpoints_noncomparable()
