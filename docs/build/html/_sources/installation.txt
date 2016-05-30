@@ -6,10 +6,11 @@ This is a brief guide for installing ``Equibel``.
 The following steps assume that you have the ``pip`` Python package manager installed.
 If you don't have ``pip``, you can get it `here <https://pip.pypa.io/en/latest/installing.html>`__.
 
-``Equibel`` currently supports Mac OS X and Linux (32-bit and 64-bit), with Python 2.7.x or Python 3.
+``Equibel`` currently supports Mac OS X and 64-bit Linux, with Python 2.7.x.
 
-Quick Install
--------------
+
+Installing from Source
+----------------------
 
 System-Wide Installation
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -49,12 +50,6 @@ installation, simply use::
 With a virtual environment activated, you can simply install ``Equibel`` using ``pip``::
 
     (venv)$ pip install equibel
-
-
-Installing from Source
-----------------------
-
-
 
 
 Optional Packages

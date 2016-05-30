@@ -1,7 +1,7 @@
 Equibel Documentation
 =====================
 
-.. include:: intro.rst
+.. include:: intro_readme.rst
 
 Contents
 --------
@@ -9,17 +9,8 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   installation
-   quickstart
-   graphs
-   generators
-   globalcompletion
-   simple
-   expanding
-   augmenting
    modules
    licence
-
 
 
 
