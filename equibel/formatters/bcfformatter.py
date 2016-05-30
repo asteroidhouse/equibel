@@ -48,7 +48,6 @@ def convert_to_bcf(G):
     return bcf_str
 
 
-# TODO: Update this for sympy formulas
 def convert_formula_to_bcf(formula):
     if formula.is_atomic():
         return formula.get_name()

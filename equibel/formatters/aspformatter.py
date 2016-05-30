@@ -29,8 +29,6 @@ NEG_TEMPLATE = "neg({0})"
 
 
 def to_asp(G, atoms=None):
-    """
-    """
     asp_str = ""
 
     for node_id in G.nodes():
