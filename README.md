@@ -4,7 +4,7 @@
 
 <br>
 
-[![Build Status](https://travis-ci.org/asteroidhouse/equibel.svg?branch=master)](https://travis-ci.org/asteroidhouse)
+[![Build Status](https://travis-ci.org/asteroidhouse/equibel.svg?branch=master)](https://travis-ci.org/asteroidhouse/equibel)
 
 # Equibel
 
