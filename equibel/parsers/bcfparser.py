@@ -1,7 +1,7 @@
 """Parser for the Belief Change Format (BCF) representation of a graph and 
 associated scenario.
 
-An example of the contents of a file using the Belief Change Format is as follows:
+An example of the Belief Change Format is as follows:
 
 n 1..5
 a p q r
@@ -39,8 +39,6 @@ __all__ = ["parse_bcf"]
 
 
 class FormatError(Exception):
-    """
-    """
     pass
 
 

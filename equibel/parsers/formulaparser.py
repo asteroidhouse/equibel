@@ -2,33 +2,37 @@
 
 The symbols used for the logical connectives are as follows:
 
-        ----------------------
+       +------------+--------+
        | Connective | Symbol |
-       |----------------------
-       |    conj.   |    &   |
-       |    disj.   |    |   |
-       |   implies  |   ->   |
-       |    equiv   |    =   |
-       |     neg    |    ~   |
-        ----------------------
+       +============+========+
+       |    conj.   |  ``&`` |
+       +------------+--------+
+       |    disj.   |  ``|`` |
+       +------------+--------+
+       |   implies  | ``->`` |
+       +------------+--------+
+       |    equiv   |  ``=`` |
+       +------------+--------+
+       |     neg    |  ``~`` |
+       +------------+--------+
 
 The precedence and right/left associativity rules of the conectives are as follows:
 
-1. Negation (~) has the highest precendence, and is right-associative.
-2. Conjunction (&) has the next highest precedence, and is left-associative.
-3. Disjunction (|) is next, is left-associative.
-4. Implication (->) comes next, and is right-associative.
-5. Finally, equivalence (=) is last, and is right-associative.
+1. Negation (``~``) has the highest precendence, and is right-associative.
+2. Conjunction (``&``) has the next highest precedence, and is left-associative.
+3. Disjunction (``|``) is next, is left-associative.
+4. Implication (``->``) comes next, and is right-associative.
+5. Finally, equivalence (``=``) is last, and is right-associative.
 
-Using these precedence rules, the following formulas are equivalent:
+Using these precedence rules, the following formulas are equivalent::
 
-     p & q | r   ===   (p & q) | r
-    p & q -> r   ===   (p & q) -> r
-    p | ~r = q   ===   (p | (~r)) = q
-   ~p | ~q & r   ===   ((~p) | (~q)) & r
+* ``p & q | r   ==   (p & q) | r``
+* ``p & q -> r   ==   (p & q) -> r``
+* ``p | ~r = q   ==   (p | (~r)) = q``
+* ``~p | ~q & r   ==   ((~p) | (~q)) & r``
 
 The only importable function from this file is parse_formula, 
-which takes a string such as "p & q | ~r" and creates a Sympy logical
+which takes a string such as ``p & q | ~r`` and creates a Sympy logical
 formula object representing that formula.
 """
 #    Copyright (C) 2016
