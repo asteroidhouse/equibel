@@ -14,7 +14,7 @@ graph-oriented setting.
 
 ## Currently Supported Platforms
 
-* OS X with Python 2.7.x
+* Mac OS X (tested on OS X 10.10.5) with Python 2.7.x
 * 64-bit Linux (tested on Ubuntu 14.04) with Python 2.7.x
 
 Note that while Equibel is distributed as a Python package, the core of the system is 
@@ -33,7 +33,7 @@ The *Python* component of Equibel is highly portable across platforms; however, 
 and `asprin.parser` dependencies must be compiled for specific system configurations, producing 
 system-specific binaries.
 In order to simplify usage for some _common_ system configurations, Equibel includes pre-compiled 
-binaries of these dependencies for 64-bit Linux distributions and Mac OS. These are placed in 
+binaries of these dependencies for 64-bit Ubuntu Linux and Mac OS. These are placed in 
 the `equibel/includes/` directory, which is structured as follows:
 
 ```
@@ -114,14 +114,13 @@ installed. If you don't have `pip`, you can get it [here](https://pip.pypa.io/en
     If the tests fail, it is most likely due to the *dependencies* of Equibel not being compatible 
     with your platform. As noted above, Equibel includes pre-compiled binaries of the Python `gringo` 
     module, as well as of `asprin.parser`, for 64-bit Linux distributions (tested on Ubuntu 14.04) and 
-    for Mac OS (tested on OSX 10.10). If you are not using one of these systems, you will need to 
+    for Mac OS (tested on OSX 10.10.5). If you are not using one of these systems, you will need to 
     manually compile the `gringo` and `asprin.parser` dependencies.
 
 ## Quickstart
 
 To use Equibel within a Python program, you need to import the `equibel`
-module. The following Python script creates a path graph, assigns formulas 
-to nodes, finds the global completion, and prints the resulting formulas at 
+package. The statement `import equibel as eb` imports this package, and gives it a shorter alias `eb`. The following Python script creates a path graph, assigns formulas to nodes, finds the global completion, and prints the resulting formulas at 
 each node:
 
 ```python
@@ -177,7 +176,7 @@ consistency-based belief change in a graph-oriented setting, namely:
 2. Simple iteration
 3. Expanding iteration
 4. Augmenting iteration
-5. The ring method.
+5. Ring iteration
 
 
 The global completion operation is performed on an `EquibelGraph` `G` by 
@@ -185,7 +184,7 @@ The global completion operation is performed on an `EquibelGraph` `G` by
 the information at every node in the graph, and thus is not an iterative approach. All 
 of the other approaches---*simple*, *expanding*, *augmenting*, and *ring*---can be performed 
 iteratively, and each one iterates to a *fixpoint*. The table below summarizes the Equibel 
-functions to perform single iterations of each approach, as well as to find the fixpoints 
+functions used to perform single iterations of each approach, as well as to find the fixpoints 
 reached by each approach:
 
 
