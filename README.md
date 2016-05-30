@@ -153,7 +153,7 @@ if __name__ == '__main__':
 If the above code is saved in a file called `completion.py`, then it can be run by typing 
 `python completion.py` at the command line, as follows:
 
-```python
+```
 $ python completion.py 
 Node 1:
 p ∧ q ∧ r
@@ -261,7 +261,7 @@ if __name__ == '__main__':
 
 Saving this code in a file `inclusion_vs_cardinality.py` and running it yields:
 
-```python
+```
 $ python inclusion_vs_cardinality.py 
 Node 0:
 p ∨ ¬p
