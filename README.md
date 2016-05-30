@@ -1,6 +1,8 @@
-<div style="text-align: center">
+<div style="text-align: center;">
     <img src="equibel_logo.png" alt="Equibel">
 </div>
+
+<br>
 
 [![Build Status](https://travis-ci.org/asteroidhouse/equibel.svg?branch=master)](https://travis-ci.org/asteroidhouse)
 
