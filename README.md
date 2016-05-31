@@ -5,6 +5,7 @@
 <br>
 
 [![Build Status](https://travis-ci.org/asteroidhouse/equibel.svg?branch=master)](https://travis-ci.org/asteroidhouse/equibel)
+[![PyPI version](https://badge.fury.io/py/equibel.svg)](https://pypi.python.org/pypi/equibel/)
 
 # Equibel
 
@@ -142,7 +143,7 @@ if __name__ == '__main__':
     G.add_formula(4, "~p & ~q")
 
     # Find the global completion of the G-scenario:
-    R = eb.global_completion(G)
+    R = eb.global_completion(G, simplify=True)
 
     # Pretty-print the resulting formulas at each node:
     eb.print_formulas(R)
