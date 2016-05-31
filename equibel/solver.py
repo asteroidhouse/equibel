@@ -376,12 +376,16 @@ def global_completion(G, method=SEMANTIC, opt_type=INCLUSION, simplify=False):
     R : A new EquibelGraph object, representing the global completion of ``G``.
     """
     if method == SEMANTIC:
-        return global_completion_semantic(G, opt_type=opt_type, simplify=simplify)
+        R = global_completion_semantic(G, opt_type=opt_type)
     elif method == SYNTACTIC:
-        return global_completion_syntactic(G, opt_type=opt_type, simplify=simplify)
+        R = global_completion_syntactic(G, opt_type=opt_type)
+
+    if simplify:
+        simplify_all_formulas(R)
+    return R
 
 
-def global_completion_semantic(G, opt_type=INCLUSION, simplify=False):
+def global_completion_semantic(G, opt_type=INCLUSION):
     """Finds the global completion of a graph and associated scenario, using the 
     **semantic characterization**.
 
@@ -424,12 +428,7 @@ def global_completion_semantic(G, opt_type=INCLUSION, simplify=False):
     for node in node_models:
         t = tuple(node_models[node])
         formula = formula_from_models(t, atoms)
-        if simplify:
-            simple = eb.simplify_logic(formula)
-            if simple != True:
-                R.add_formula(node, simple)
-        else:
-            R.add_formula(node, formula)
+        R.add_formula(node, formula)
 
     return R
 
@@ -456,7 +455,7 @@ def create_eq_dicts(answer_sets):
     return eq_dicts
 
 
-def global_completion_syntactic(G, opt_type=INCLUSION, simplify=False):
+def global_completion_syntactic(G, opt_type=INCLUSION):
     """Finds the global completion of a graph and associated scenario, using the 
     **syntactic characterization**.
 
