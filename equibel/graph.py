@@ -30,7 +30,7 @@ class EquibelGraph(nx.Graph):
         """Tests this graph for equality with ``other``. Two graphs are equal
         if they contain the same nodes, edges, and formulas at each node.
 
-        This operation can be expensive, since it check whether formulas are 
+        This operation can be expensive, since it checks whether formulas are 
         equivalent by first simplifying the formulas, and then testing the 
         simplified representations for equivalence.
 
@@ -119,7 +119,7 @@ class EquibelGraph(nx.Graph):
         ----------
         node_id : The identifier of the desired node (usually an int)
         formula : This can be either a *Sympy formula object*, or a *string*
-                  representing a formua in infix notation
+                  representing a formula in infix notation
 
         Examples
         --------
