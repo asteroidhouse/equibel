@@ -6,11 +6,19 @@
 
 [![Build Status](https://travis-ci.org/asteroidhouse/equibel.svg?branch=master)](https://travis-ci.org/asteroidhouse/equibel)
 [![PyPI version](https://badge.fury.io/py/equibel.svg)](https://pypi.python.org/pypi/equibel/)
+[![Documentation Status](https://readthedocs.org/projects/equibel/badge/?version=latest)](http://equibel.readthedocs.io/en/latest/?badge=latest)
+
 
 # Equibel
 
-`Equibel` is a Python package for working with consistency-based belief change in a 
-graph-oriented setting. 
+`Equibel` is a Python package for working with consistency-based belief change in a graph-oriented setting. 
+
+<!--
+
+* Documentation: [http://equibel.readthedocs.io](http://equibel.readthedocs.io)
+* PyPI: [https://pypi.python.org/pypi/equibel](https://pypi.python.org/pypi/equibel)
+
+-->
 
 
 ## Currently Supported Platforms
