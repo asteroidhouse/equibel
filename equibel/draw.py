@@ -156,6 +156,17 @@ def min_model_edges(edge_change_sets):
 
 
 def draw_graph(G, pos=None):
+    """Draws a graph and associated scenario by displaying formulas above each node.
+
+    Parameters
+    ----------
+    G : EquibelGraph
+        The graph/scenario to draw.
+    pos : dict
+          An optional dictionary mapping nodes in G to (x,y) coordinates where they should 
+          be drawn. By default, ``pos`` is ``None``, and the spatial layout of nodes is 
+          automatically determined by using the NetworkX ``spring_layout`` method.
+    """
     if not pos:
         pos = nx.spring_layout(G)
 
@@ -176,7 +187,7 @@ def draw_graph(G, pos=None):
     plt.axis("off")
 
 
-def draw_model_lifting(G, pos=None, show_only_min_edges=False, highlight_nodes=[], highlight_color='#33FF99'):
+def draw_model_graph(G, pos=None, show_only_min_edges=False, highlight_nodes=[], highlight_color='#33FF99'):
     if not pos:
         pos = nx.spring_layout(G)
 
@@ -278,7 +289,7 @@ def draw_model_lifting(G, pos=None, show_only_min_edges=False, highlight_nodes=[
 
 
 
-def draw_path_model_lifting(G, R1=None, R2=None, show_only_min_edges=True):
+def draw_path_model_graph(G, R1=None, R2=None, show_only_min_edges=True):
     if R1 is not None and R2 is not None:
         diff_nodes = find_diff_nodes(R1, R2)
     else:
@@ -292,7 +303,7 @@ def draw_path_model_lifting(G, R1=None, R2=None, show_only_min_edges=True):
         pos[node] = (x_coord, y_coord)
         x_coord += 2
 
-    draw_model_lifting(G, pos, show_only_min_edges=True, highlight_nodes=diff_nodes)
+    draw_model_graph(G, pos, show_only_min_edges=show_only_min_edges, highlight_nodes=diff_nodes)
 
 
 def find_diff_nodes(S,T):
