@@ -1,0 +1,490 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Working with Graphs and Scenarios &mdash; Equibel a1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Equibel a1 documentation" href="index.html"/>
+        <link rel="next" title="Graph Generators" href="graphgenerators.html"/>
+        <link rel="prev" title="Equibel Documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Equibel
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Working with Graphs and Scenarios</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-graph">Creating a Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nodes">Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#edges">Edges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-formulas">Working with Formulas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#equality-testing">Equality Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#convenience-methods">Convenience Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="graphgenerators.html">Graph Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">equibel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="licence.html">Licence</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Equibel</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Working with Graphs and Scenarios</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/equibelgraphref.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="working-with-graphs-and-scenarios">
+<h1>Working with Graphs and Scenarios<a class="headerlink" href="#working-with-graphs-and-scenarios" title="Permalink to this headline">¶</a></h1>
+<p>The primary data structure used in Equibel is a class called <code class="docutils literal"><span class="pre">EquibelGraph</span></code>. An <code class="docutils literal"><span class="pre">EquibelGraph</span></code> object
+represents a graph and an associated scenario. Each approach to belief change in
+Equibel takes as input an <code class="docutils literal"><span class="pre">EquibelGraph</span></code>, and produces a new <code class="docutils literal"><span class="pre">EquibelGraph</span></code> as output.</p>
+<p>The <code class="docutils literal"><span class="pre">EquibelGraph</span></code> class is a subclass of the NetworkX <a class="reference external" href="http://networkx.readthedocs.io/en/networkx-1.11/reference/classes.html">undirected Graph class</a>,
+so it inherits all of the methods of <code class="docutils literal"><span class="pre">Graph</span></code>. In addition, <code class="docutils literal"><span class="pre">EquibelGraph</span></code> extends the standard <code class="docutils literal"><span class="pre">Graph</span></code>
+functionality by adding the ability to associate propositional formulas with nodes.</p>
+<p>In this section, we describe the API used by <code class="docutils literal"><span class="pre">EquibelGraph</span></code> through examples.</p>
+<div class="section" id="creating-a-graph">
+<h2>Creating a Graph<a class="headerlink" href="#creating-a-graph" title="Permalink to this headline">¶</a></h2>
+<p>Create an empty graph and scenario, with no nodes and no edges:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">equibel</span> <span class="k">as</span> <span class="nn">eb</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">EquibelGraph</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="nodes">
+<h2>Nodes<a class="headerlink" href="#nodes" title="Permalink to this headline">¶</a></h2>
+<p>All the methods for manipulating nodes in a graph are inherited from the NetworkX <code class="docutils literal"><span class="pre">Graph</span></code> class;
+these methods are summarized here.</p>
+<p>Individual nodes can be added via the method <code class="docutils literal"><span class="pre">add_node()</span></code>:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Multiple nodes can be added simultaneously via the method <code class="docutils literal"><span class="pre">add_nodes_from()</span></code>, which adds all
+nodes from an iterable container (a <code class="docutils literal"><span class="pre">list</span></code>, <code class="docutils literal"><span class="pre">set</span></code>, etc.):</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>You can see which nodes are currently in the graph by calling the
+<code class="docutils literal"><span class="pre">nodes()</span></code> method:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+<span class="go">[1,2,3,4]</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">remove_node()</span></code> and <code class="docutils literal"><span class="pre">remove_nodes_from()</span></code> methods similarly remove an individual node and
+all nodes from an iterable container, respectively:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+<span class="go">[1, 3, 4]</span>
+</pre></div>
+</div>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">remove_nodes_from</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+<span class="go">[1]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="edges">
+<h2>Edges<a class="headerlink" href="#edges" title="Permalink to this headline">¶</a></h2>
+<p>As with nodes, edges can be added individually:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or multiple edges from an iterable container can be added simultaneously:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)])</span>
+</pre></div>
+</div>
+<p>You can see which edges are currently in the graph by calling the <code class="docutils literal"><span class="pre">edges()</span></code> method:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+<span class="go">[(1,2), (2,3), (3,4)]</span>
+</pre></div>
+</div>
+<p>Edges can be removed individually or in groups by the <code class="docutils literal"><span class="pre">remove_edge()</span></code> and <code class="docutils literal"><span class="pre">remove_edges_from()</span></code>
+methods, respectively:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+<span class="go">[(1,2), (2,3)]</span>
+</pre></div>
+</div>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">remove_edges_from</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+<span class="go">[]</span>
+</pre></div>
+</div>
+<p>Note that removing edges does not affect the nodes in the graph:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+<span class="go">[1, 2, 3, 4]</span>
+</pre></div>
+</div>
+<p>You can also add an edge whose endpoints are <em>not</em> in the graph; in this case, the
+endpoints will be automatically added as nodes:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">EquibelGraph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+<span class="go">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+<span class="go">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># Endpoints 1 and 2 are automatically added as nodes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+<span class="go">[1, 2]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="working-with-formulas">
+<h2>Working with Formulas<a class="headerlink" href="#working-with-formulas" title="Permalink to this headline">¶</a></h2>
+<p>Each node in an <code class="docutils literal"><span class="pre">EquibelGraph</span></code> is associatd with a set of formulas, where each formula is
+represented by a Sympy formula object. By default, a node is associated with an empty
+set of formulas.</p>
+<p>The <code class="docutils literal"><span class="pre">add_formula()</span></code> method adds a formula to the set of formulas associated with a node.
+The argument to <code class="docutils literal"><span class="pre">add_formula()</span></code> can be either a <em>Sympy formula object</em>, or a <em>string</em>
+representing a formula in infix notation.</p>
+<p>The following line creates a graph by invoking a <em>graph generator</em> (described in more detail in
+the Graph Generators section):</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="c1"># Creates a path graph on nodes [0, 1, 2]</span>
+</pre></div>
+</div>
+<p>The following creates a Sympy formula object by parsing a string via the Equibel <code class="docutils literal"><span class="pre">parse_formula</span></code> function,
+and associates it with node 1:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">formula_object</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">parse_formula</span><span class="p">(</span><span class="s1">&#39;p &amp; q&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">formula_object</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formulas</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">set([And(p, q)])</span>
+</pre></div>
+</div>
+<p>Alternatively, one can simply pass a formula string to the <code class="docutils literal"><span class="pre">add_formula()</span></code> method, and it will
+be automatically parsed as above:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;q | ~r&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formulas</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">set([Or(Not(r), q), And(p, q)])</span>
+</pre></div>
+</div>
+<p>Formula strings use the following notation for logical connectives:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="44%" />
+<col width="56%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Connective</th>
+<th class="head">Equibel Notation</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>negation</td>
+<td><code class="docutils literal"><span class="pre">~</span></code></td>
+</tr>
+<tr class="row-odd"><td>conjunction</td>
+<td><code class="docutils literal"><span class="pre">&amp;</span></code></td>
+</tr>
+<tr class="row-even"><td>disjunction</td>
+<td><code class="docutils literal"><span class="pre">|</span></code></td>
+</tr>
+<tr class="row-odd"><td>implication</td>
+<td><code class="docutils literal"><span class="pre">-&gt;</span></code></td>
+</tr>
+<tr class="row-even"><td>equivalence</td>
+<td><code class="docutils literal"><span class="pre">=</span></code></td>
+</tr>
+</tbody>
+</table>
+<p>The precedence and right/left associativity rules of the conectives are as follows:</p>
+<ol class="arabic simple">
+<li>Negation has the highest precendence, and is right-associative.</li>
+<li>Conjunction has the next highest precedence, and is left-associative.</li>
+<li>Disjunction is next, is left-associative.</li>
+<li>Implication comes next, and is right-associative.</li>
+<li>Finally, equivalence is last, and is right-associative.</li>
+</ol>
+<p>Parentheses can also be used for grouping, or to overwrite the default precedence rules.
+With the default rules, the following formulas are equivalent:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">p</span> <span class="pre">&amp;</span> <span class="pre">q</span> <span class="pre">|</span> <span class="pre">r</span>&nbsp;&nbsp; <span class="pre">==</span>&nbsp;&nbsp; <span class="pre">(p</span> <span class="pre">&amp;</span> <span class="pre">q)</span> <span class="pre">|</span> <span class="pre">r</span></code></li>
+<li><code class="docutils literal"><span class="pre">p</span> <span class="pre">&amp;</span> <span class="pre">q</span> <span class="pre">-&gt;</span> <span class="pre">r</span>&nbsp;&nbsp; <span class="pre">==</span>&nbsp;&nbsp; <span class="pre">(p</span> <span class="pre">&amp;</span> <span class="pre">q)</span> <span class="pre">-&gt;</span> <span class="pre">r</span></code></li>
+<li><code class="docutils literal"><span class="pre">p</span> <span class="pre">|</span> <span class="pre">~r</span> <span class="pre">=</span> <span class="pre">q</span>&nbsp;&nbsp; <span class="pre">==</span>&nbsp;&nbsp; <span class="pre">(p</span> <span class="pre">|</span> <span class="pre">(~r))</span> <span class="pre">=</span> <span class="pre">q</span></code></li>
+<li><code class="docutils literal"><span class="pre">~p</span> <span class="pre">|</span> <span class="pre">~q</span> <span class="pre">&amp;</span> <span class="pre">r</span>&nbsp;&nbsp; <span class="pre">==</span>&nbsp;&nbsp; <span class="pre">((~p)</span> <span class="pre">|</span> <span class="pre">(~q))</span> <span class="pre">&amp;</span> <span class="pre">r</span></code></li>
+</ul>
+<p>In order to obtain the set of formulas associated with a node, use the <code class="docutils literal"><span class="pre">formulas()</span></code> method,
+passing the node as an argument:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formulas</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">set([Or(Not(r), q), And(p, q)])</span>
+</pre></div>
+</div>
+<p>Calling <code class="docutils literal"><span class="pre">formulas()</span></code> with no arguments yields a <em>dictionary</em> that maps each node in the graph
+to a set of formulas:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formulas</span><span class="p">()</span>
+<span class="go">{0: set([Or(Not(r), q), And(p, q)]), 1: set([]), 2: set([])}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;p | q&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formulas</span><span class="p">()</span>
+<span class="go">{0: set([Or(Not(r), q), And(p, q)]), 1: set([Or(p, q)]), 2: set([])}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;p -&gt; q&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formulas</span><span class="p">()</span>
+<span class="go">{0: set([Or(Not(r), q), And(p, q)]), 1: set([Or(p, q)]), 2: set([Implies(p, q)])}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">formula_conj()</span></code> method returns the <em>conjunction</em> of all formulas associated with a
+given node. This is handy because it is often useful to obtain a single formula representing the
+information at a node, rather than a set of formulas.</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formula_conj</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">And(Implies(r, s), p, q)</span>
+</pre></div>
+</div>
+<p>To clear all formulas from a node, use <code class="docutils literal"><span class="pre">clear_formulas_form()</span></code> as follows:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">clear_formulas_from</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formulas</span><span class="p">()</span>
+<span class="go">{0: set([]), 1: set([Or(p, q)]), 2: set([Implies(p, q)])}</span>
+</pre></div>
+</div>
+<p>To clear all formulas from <em>all nodes in the graph</em>, use <code class="docutils literal"><span class="pre">clear_formulas()</span></code>:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">clear_formulas</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">formulas</span><span class="p">()</span>
+<span class="go">{0: set([]), 1: set([]), 2: set([])}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">atoms()</span></code> method returns the set of atoms used by a specific node in the graph:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;p -&gt; q&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;q | ~r&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">set([p, q])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">set([r, q])</span>
+</pre></div>
+</div>
+<p>Alternatively, if <code class="docutils literal"><span class="pre">atoms()</span></code> is called without any arguments, it returns the set of atoms
+that appear in <em>any</em> formula of <em>any</em> node in the graph:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">atoms</span><span class="p">()</span>
+<span class="go">set([p, r, q])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="equality-testing">
+<h2>Equality Testing<a class="headerlink" href="#equality-testing" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">EquibelGraph</span></code> objects can be tested for equality via the <code class="docutils literal"><span class="pre">==</span></code> operator.
+Two graphs are <em>equal</em> if they contain the same nodes, edges, <em>and formulas at each node</em>.</p>
+<p>Equality testing can be expensive, since it checks whether formulas are equivalent by first
+simplifying the formulas, and then testing the simplified representations for equivalence.
+That is, it performs <em>semantic</em> equivalence checks for formulas, rather than <em>syntactic</em> checks.</p>
+<p>We now present an example of this. We create the first graph as follows:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G1</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G1</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;p &amp; q&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G1</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;q | r&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then, we create the second graph:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G2</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G2</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;p &amp; q&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>These graphs are not equal:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G1</span> <span class="o">==</span> <span class="n">G2</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>But we can add a formula to G2 to make it equal to G1:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G2</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;q | r&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G1</span> <span class="o">==</span> <span class="n">G2</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="convenience-methods">
+<h2>Convenience Methods<a class="headerlink" href="#convenience-methods" title="Permalink to this headline">¶</a></h2>
+<p>You can obtain the Answer Set Programming (ASP) representation of an <code class="docutils literal"><span class="pre">EquibelGraph</span></code> by calling the
+<code class="docutils literal"><span class="pre">to_asp()</span></code> convenience method:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;p -&gt; (q &amp; r)&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;~p | ~r&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">to_asp</span><span class="p">())</span>
+<span class="go">node(0).</span>
+<span class="go">node(1).</span>
+<span class="go">node(2).</span>
+<span class="go">edge(0,1).</span>
+<span class="go">edge(1,0).</span>
+<span class="go">edge(1,2).</span>
+<span class="go">edge(2,1).</span>
+<span class="go">formula(0,p).</span>
+<span class="go">formula(1,implies(p,and(q,r))).</span>
+<span class="go">formula(2,or(neg(p),neg(r))).</span>
+<span class="go">atom(p).</span>
+<span class="go">atom(r).</span>
+<span class="go">atom(q).</span>
+</pre></div>
+</div>
+<p>Note that <code class="docutils literal"><span class="pre">G.to_asp()</span></code> is shorthand for <code class="docutils literal"><span class="pre">eb.to_asp(G)</span></code>.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="graphgenerators.html" class="btn btn-neutral float-right" title="Graph Generators" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Equibel Documentation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Paul Vicol.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'a1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

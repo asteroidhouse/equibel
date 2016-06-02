@@ -81,6 +81,9 @@
             
             
                 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../equibelgraphref.html">Working with Graphs and Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../graphgenerators.html">Graph Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">equibel</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../licence.html">Licence</a></li>
 </ul>
@@ -286,6 +289,17 @@
 
 
 <div class="viewcode-block" id="draw_graph"><a class="viewcode-back" href="../../equibel.html#equibel.draw.draw_graph">[docs]</a><span class="k">def</span> <span class="nf">draw_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Draws a graph and associated scenario by displaying formulas above each node.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : EquibelGraph</span>
+<span class="sd">        The graph/scenario to draw.</span>
+<span class="sd">    pos : dict</span>
+<span class="sd">          An optional dictionary mapping nodes in G to (x,y) coordinates where they should </span>
+<span class="sd">          be drawn. By default, ``pos`` is ``None``, and the spatial layout of nodes is </span>
+<span class="sd">          automatically determined by using the NetworkX ``spring_layout`` method.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">pos</span><span class="p">:</span>
         <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
 
@@ -306,7 +320,7 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="draw_model_lifting"><a class="viewcode-back" href="../../equibel.html#equibel.draw.draw_model_lifting">[docs]</a><span class="k">def</span> <span class="nf">draw_model_lifting</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">show_only_min_edges</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">highlight_nodes</span><span class="o">=</span><span class="p">[],</span> <span class="n">highlight_color</span><span class="o">=</span><span class="s1">&#39;#33FF99&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="draw_model_graph"><a class="viewcode-back" href="../../equibel.html#equibel.draw.draw_model_graph">[docs]</a><span class="k">def</span> <span class="nf">draw_model_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">show_only_min_edges</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">highlight_nodes</span><span class="o">=</span><span class="p">[],</span> <span class="n">highlight_color</span><span class="o">=</span><span class="s1">&#39;#33FF99&#39;</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">pos</span><span class="p">:</span>
         <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
 
@@ -408,7 +422,7 @@
 
 
 
-<div class="viewcode-block" id="draw_path_model_lifting"><a class="viewcode-back" href="../../equibel.html#equibel.draw.draw_path_model_lifting">[docs]</a><span class="k">def</span> <span class="nf">draw_path_model_lifting</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">R1</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">R2</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">show_only_min_edges</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="draw_path_model_graph"><a class="viewcode-back" href="../../equibel.html#equibel.draw.draw_path_model_graph">[docs]</a><span class="k">def</span> <span class="nf">draw_path_model_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">R1</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">R2</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">show_only_min_edges</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">R1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">R2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">diff_nodes</span> <span class="o">=</span> <span class="n">find_diff_nodes</span><span class="p">(</span><span class="n">R1</span><span class="p">,</span> <span class="n">R2</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -422,7 +436,7 @@
         <span class="n">pos</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_coord</span><span class="p">,</span> <span class="n">y_coord</span><span class="p">)</span>
         <span class="n">x_coord</span> <span class="o">+=</span> <span class="mi">2</span>
 
-    <span class="n">draw_model_lifting</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">show_only_min_edges</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">highlight_nodes</span><span class="o">=</span><span class="n">diff_nodes</span><span class="p">)</span></div>
+    <span class="n">draw_model_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">show_only_min_edges</span><span class="o">=</span><span class="n">show_only_min_edges</span><span class="p">,</span> <span class="n">highlight_nodes</span><span class="o">=</span><span class="n">diff_nodes</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="find_diff_nodes"><a class="viewcode-back" href="../../equibel.html#equibel.draw.find_diff_nodes">[docs]</a><span class="k">def</span> <span class="nf">find_diff_nodes</span><span class="p">(</span><span class="n">S</span><span class="p">,</span><span class="n">T</span><span class="p">):</span>

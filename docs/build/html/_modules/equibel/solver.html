@@ -81,6 +81,9 @@
             
             
                 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../equibelgraphref.html">Working with Graphs and Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../graphgenerators.html">Graph Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">equibel</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../licence.html">Licence</a></li>
 </ul>
@@ -506,12 +509,16 @@
 <span class="sd">    R : A new EquibelGraph object, representing the global completion of ``G``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SEMANTIC</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">global_completion_semantic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="n">simplify</span><span class="p">)</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">global_completion_semantic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SYNTACTIC</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">global_completion_syntactic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="n">simplify</span><span class="p">)</span></div>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">global_completion_syntactic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">opt_type</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">simplify</span><span class="p">:</span>
+        <span class="n">simplify_all_formulas</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">R</span></div>
 
 
-<div class="viewcode-block" id="global_completion_semantic"><a class="viewcode-back" href="../../equibel.html#equibel.solver.global_completion_semantic">[docs]</a><span class="k">def</span> <span class="nf">global_completion_semantic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="global_completion_semantic"><a class="viewcode-back" href="../../equibel.html#equibel.solver.global_completion_semantic">[docs]</a><span class="k">def</span> <span class="nf">global_completion_semantic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Finds the global completion of a graph and associated scenario, using the </span>
 <span class="sd">    **semantic characterization**.</span>
 
@@ -554,12 +561,7 @@
     <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_models</span><span class="p">:</span>
         <span class="n">t</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">node_models</span><span class="p">[</span><span class="n">node</span><span class="p">])</span>
         <span class="n">formula</span> <span class="o">=</span> <span class="n">formula_from_models</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">simplify</span><span class="p">:</span>
-            <span class="n">simple</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">simplify_logic</span><span class="p">(</span><span class="n">formula</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">simple</span> <span class="o">!=</span> <span class="bp">True</span><span class="p">:</span>
-                <span class="n">R</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">simple</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">R</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">formula</span><span class="p">)</span>
+        <span class="n">R</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">formula</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">R</span></div>
 
@@ -586,7 +588,7 @@
     <span class="k">return</span> <span class="n">eq_dicts</span></div>
 
 
-<div class="viewcode-block" id="global_completion_syntactic"><a class="viewcode-back" href="../../equibel.html#equibel.solver.global_completion_syntactic">[docs]</a><span class="k">def</span> <span class="nf">global_completion_syntactic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="global_completion_syntactic"><a class="viewcode-back" href="../../equibel.html#equibel.solver.global_completion_syntactic">[docs]</a><span class="k">def</span> <span class="nf">global_completion_syntactic</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">opt_type</span><span class="o">=</span><span class="n">INCLUSION</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Finds the global completion of a graph and associated scenario, using the </span>
 <span class="sd">    **syntactic characterization**.</span>
 

@@ -1,0 +1,318 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Visualization &mdash; Equibel a1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Equibel a1 documentation" href="index.html"/>
+        <link rel="next" title="equibel" href="modules.html"/>
+        <link rel="prev" title="Graph Generators" href="graphgenerators.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Equibel
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="equibelgraphref.html">Working with Graphs and Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphgenerators.html">Graph Generators</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Visualization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#drawing-graphs">Drawing Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#drawing-model-graphs">Drawing Model Graphs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">equibel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="licence.html">Licence</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Equibel</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Visualization</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/visualization.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="visualization">
+<h1>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h1>
+<p>Equibel provides functions that enable visualization of:</p>
+<ol class="arabic simple">
+<li>Arbitrary graphs with associated scenarios;</li>
+<li><em>Model graphs</em> corresponding to base graphs, for the restricted case
+where the base graphs
+are <em>paths</em></li>
+</ol>
+<p>The visualization functions <strong>require</strong> the <a class="reference external" href="http://matplotlib.org/">matplotlib</a> package, which
+can be installed via <code class="docutils literal"><span class="pre">pip</span></code> as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ [sudo] pip install matplotlib
+</pre></div>
+</div>
+<div class="section" id="drawing-graphs">
+<h2>Drawing Graphs<a class="headerlink" href="#drawing-graphs" title="Permalink to this headline">¶</a></h2>
+<p>Equibel extends the graph drawing capabilities of NetworkX by adding the option to display
+<em>formulas</em> associated with nodes. Such formulas are displayed <em>above</em> their respective nodes,
+and are typeset using LaTeX.</p>
+<p>First, we create a graph to display:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">equibel</span> <span class="k">as</span> <span class="nn">eb</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">complete_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;p | q | r&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;~p &amp; q&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;~q | ~r&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;p &amp; q &amp; ~r&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To visualize graphs <em>interactively</em> while in the terminal, it is recommended that you use the
+<a class="reference external" href="https://ipython.org/">iPython interpreter</a>.
+Then, before invoking the Equibel methods to draw graphs (or model graphs), you must
+enter the <code class="docutils literal"><span class="pre">iPython</span></code> <em>magic command</em> <code class="docutils literal"><span class="pre">%matplotlib</span></code> (more information about iPython magic commands can
+be found <a class="reference external" href="http://ipython.readthedocs.io/en/stable/interactive/magics.html?highlight=magic#magic-matplotlib">here</a>).
+This magic command sets up <code class="docutils literal"><span class="pre">matplotlib</span></code> to work interactively.</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">matplotlib</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">draw_graph</span></code> method is used to display the graph, as follows:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eb</span><span class="o">.</span><span class="n">draw_graph</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><img alt="Displayed graph (with automatic node positioning)" src="_images/complete_graph.png" /></p>
+<p>By default, the spatial layout of nodes is determined by the NetworkX <code class="docutils literal"><span class="pre">spring_layout()</span></code> method,
+which is stochastic, and produces slightly different results each time it is called. This is
+usually sufficient for interactive experimentation; however, if you want more control over how nodes
+are laid out, you can specify the <em>exact coordinates</em> of each node in the graph. This is done by
+creating a <em>dictionary</em> that maps each node identifier to a 2-tuple representing the
+x- and y-coordinates of the node:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">positions</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">3</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mf">2.5</span><span class="p">),</span> <span class="mi">4</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mf">2.8</span><span class="p">)}</span>
+</pre></div>
+</div>
+<p>Then, this dictionary can be passed to the <code class="docutils literal"><span class="pre">draw_graph</span></code> method via a keyword argument
+<code class="docutils literal"><span class="pre">pos=positions</span></code>, as follows:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eb</span><span class="o">.</span><span class="n">draw_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">positions</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><img alt="Displayed graph (with manual node positioning)" src="_images/complete_graph_custom_pos.png" /></p>
+</div>
+<div class="section" id="drawing-model-graphs">
+<h2>Drawing Model Graphs<a class="headerlink" href="#drawing-model-graphs" title="Permalink to this headline">¶</a></h2>
+<p>Equibel also enables visualization of <em>model graphs</em>.</p>
+<p>First, we create a graph <code class="docutils literal"><span class="pre">G</span></code>:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;(x1 = x2) &amp; x3&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;x2 = x3&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_formula</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;~x3&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To display the model graph of <code class="docutils literal"><span class="pre">G</span></code>, we use the function <code class="docutils literal"><span class="pre">draw_path_model_graph</span></code>, as follows:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eb</span><span class="o">.</span><span class="n">draw_path_model_graph</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><img alt="Model graph showing only minimal edges" src="_images/path_model_graph_min_edges1.png" /></p>
+<p>To reduce clutter, by default, only <em>minimal model edges</em> are shown. Of these minimal edges,
+the ones that are <em>unique minimal</em> are highlighted red, while the ones that are <em>duplicated minimal</em>
+are highlighted yellow. These edges are generally sufficient to identify the pertinent properties of the base graph.</p>
+<p>Alternatively, <em>all</em> model edges (minimal or not) can be displayed by setting the keyword argument
+<code class="docutils literal"><span class="pre">show_only_min_edges</span></code> to <code class="docutils literal"><span class="pre">False</span></code>, as follows:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eb</span><span class="o">.</span><span class="n">draw_path_model_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">show_only_min_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><img alt="Model graph showing all edges" src="_images/path_model_graph_all_edges.png" /></p>
+<p>Model graphs are a useful representation for understanding the relationships between
+various approaches to belief change. They are useful for examining <em>why</em> a certain approach
+produced a certain result. In order to facilitate comparisons between approaches,
+and to help the user to focus on the relevent parts of a model graph, there is
+an optional argument to the <code class="docutils literal"><span class="pre">draw_path_model_graph()</span></code> function that <em>highlights</em> nodes
+for which the results of two approaches differ.</p>
+<p>To explain this functionality, we first perform some belief change operations on the graph <code class="docutils literal"><span class="pre">G</span></code>:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">R_global</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">global_completion</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">R_expanding</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">iterate_expanding</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">simplify</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">R_global</span> <span class="o">==</span> <span class="n">R_expanding</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>As you can see, the results of the global completion and the first expanding iteration differ.
+In order to help to visualize the differences between them, and, in particular, to <em>localize</em> the
+factors that lead to these differences, one can pass two additional arguments to the
+<code class="docutils literal"><span class="pre">draw_path_model_graph()</span></code> function, which are <code class="docutils literal"><span class="pre">EquibelGraph</span></code>
+objects that represent the results of different approaches performed on the base graph <code class="docutils literal"><span class="pre">G</span></code>.
+Then, the <code class="docutils literal"><span class="pre">draw_path_model_graph()</span></code> function determines <em>for which nodes</em> the resultant formulas
+of the two approaches differ, and it <em>highlights</em> the boxes around the model vertices corresponding
+to those nodes when drawing the model graph of <code class="docutils literal"><span class="pre">G</span></code>:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eb</span><span class="o">.</span><span class="n">draw_path_model_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">R_expanding</span><span class="p">,</span> <span class="n">R_global</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><img alt="Model graph with highlighted nodes that differ in approaches" src="_images/path_model_graph_highlighted_nodes.png" /></p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="modules.html" class="btn btn-neutral float-right" title="equibel" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="graphgenerators.html" class="btn btn-neutral" title="Graph Generators" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Paul Vicol.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'a1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

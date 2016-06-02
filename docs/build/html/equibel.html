@@ -83,6 +83,9 @@
             
             
                 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="equibelgraphref.html">Working with Graphs and Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphgenerators.html">Graph Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">equibel</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">equibel package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
@@ -281,16 +284,31 @@ graph is human-readable.</p>
 <dl class="function">
 <dt id="equibel.draw.draw_graph">
 <code class="descclassname">equibel.draw.</code><code class="descname">draw_graph</code><span class="sig-paren">(</span><em>G</em>, <em>pos=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/draw.html#draw_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.draw.draw_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws a graph and associated scenario by displaying formulas above each node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>G</strong> (<a class="reference internal" href="#equibel.graph.EquibelGraph" title="equibel.graph.EquibelGraph"><em>EquibelGraph</em></a>) &#8211; The graph/scenario to draw.</li>
+<li><strong>pos</strong> (<em>dict</em>) &#8211; An optional dictionary mapping nodes in G to (x,y) coordinates where they should
+be drawn. By default, <code class="docutils literal"><span class="pre">pos</span></code> is <code class="docutils literal"><span class="pre">None</span></code>, and the spatial layout of nodes is
+automatically determined by using the NetworkX <code class="docutils literal"><span class="pre">spring_layout</span></code> method.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="equibel.draw.draw_model_graph">
+<code class="descclassname">equibel.draw.</code><code class="descname">draw_model_graph</code><span class="sig-paren">(</span><em>G</em>, <em>pos=None</em>, <em>show_only_min_edges=False</em>, <em>highlight_nodes=[]</em>, <em>highlight_color='#33FF99'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/draw.html#draw_model_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.draw.draw_model_graph" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="equibel.draw.draw_model_lifting">
-<code class="descclassname">equibel.draw.</code><code class="descname">draw_model_lifting</code><span class="sig-paren">(</span><em>G</em>, <em>pos=None</em>, <em>show_only_min_edges=False</em>, <em>highlight_nodes=[]</em>, <em>highlight_color='#33FF99'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/draw.html#draw_model_lifting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.draw.draw_model_lifting" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="equibel.draw.draw_path_model_lifting">
-<code class="descclassname">equibel.draw.</code><code class="descname">draw_path_model_lifting</code><span class="sig-paren">(</span><em>G</em>, <em>R1=None</em>, <em>R2=None</em>, <em>show_only_min_edges=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/draw.html#draw_path_model_lifting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.draw.draw_path_model_lifting" title="Permalink to this definition">¶</a></dt>
+<dt id="equibel.draw.draw_path_model_graph">
+<code class="descclassname">equibel.draw.</code><code class="descname">draw_path_model_graph</code><span class="sig-paren">(</span><em>G</em>, <em>R1=None</em>, <em>R2=None</em>, <em>show_only_min_edges=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/draw.html#draw_path_model_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.draw.draw_path_model_graph" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -408,7 +426,7 @@ Sympy package for symbolic mathematics.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>node_id</strong> (<em>The identifier of the desired node (usually an int)</em>) &#8211; </li>
-<li><strong>formula</strong> (This can be either a <em>Sympy formula object</em>, or a <em>string</em>) &#8211; representing a formua in infix notation</li>
+<li><strong>formula</strong> (This can be either a <em>Sympy formula object</em>, or a <em>string</em>) &#8211; representing a formula in infix notation</li>
 </ul>
 </td>
 </tr>
@@ -990,7 +1008,7 @@ over equivalences.</li>
 
 <dl class="function">
 <dt id="equibel.solver.global_completion_semantic">
-<code class="descclassname">equibel.solver.</code><code class="descname">global_completion_semantic</code><span class="sig-paren">(</span><em>G</em>, <em>opt_type='inclusion'</em>, <em>simplify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#global_completion_semantic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.global_completion_semantic" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">equibel.solver.</code><code class="descname">global_completion_semantic</code><span class="sig-paren">(</span><em>G</em>, <em>opt_type='inclusion'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#global_completion_semantic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.global_completion_semantic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the global completion of a graph and associated scenario, using the
 <strong>semantic characterization</strong>.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1016,7 +1034,7 @@ over equivalences.</li>
 
 <dl class="function">
 <dt id="equibel.solver.global_completion_syntactic">
-<code class="descclassname">equibel.solver.</code><code class="descname">global_completion_syntactic</code><span class="sig-paren">(</span><em>G</em>, <em>opt_type='inclusion'</em>, <em>simplify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#global_completion_syntactic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.global_completion_syntactic" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">equibel.solver.</code><code class="descname">global_completion_syntactic</code><span class="sig-paren">(</span><em>G</em>, <em>opt_type='inclusion'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/equibel/solver.html#global_completion_syntactic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#equibel.solver.global_completion_syntactic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the global completion of a graph and associated scenario, using the
 <strong>syntactic characterization</strong>.</p>
 <table class="docutils field-list" frame="void" rules="none">

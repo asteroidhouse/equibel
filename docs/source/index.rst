@@ -9,6 +9,9 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   equibelgraphref
+   graphgenerators
+   visualization
    modules
    licence
 

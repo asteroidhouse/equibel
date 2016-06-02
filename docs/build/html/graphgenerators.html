@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Graph Generators &mdash; Equibel a1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Equibel a1 documentation" href="index.html"/>
+        <link rel="next" title="Visualization" href="visualization.html"/>
+        <link rel="prev" title="Working with Graphs and Scenarios" href="equibelgraphref.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Equibel
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="equibelgraphref.html">Working with Graphs and Scenarios</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Graph Generators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#classic-graph-generators">Classic Graph Generators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">equibel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="licence.html">Licence</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Equibel</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Graph Generators</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/graphgenerators.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="graph-generators">
+<h1>Graph Generators<a class="headerlink" href="#graph-generators" title="Permalink to this headline">¶</a></h1>
+<p>Equibel includes a number of functions that <em>wrap</em> around NetworkX graph generators; these
+functions invoke certain NetworkX functions, and convert the resulting NetworkX <code class="docutils literal"><span class="pre">Graph</span></code>
+objects to <code class="docutils literal"><span class="pre">EquibelGraph</span></code> objects.</p>
+<div class="section" id="classic-graph-generators">
+<h2>Classic Graph Generators<a class="headerlink" href="#classic-graph-generators" title="Permalink to this headline">¶</a></h2>
+<p>Equibel includes the following generators for classic graph topologies:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="45%" />
+<col width="55%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Type of Graph</th>
+<th class="head">Generator Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Path Graph</td>
+<td><code class="docutils literal"><span class="pre">eb.path_graph(n)</span></code></td>
+</tr>
+<tr class="row-odd"><td>Complete Graph</td>
+<td><code class="docutils literal"><span class="pre">eb.complete_graph(n)</span></code></td>
+</tr>
+<tr class="row-even"><td>Star Graph</td>
+<td><code class="docutils literal"><span class="pre">eb.star_graph(n)</span></code></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal"><span class="pre">eb.path_graph(n)</span></code> creates an undirected path graph on <code class="docutils literal"><span class="pre">n</span></code> nodes, numbered using
+the integers <code class="docutils literal"><span class="pre">0</span></code> to <code class="docutils literal"><span class="pre">n</span> <span class="pre">-</span> <span class="pre">1</span></code>, inclusive. The following invocation creates the path graph
+0 &lt;-&gt; 1 &lt;-&gt; 2 &lt;-&gt; 3:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can inspect the nodes and edges in this path graph as follows:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+<span class="go">[0, 1, 2, 3]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+<span class="go">[(0, 1), (1, 2), (2, 3)]</span>
+</pre></div>
+</div>
+<p>To create an undirected complete graph on <code class="docutils literal"><span class="pre">n</span></code> nodes, use:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">complete_graph</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Again, we inspect the nodes and edges to see what was produced by the generator:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+<span class="go">[0, 1, 2, 3]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+<span class="go">[(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]</span>
+</pre></div>
+</div>
+<p>Following the convention used by NetworkX, the function <code class="docutils literal"><span class="pre">star_graph(n)</span></code> creates an
+undirected star graph on <code class="docutils literal"><span class="pre">n</span> <span class="pre">+</span> <span class="pre">1</span></code> nodes, with one central node numbered 0, and <code class="docutils literal"><span class="pre">n</span></code> outer nodes
+numbered by the integers <code class="docutils literal"><span class="pre">1</span></code> to <code class="docutils literal"><span class="pre">n</span></code>, inclusive:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">star_graph</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When inspecting the nodes and edges produced by <code class="docutils literal"><span class="pre">star_graph(4)</span></code>, note that there are 5 nodes,
+numbered from 0 to 4, inclusive, and that node 0 is the central node of the star gtaph:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+<span class="go">[0, 1, 2, 3, 4]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+<span class="go">[(0, 1), (0, 2), (0, 3), (0, 4)]</span>
+</pre></div>
+</div>
+<p>In addition to the graph generators provided with Equibel, you can also use any of the graph
+generators included with NetworkX, which are
+<a class="reference external" href="http://networkx.readthedocs.io/en/networkx-1.11/reference/generators.html">documented here</a>,
+via the method described next.
+The majority of the generator functions in NetworkX have an optional keyword argument
+called <code class="docutils literal"><span class="pre">create_using</span></code>, which enables them to return an object of any type that is a subclass of
+the NetworkX <code class="docutils literal"><span class="pre">Graph</span></code> class. Thus, if you include the argument <code class="docutils literal"><span class="pre">create_using=EquibelGraph()</span></code>
+when calling a NetworkX generator function, the output will be an <code class="docutils literal"><span class="pre">EquibelGraph</span></code> object with
+the desired graph topology.</p>
+<p>In fact, the graph generators in Equibel are implemented using this method. For example, the
+<code class="docutils literal"><span class="pre">eb.star_graph()</span></code> function is equivalent to the following NetworkX call:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">star_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="n">EquibelGraph</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Alternatively, you can <em>initialize</em> an <code class="docutils literal"><span class="pre">EquibelGraph</span></code> object from an existing <code class="docutils literal"><span class="pre">Graph</span></code> <em>or</em>
+<code class="docutils literal"><span class="pre">EquibelGraph</span></code> object; this creates a new <code class="docutils literal"><span class="pre">EquibelGraph</span></code> by copying the nodes and edges from
+the existing graph. Thus, you can generate any type of (undirected) NetworkX graph and pass it to
+the <code class="docutils literal"><span class="pre">EquibelGraph</span></code> constructor as follows:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">EquibelGraph</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">complete_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="visualization.html" class="btn btn-neutral float-right" title="Visualization" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="equibelgraphref.html" class="btn btn-neutral" title="Working with Graphs and Scenarios" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Paul Vicol.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'a1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
